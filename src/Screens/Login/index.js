@@ -16,8 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { BoxShadow } from 'react-native-shadow'
 
-import { Video } from 'expo'
-
+import { Video } from 'expo-av';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +25,14 @@ const styles = StyleSheet.create({
   viewView: {
     flex: 1,
     alignItems: 'flex-start'
+  },
+  backgroundVideo:{
+    width: '100%',
+    height: '100%',
+    top: 0,
+    left: 0,
+    right: 0,
+    position:'absolute'
   },
   scroll:{
     width: '100%',
@@ -139,7 +146,8 @@ export default function({navigation}) {
     width: 194,
     height: 60,
     color: colors.cyan,
-    border: 6,
+    backgroundColor: 'transparent',
+    border: 10,
     radius: 10,
     opacity: 0.9,
     x: 0,
@@ -148,10 +156,17 @@ export default function({navigation}) {
 
   return (
     <View style={styles.viewView}>
-      <LinearGradient
-        colors={[colors.background, colors.background2]}
-        style={styles.linearGradient}
+      <Video
+        source={require("../../../assets/bg_video.mp4")}
+        rate={1.0}
+        volume={1.0}
+        isMuted={true}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+        style={styles.backgroundVideo}
       />
+
         <ScrollView style={styles.scroll}>
           <Image
             source={require("../../../assets/img/logo.png")}
