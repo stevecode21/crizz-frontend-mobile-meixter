@@ -1,0 +1,11 @@
+{
+    "loginTitle": "Unirse a MeiXter!",
+    "loginYourPhone": "Celular",
+    "loginAccessnow": "Ingresar",
+    "loginSMSVerification": "Verificación por SMS",
+    "loginTextModal2": "enviamos un código al número de telefono",
+    "loginWait": "Espere",
+    "loginSeconds": "segundos para solicitar un nuevo código",
+    "loginResendCode": "Reenviar código",
+    "loginErrorPhoneInvalid": "número de celular invalido"
+}

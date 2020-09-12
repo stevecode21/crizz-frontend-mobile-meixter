@@ -1,0 +1,13 @@
+{
+    "loginTitle": "Join MeiXter!",
+    "loginYourPhone": "Your Phone",
+    "loginAccessnow": "Access now",
+    "loginSMSVerification": "SMS Verification",
+    "loginTextModal2": "we sent a code to the phone number",
+    "loginWait": "Wait",
+    "loginSeconds": "seconds to request a new code",
+    "loginResendCode": "Resend code",
+    "loginErrorPhoneInvalid": "invalid phone number",
+    "selectCountry": "Select your country",
+    "country": "Country",
+}
