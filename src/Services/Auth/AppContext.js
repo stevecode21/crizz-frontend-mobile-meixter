@@ -12,14 +12,33 @@ const AppStateContext = React.createContext();
 export const AppContextProvider = props => {
 	const [accessToken, changeAccessToken] = useStorage("@TOKEN", accessToken);
 	const [account, updateAccount] = useStorage("@USER", {});
-	const [stateApp, setStateApp] = useStorage("@STATE", APP_STATE.PUBLIC);
+	const [stateApp, setStateApp] = useStorage("@STATE", stateApp);
 	const [loading, setLoading] = useState(false)
 	const {localeProvider} = useTranslation()
 	
-	const _setToken = accessToken => {
+	const _setToken = async (accessToken) => {
 		api.setAuthorization(accessToken)
-		setStateApp(APP_STATE.PRIVATE)
-		changeAccessToken(accessToken);
+		changeAccessToken(accessToken)
+		console.log('accessToken', accessToken)
+		console.log('consultando account')
+		setLoading(true)
+		try
+		{
+			let response = await api.account();
+			setLoading(false)
+			console.log('account_info', response.result)
+			updateAccount(response.result)
+			if (response.result.fullRecord == false)
+				setStateApp(APP_STATE.REGISTER)
+			else
+				setStateApp(APP_STATE.PRIVATE)
+		}
+	    catch (error) 
+	    {
+      		showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	    	setStateApp(APP_STATE.PUBLIC)
+			setLoading(false)
+	    }
 	}
 
 	const _changeAccount = account => {
@@ -31,7 +50,7 @@ export const AppContextProvider = props => {
 		updateAccount({})
 	    setStateApp(APP_STATE.PUBLIC);
 	    api.deleteAuthorization()
-	}, [changeAccessToken, updateAccount, setStateApp]);
+	}, []);
 
 	const _logout = useCallback(() => {
 	    Alert.alert(
@@ -64,18 +83,18 @@ export const AppContextProvider = props => {
 			{
 				let response = await api.account();
 				setLoading(false)
-				console.log(response)
+				console.log('account_info', response.result)
 				updateAccount(response.result)
-				setStateApp(APP_STATE.PRIVATE)
+				if (response.result.fullRecord == false)
+					setStateApp(APP_STATE.REGISTER)
+				else
+					setStateApp(APP_STATE.PRIVATE)
 			}
 		    catch (error) 
 		    {
           		showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
-		    	console.log(error)
-		    	setStateApp(APP_STATE.PUBLIC)
+		    	
 				setLoading(false)
-				if (error.status == 403)
-					setStateApp(APP_STATE.PUBLIC)
 		    }
 		}
 	}
@@ -83,12 +102,12 @@ export const AppContextProvider = props => {
 	return (
 		<AppStateContext.Provider
 			value={{
-				tokenProvider: accessToken,
 				setToken: _setToken,
 				account: account,
 				changeAccount: _changeAccount,
 				logout: _logout,
 				stateApp: stateApp,
+				setStateApp: setStateApp,
 				setLoading: setLoading,
 				checkAccount: _checkAccount,
 				showErrorToast: showErrorToast

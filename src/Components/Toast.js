@@ -4,7 +4,7 @@ import colors from '../Themes/Colors';
 
 let toast;
 
-export default function showToast(message, type, duration = 4000) {
+export default function showToast(message, type, duration = 5000) {
   Toast.show(message, {
     position: 20,
     duration: duration,

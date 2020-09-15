@@ -10,4 +10,11 @@
     "loginErrorPhoneInvalid": "invalid phone number",
     "selectCountry": "Select your country",
     "country": "Country",
+    "registerPreparing": "Preparing your console",
+    "registerCreateProfile": "Create profile",
+    "registerUploadPhoto": "Upload your profile photo",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "instagram": "Instagram",
+    "ready": "Ready"
 }

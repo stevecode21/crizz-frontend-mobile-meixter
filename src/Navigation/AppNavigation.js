@@ -6,22 +6,24 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Routes from './Routes';
 import LaunchScreen from '../Screens/Launch';
 import LoginStack from './LoginStack';
+import RegisterStack from './RegisterStack';
 //import MainStack from './MainStack';
 import {APP_STATE} from '../Constants';
+import useAuth from '../Services/Auth';
 
 export default function RootNavigation(props) {
 
-  const [stateLogin, setStateLogin] = useState('PUBLIC_LOGIN') //PUBLIC_LOGIN, MAIN_APP, CHECKING_LOGIN, UNKNOWN
+  const {stateApp} = useAuth()
 
   return (
     <NavigationContainer>
       <Stack.Navigator headerMode="none">
-        {stateLogin === APP_STATE.PRIVATE ? (
-          <Stack.Screen name={Routes.MAIN_APP} component={LaunchScreen} />
-        ) : stateLogin === APP_STATE.PUBLIC ? (
+        {stateApp === APP_STATE.PUBLIC ? (
           <Stack.Screen name={Routes.LOGIN_STACK} component={LoginStack} />
+        ) : stateApp === APP_STATE.REGISTER ? (
+          <Stack.Screen name={Routes.REGISTER_STACK} component={RegisterStack} />
         ) : (
-          <Stack.Screen name={Routes.LOADING} component={LaunchScreen} />
+          <Stack.Screen name={Routes.HOME_STACK} component={LaunchScreen} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

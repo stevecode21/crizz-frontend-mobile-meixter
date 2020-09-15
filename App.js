@@ -10,6 +10,9 @@ import {
 import RootNavigation from './src/Navigation/AppNavigation';
 import Constants from 'expo-constants';
 
+import {LocaleContextProvider} from './src/i18n/LocaleContext';
+import {AppContextProvider} from './src/Services/Auth/AppContext';
+
 export default function App() {
 
   const styles = StyleSheet.create({
@@ -29,11 +32,15 @@ export default function App() {
     return <AppLoading />
   } else {
     return (
-      <SafeAreaView style={styles.containerSafe}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <RootNavigation />
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
+      <LocaleContextProvider>
+        <AppContextProvider>
+          <SafeAreaView style={styles.containerSafe}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <RootNavigation />
+            </TouchableWithoutFeedback>
+          </SafeAreaView>
+        </AppContextProvider>
+      </LocaleContextProvider>
     )
   }
 }

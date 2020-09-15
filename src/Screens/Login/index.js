@@ -1,158 +1,155 @@
-import React from 'react';
+import React, {useRef, useEffect, useState, useCallback} from 'react';
 import {
   Text, 
-  Platform, 
   ScrollView, 
   StyleSheet, 
   Image,
   View,
   TextInput,
   Alert,
-  TouchableHighlight
+  TouchableHighlight,
+  TouchableOpacity
 } from 'react-native';
+import useTranslation from '../../i18n';
+import useAuth from '../../Services/Auth';
+
+import styles from './styles';
+import codes from '../../i18n/Codes';
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
-import { LinearGradient } from 'expo-linear-gradient';
-
-import { BoxShadow } from 'react-native-shadow'
-
 import { Video } from 'expo-av';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  viewView: {
-    flex: 1,
-    alignItems: 'flex-start'
-  },
-  backgroundVideo:{
-    width: '100%',
-    height: '100%',
-    top: 0,
-    left: 0,
-    right: 0,
-    position:'absolute'
-  },
-  scroll:{
-    width: '100%',
-    height: '100%',
-  },
-  linearGradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: '100%',
-  },
-  imageCenter: {
-    backgroundColor: "transparent",
-    marginTop: 106,
-    alignSelf: 'center',
-    width: 160,
-    height: 125,
-    resizeMode: 'stretch',
-  },
-  imageCenterWellcome: {
-    backgroundColor: "transparent",
-    marginTop: 33,
-    alignSelf: 'center',
-    width: 98,
-    height: 31,
-    resizeMode: 'stretch',
-  },
-  title: {
-    color: colors.white,
-    fontFamily: fonts.medium,
-    fontSize: 24,
-    textAlign: "center",
-    marginTop: 78,
-  },
-  textPhone: {
-    color: colors.fucsia,
-    fontFamily: fonts.SemiBold,
-    fontSize: 18,
-    marginTop: 90,
-    marginLeft: 36,
-    marginBottom: -20
-  },
-  containerInput: {
-    borderColor: colors.lila, 
-    borderBottomWidth: 1,
-    marginLeft: 36,
-    marginRight: 36,
-    alignSelf: "stretch",
-    height: 70,
-  },
-  inputPhone: {
-    fontSize: 18,
-    color: colors.white,
-    fontFamily: fonts.medium,
-    padding: 10,
-    bottom: -15,
-    width: '100%'
-  },
-  textPrefi: {
-    color: colors.lila,
-    fontSize: 18,
-    fontFamily: fonts.medium
-  },
-  containerInputNumber: {
-    marginLeft: 70,
-    marginRight: 30,
-    flexDirection: "row"
-  },
-  containerCenter: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: -9,
-    justifyContent: "center",
-  },
-  containerInputPrefi: {
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  imagenPhone: {
-    resizeMode: "center",
-    backgroundColor: "transparent",
-    width: 33,
-    height: 22,
-  },
-  containerButtom: {
-    alignSelf: 'center',
-    marginTop: 58,
-    marginBottom: 20
-  },
-  buttom: {
-    backgroundColor: colors.background2,
-    borderRadius: 10,
-    width: 194,
-    height: 60,
-    justifyContent: "center",
-    alignItems: 'center',
-  },
-  textButton: {
-    color: colors.cyan,
-    fontFamily: fonts.SemiBold,
-    fontSize: 18
-  },
-});
+import ModalBottom from 'react-native-raw-bottom-sheet';
+import PinCode from 'react-native-smooth-pincode-input';
+//api services
+import * as api from "../../Services/login";
 
 export default function({navigation}) {
 
-  const shadowOpt = {
-    width: 194,
-    height: 60,
-    color: colors.cyan,
-    backgroundColor: 'transparent',
-    border: 10,
-    radius: 10,
-    opacity: 0.9,
-    x: 0,
-    y: 0
+  const {t, localeProvider} = useTranslation()
+  const {setToken, setLoading, showErrorToast, stateApp, checkAccount} = useAuth()
+
+  const refModalBottom = useRef()
+  const [code, setCode] = useState('')
+  const [counter, setCounter] = useState(10)
+  const [resend, setResend] = useState(false)
+  const [phone, setPhone] = useState('')
+  const [errorPhone, setErrorPhone] = useState(false)
+  const [textErrorPhone, setTextErrorPhone] = useState('')
+  const [tokenVerify, setTokenVerify] = useState('')
+  const [viewMode, setViewMode] = useState('code')
+  const [filters, setFilters] = useState('')
+  const [codePhone, setCodePhone] = useState('+44')
+
+  const closeModal = () => {
+    refModalBottom.current.close()
   }
+
+  const openModal = () => {
+    setViewMode('code')
+    resetCounter()
+    refModalBottom.current.open()
+  }
+
+  const openModalCodes = () => {
+    setViewMode('phone')
+    refModalBottom.current.open()
+  }
+
+  const resetCounter = () => {
+    setCounter(60) 
+    setResend(false) 
+  }
+
+  const resetErrors = () => {
+    setErrorPhone(false)
+    setTextErrorPhone('')
+  }
+
+  const handleSelectec = (dial_code) => {
+    setCodePhone(dial_code)
+    closeModal()
+  }
+
+  const handleVerify = async () => {
+    setCode('')
+    if (phone !== '') {
+      let newphone = phone 
+      newphone = newphone.replace(/\D+/g, '')
+      newphone = codePhone+''+newphone
+      setLoading(true);
+      try 
+      {
+        let response = await api.verify({phone: newphone});
+        resetErrors()
+        setLoading(false);
+        if (response.result.tokenVerify) 
+        {
+          setTokenVerify(response.result.tokenVerify)
+          openModal()
+        }
+      } 
+      catch (error) 
+      {
+        setLoading(false)
+        if (error.message == 'Network Error') 
+        {
+          showErrorToast(error.message);
+        }
+        else
+        {
+          setErrorPhone(true)
+          setTextErrorPhone(localeProvider.name == 'en' ? error.message_en : error.message_es)
+          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+        }
+      }
+    } else {
+      setErrorPhone(true)
+      setTextErrorPhone(t('loginErrorPhoneInvalid'))
+    }
+  }
+
+  const handleLogin = async (codePhone) => {
+    setCode(codePhone)
+    setLoading(true);
+    try 
+    {
+      let data = {
+        tokenVerify: tokenVerify,
+        code: codePhone
+      }
+      let response = await api.login(data);
+      setLoading(false);
+      if (response.result.token) 
+      {
+        closeModal()
+        await setToken(response.result.token)
+      }
+    } 
+    catch (error) 
+    {
+      setCode('')
+      setLoading(false)
+      if (error.status == 401) 
+      {
+        setTextErrorPhone(localeProvider.name == 'en' ? error.message_en : error.message_es)
+        showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+      }
+      else
+      {
+        showErrorToast(error.message);
+      }
+    }
+  }
+
+  useEffect(() => {
+    const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+    setResend((timer == 0) ? true : false)
+    return () => clearInterval(timer);
+  }, [counter])
+
+  useEffect(() => {
+    checkAccount()
+  }, [])
 
   return (
     <View style={styles.viewView}>
@@ -166,53 +163,175 @@ export default function({navigation}) {
         isLooping
         style={styles.backgroundVideo}
       />
+      <ScrollView style={styles.scroll}>
+        <Image
+          source={require("../../../assets/img/logo.png")}
+          style={styles.imageCenter}
+        />
+        <Image
+          source={require("../../../assets/img/Welcome.png")}
+          style={styles.imageCenterWellcome}
+        /> 
 
-        <ScrollView style={styles.scroll}>
-          <Image
-            source={require("../../../assets/img/logo.png")}
-            style={styles.imageCenter}
-          />
-          <Image
-            source={require("../../../assets/img/Welcome.png")}
-            style={styles.imageCenterWellcome}
-          />
-          <Text style={styles.title}> Join MeiXter! </Text>
-          <Text style={styles.textPhone}>Your Phone</Text>
+        <Text style={styles.title}> {t('loginTitle')} </Text>
+        <Text style={styles.textPhone}> {t('loginYourPhone')} </Text>
 
-          <View style={styles.containerInput}>  
-            <View pointerEvents="box-none" style={styles.containerInputNumber}>
-              <TextInput
-                keyboardType={'phone-pad'}
-                maxLength={12}
-                placeholder="7454 123456"
-                onChangeText={() => {}}
-                style={styles.inputPhone}
-              />
-            </View>
-            <View style={styles.containerCenter}>
-              <View style={styles.containerInputPrefi}>
-                <Image source={require("../../../assets/img/phone.png")} style={styles.imagenPhone}/>
-                <Text style={styles.textPrefi}>+44</Text>
-              </View>
-            </View>
+        <View style={( errorPhone ) ? styles.containerInputError : styles.containerInput}>  
+          <View pointerEvents="box-none" style={styles.containerInputNumber}>
+            <TextInput
+              keyboardType={'phone-pad'}
+              maxLength={10}
+              placeholder="7454 123456"
+              onChangeText={(data) => {
+                resetErrors()
+                setPhone(data)
+              }}
+              style={styles.inputPhone}
+            />
           </View>
-
-          <View style={styles.containerButtom}>
-            <BoxShadow setting={ shadowOpt }>
-              <TouchableHighlight
-                onPress={() => navigation.navigate('Login')}
-                style={styles.buttom}
+          <View style={styles.containerCenter}>
+            <View style={styles.containerInputPrefi}>
+              <TouchableOpacity
+                onPress={() => openModalCodes()}
+                style={styles.containerInputPrefi}
               >
-                <Text style={styles.textButton}>
-                  Access now{'       '}
-                  <Image
-                    source={require('../../../assets/img/arrowRight.png')}
-                  />
-                </Text>
-              </TouchableHighlight>
-            </BoxShadow>
+                <Image source={require("../../../assets/img/phone.png")} style={styles.imagenPhone}/>
+                <Text style={styles.textPrefi}>{ codePhone }</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </ScrollView>
+        </View>
+        {errorPhone && (
+          <Text style={styles.textError}>{textErrorPhone}</Text>
+        )}
+
+        <View style={styles.containerButtom}>
+          <Text style={styles.textButton}>
+            {t('loginAccessnow')}{'       '}
+            <Image
+              source={require('../../../assets/img/arrowRight.png')}
+            />
+          </Text>
+          <TouchableHighlight
+            onPress={() => handleVerify()}
+            style={styles.buttom}
+          >
+            <Image
+              source={require("../../../assets/img/button-bg.png")}
+            />
+          </TouchableHighlight>
+        </View>
+
+        <ModalBottom
+          ref={refModalBottom}
+          closeOnDragDown={true}
+          closeOnPressMask={true}
+          closeOnPressBack={true}
+          dragFromTopOnly={true}
+          animationType={'slide'}
+          customStyles={{
+            wrapper: {
+              backgroundColor: colors.transparentLight,
+            },
+            draggableIcon: {
+              backgroundColor: colors.background,
+              width: 80,
+              top: 10,
+              height: 5,
+              borderRadius: 2.5,
+            },
+            container: {
+              height: 520,
+              borderTopLeftRadius: 35,
+              borderTopRightRadius: 35,
+              backgroundColor: colors.background
+            }
+          }}
+        >
+          {viewMode === 'code' && (
+            <View>
+              <Text style={styles.titleModal}> {t('loginSMSVerification')} </Text>
+              <Text style={styles.textModal2}> {t('loginTextModal2')} </Text>
+              <Text style={styles.textModalPhone}>{codePhone} {phone}</Text>
+
+              <PinCode
+                value={code}
+                onTextChange={(codeNumber) => {
+                  setCode(codeNumber)
+                }}
+                onFulfill={(codeNumber) => {
+                  handleLogin(codeNumber)
+                }}
+                placeholder="0"
+                cellSize={60}
+                containerStyle={{
+                  alignSelf: 'center',
+                  marginTop: 30
+                }}
+                cellStyle={{
+                  borderRadius: 10,
+                  backgroundColor: colors.transparent,
+                  marginLeft: 10,
+                  borderWidth: 3,
+                  borderColor: colors.cyan,
+                  borderStyle: "solid"
+                }}
+                cellStyleFocused={{
+                  backgroundColor: colors.transparentLight
+                }}
+                textStyle={{
+                  fontSize: 28,
+                  color: colors.white
+                }}
+                textStyleFocused={{
+                  color: colors.cyan
+                }}
+              />
+
+              {!resend && (
+                <Text style={styles.textModal3}> {t('loginWait')} {counter} {t('loginSeconds')}</Text>
+              )}
+
+              <TouchableOpacity  onPress={() => { handleVerify() }} >
+                {resend && (
+                  <Text style={styles.textModalResend}> {t('loginResendCode')} </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {viewMode === 'phone' && (
+            <View>
+              <Text style={styles.textModalPhone1}> {t('selectCountry')}</Text>
+              <View style={styles.containerInput}>  
+                <View pointerEvents="box-none" style={styles.containerInputCountry}>
+                  <TextInput
+                    maxLength={25}
+                    placeholder={t('country')}
+                    onChangeText={(data) => {
+                      setFilters(data)
+                    }}
+                    value={filters}
+                    style={styles.inputCountry}
+                  />
+                </View>
+              </View>
+              <ScrollView style={styles.scrollPhone}>
+                {codes.filter(code => code.name.includes(filters)).map((item) => (
+                  <TouchableOpacity key={item.code}  onPress={() => {  handleSelectec(item.dial_code) }} >
+                    <View style={styles.containerListPhone}>
+                      <Text style={styles.textModalListPhone}> {item.dial_code} - {item.name} </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+            
+        </ModalBottom>
+        
+      </ScrollView>
     </View>
   );
 }
+

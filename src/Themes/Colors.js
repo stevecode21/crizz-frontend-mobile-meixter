@@ -9,7 +9,8 @@ const colors = {
   lila: "#6A65A8",
   black: '#000000',
   white: '#ffffff',
-  cyan: "#00FEFF"
+  cyan: "#00FEFF",
+  violet: "#8D45FF"
 };
 
 export default colors;

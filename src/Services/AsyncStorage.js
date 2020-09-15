@@ -64,7 +64,7 @@ async function saveMultiValues(data) {
   }
 }
 
-async function getValue(key) {
+export async function getValue(key) {
   try {
     const value = await AsyncStorage.getItem(key);
     return value;
