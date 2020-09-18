@@ -4,6 +4,7 @@ import { useFonts } from '@use-expo/font';
 import {
   StyleSheet,
   SafeAreaView,
+  StatusBar,
   TouchableWithoutFeedback,
   Keyboard
 } from 'react-native';
@@ -13,33 +14,38 @@ import Constants from 'expo-constants';
 import {LocaleContextProvider} from './src/i18n/LocaleContext';
 import {AppContextProvider} from './src/Services/Auth/AppContext';
 
+import { AppearanceProvider } from 'react-native-appearance';
+
 export default function App() {
 
   const styles = StyleSheet.create({
     containerSafe: {
       flex: 1,
-      marginTop: Constants.statusBarHeight
-    },
+      backgroundColor: 'transparent'
+    }
   })
 
   let [fontsLoaded] = useFonts({
-    TitlingRegular: require('./assets/fonts/TitlingGothicFBComp-Reg.otf'),
+    TitlingRegular: require('./assets/fonts/TitlingGothicFBNormalRegular.otf'),
     TitlingMedium: require('./assets/fonts/TitlingGothicFBNormalMedium.otf'),
     TitilliumWebSemiBold: require('./assets/fonts/TitilliumWeb-SemiBold.ttf')
   });
-  
+
   if (!fontsLoaded) {
     return <AppLoading />
   } else {
     return (
       <LocaleContextProvider>
-        <AppContextProvider>
-          <SafeAreaView style={styles.containerSafe}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <RootNavigation />
-            </TouchableWithoutFeedback>
-          </SafeAreaView>
-        </AppContextProvider>
+        <AppearanceProvider>
+          <AppContextProvider>
+            <SafeAreaView style={styles.containerSafe}>
+              <StatusBar translucent backgroundColor={'rgba(0,0,0,0.2)'} />
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <RootNavigation />
+              </TouchableWithoutFeedback>
+            </SafeAreaView>
+          </AppContextProvider>
+        </AppearanceProvider>
       </LocaleContextProvider>
     )
   }

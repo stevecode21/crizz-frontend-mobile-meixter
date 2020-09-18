@@ -15,15 +15,25 @@ export default function RootNavigation(props) {
 
   const {stateApp} = useAuth()
 
+  const fadeConfig = ({ current }) => {
+    return {
+      cardStyle: {
+        opacity: current.progress,
+      },
+    }
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator headerMode="none">
         {stateApp === APP_STATE.PUBLIC ? (
-          <Stack.Screen name={Routes.LOGIN_STACK} component={LoginStack} />
+          <Stack.Screen name={Routes.LOGIN_STACK} component={LoginStack} options={{ cardStyleInterpolator: fadeConfig }}/>
         ) : stateApp === APP_STATE.REGISTER ? (
-          <Stack.Screen name={Routes.REGISTER_STACK} component={RegisterStack} />
+          <Stack.Screen name={Routes.REGISTER_STACK} component={RegisterStack} options={{ cardStyleInterpolator: fadeConfig }}/>
+        ) : stateApp === APP_STATE.PRIVATE ? (
+          <Stack.Screen name={Routes.REGISTER_STACK} component={RegisterStack} options={{ cardStyleInterpolator: fadeConfig }}/>
         ) : (
-          <Stack.Screen name={Routes.HOME_STACK} component={LaunchScreen} />
+          <Stack.Screen name={Routes.LAUNCH_SCREEN} component={LaunchScreen} options={{ cardStyleInterpolator: fadeConfig }}/>
         )}
       </Stack.Navigator>
     </NavigationContainer>

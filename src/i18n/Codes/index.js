@@ -1,6 +1,6 @@
 export default codes = [
     {
-        "name": "United Kingdom",
+        "name": "England",
         "dial_code": "+44",
         "code": "GB"
     },

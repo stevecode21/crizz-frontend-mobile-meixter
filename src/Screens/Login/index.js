@@ -23,7 +23,7 @@ import PinCode from 'react-native-smooth-pincode-input';
 //api services
 import * as api from "../../Services/login";
 
-export default function({navigation}) {
+export default function() {
 
   const {t, localeProvider} = useTranslation()
   const {setToken, setLoading, showErrorToast, stateApp, checkAccount} = useAuth()

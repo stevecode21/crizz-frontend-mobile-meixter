@@ -23,12 +23,7 @@ export default function() {
       style={styles.container}
       source={require('../../../assets/bg.png')}
     >
-      <TouchableHighlight
-        onPress={() => logout()}
-      >
-        <Text style={{marginTop: 50, color: 'white'}}> logout </Text> 
-      </TouchableHighlight>
-      
+    
     </ImageBackground>
   );
 }

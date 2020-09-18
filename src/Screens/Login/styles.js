@@ -8,7 +8,8 @@ const style = StyleSheet.create({
   },
   viewView: {
     flex: 1,
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    backgroundColor: colors.background
   },
   backgroundVideo:{
     width: '100%',
@@ -79,7 +80,7 @@ const style = StyleSheet.create({
   textError : {
     color: colors.fucsia,
     fontSize: 12,
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     marginTop: 15,
     justifyContent: "center",
     textAlign: "center",
@@ -141,7 +142,10 @@ const style = StyleSheet.create({
     fontSize: 18,
     marginLeft: 35,
     marginTop: 20,
-    elevation: 2
+    elevation: 2,
+    textShadowColor: colors.cyan,
+    textShadowOffset: {width: 0, height: 0},
+    textShadowRadius: 8
   },
   titleModal: {
     color: colors.white,
@@ -152,14 +156,14 @@ const style = StyleSheet.create({
   },
   textModal2: {
     color: colors.lila,
-    fontFamily: fonts.SemiBold,
+    fontFamily: fonts.regular,
     fontSize: 14,
     marginTop: 18,
     textAlign: "center"
   },
   textModal3: {
     color: colors.lila,
-    fontFamily: fonts.SemiBold,
+    fontFamily: fonts.regular,
     fontSize: 14,
     marginTop: 60,
     textAlign: "center"
@@ -176,7 +180,10 @@ const style = StyleSheet.create({
     fontFamily: fonts.SemiBold,
     fontSize: 18,
     marginTop: 60,
-    textAlign: "center"
+    textAlign: "center",
+    textShadowColor: colors.cyan,
+    textShadowOffset: {width: 0, height: 0},
+    textShadowRadius: 8
   },
   textModalPhone1: {
     color: colors.lila,
@@ -199,7 +206,7 @@ const style = StyleSheet.create({
   },
   textModalListPhone: {
     color: colors.lila,
-    fontFamily: fonts.SemiBold,
+    fontFamily: fonts.regular,
     fontSize: 18,
     textAlign: "left"
   },

@@ -10,6 +10,22 @@
       "ios",
       "android"
     ],
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "userInterfaceStyle": "light"
+    },
+    "android": {
+      "userInterfaceStyle": "dark",
+      "package": "com.meixter.app",
+      "versionCode": 1
+    },
+    "androidNavigationBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#000000"
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -21,21 +37,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "notification": {
       "icon": "./assets/favicon.png",
-      "color": "#90ddd2",
-      "androidMode": "collapse",
-      "androidCollapsedTitle": "Tienes notificaciones por revisar"
-    },
-    "android": {
-      "package": "com.meixter.app",
-      "versionCode": 1
+      "color": "#00FEFF",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Notifications"
     },
     "packagerOpts": {
       "config": "metro.config.js",

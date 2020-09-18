@@ -20,12 +20,12 @@ import codes from '../../i18n/Codes';
 import colors from '../../Themes/Colors';
 
 import { LinearGradient } from 'expo-linear-gradient';
-
+import Routes from '../../Navigation/Routes';
 //api services
 import * as api from "../../Services/register";
 
-export default function() {
-  const {logout, setLoading, checkAccount, showErrorToast, setStateApp} = useAuth()
+export default function({navigation}) {
+  const {logout, setLoading, checkAccount, showErrorToast, setStateApp, account, changeAccount} = useAuth()
   const {t, localeProvider} = useTranslation()
 
   const [hasPermission, setHasPermission] = useState(null);
@@ -60,7 +60,7 @@ export default function() {
     }
   };
 
-  const handleUpload = async (codePhone) => {
+  const handleUpload = async () => {
     if (image != null) 
     {
       setLoading(true);
@@ -71,8 +71,9 @@ export default function() {
           profileImage: `data:image/png;base64,${image}`
         }
         let response = await api.imageProfile(data);
-        setLoading(false);
-        console.log(response)
+        changeAccount(response.result)
+        setLoading(false)
+        navigation.navigate(Routes.PROFILE_SCREEN)
       } 
       catch (error) 
       {
@@ -102,9 +103,12 @@ export default function() {
 
   useEffect(() => {
     (async () => {
-      checkAccount()
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
+      if (account.step == 3)
+        navigation.navigate(Routes.PROFILE_SCREEN)
+      if (account.step == 4)
+        navigation.navigate(Routes.GENDER_SCREEN)
     })();
   }, []);
 
@@ -123,8 +127,8 @@ export default function() {
         />  
         {image === null ? (
           <Image
-            source={require("../../../assets/img/Imagen1.png")}
-            style={styles.imageCenter2}
+            source={require("../../../assets/img/avatar.png")}
+            style={styles.imageCenterAvatar}
           />  
         ) : (
           <Image

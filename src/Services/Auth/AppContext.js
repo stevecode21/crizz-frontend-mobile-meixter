@@ -1,20 +1,27 @@
-import React, {useEffect, useCallback, useState} from 'react';
+import React, {useEffect, useCallback, useState, useRef} from 'react';
 import { Alert } from 'react-native';
 import useStorage, {getValue} from "../AsyncStorage";
-import { APP_STATE } from "../../Constants";
+import { APP_STATE, URI } from "../../Constants";
 import * as api from "../login";
 import Loading from '../../Components/Loading'
 import {showErrorToast} from '../../Components/Toast'
 import useTranslation from '../../i18n';
+import Routes from '../../Navigation/Routes';
 
 const AppStateContext = React.createContext();
 
 export const AppContextProvider = props => {
 	const [accessToken, changeAccessToken] = useStorage("@TOKEN", accessToken);
 	const [account, updateAccount] = useStorage("@USER", {});
-	const [stateApp, setStateApp] = useStorage("@STATE", stateApp);
+	const [stateApp, setStateApp] = useStorage("@STATE", APP_STATE.UNKNOWN);
 	const [loading, setLoading] = useState(false)
 	const {localeProvider} = useTranslation()
+
+	useEffect(() => {
+    (async () => {
+		_checkAccount()
+	    })();
+	}, []);
 	
 	const _setToken = async (accessToken) => {
 		api.setAuthorization(accessToken)
@@ -83,17 +90,24 @@ export const AppContextProvider = props => {
 			{
 				let response = await api.account();
 				setLoading(false)
-				console.log('account_info', response.result)
+				if (response.result.urlProfileImage != undefined) 
+				{
+					response.result.urlProfileImage = URI+''+response.result.urlProfileImage
+				}
 				updateAccount(response.result)
+				console.log('account_info', response.result)
 				if (response.result.fullRecord == false)
+				{
 					setStateApp(APP_STATE.REGISTER)
+				}
 				else
+				{
 					setStateApp(APP_STATE.PRIVATE)
+				}
 			}
 		    catch (error) 
 		    {
           		showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
-		    	
 				setLoading(false)
 		    }
 		}
