@@ -15,6 +15,7 @@ import useAuth from '../../Services/Auth';
 
 import styles from './styles';
 import colors from '../../Themes/Colors';
+import { APP_STATE } from "../../Constants";
 
 import { LinearGradient } from 'expo-linear-gradient';
 import ModalBottom from 'react-native-raw-bottom-sheet';
@@ -32,6 +33,16 @@ export default function({navigation}) {
   const [errorBio, setErrorBio] = useState(false)
   const [textErrorBio, setTextErrorBio] = useState('')
 
+  const [tagSelected, setTagSelected] = useState([
+    {_id: 1, name: '#tag', active: false}
+  ])
+
+  useEffect(() => {
+    (async () => {
+      handleTagsTrend()
+    })();
+  }, []);
+
   const eraseErrorAll = () => {
     setErrorBio(false)
     setTextErrorBio('')
@@ -39,15 +50,101 @@ export default function({navigation}) {
 
   const validateAllForm = () => {
     eraseErrorAll()
+    let encontre = false
     if (bio == '')
     {
+      encontre = true
       setErrorBio(true)
       setTextErrorBio(t('errorInputEmpty'))
-    }    
+    }   
+    return encontre 
   }
 
   const handleUpdate = async () => {
-    validateAllForm()
+    let encontre = validateAllForm()
+    if(!encontre)
+    {
+      let data = {
+        gender: gender,
+        bio: bio,
+        tags: []
+      }
+      tagSelected.map(item => {
+        if (item.active === true)
+          data.tags.push(item._id)
+      })
+
+      setLoading(true);
+      try 
+      {
+        let response = await api.adjustProfile(data);
+        changeAccount(response.result)
+        setLoading(false)
+        setStateApp(APP_STATE.PRIVATE)
+      } 
+      catch (error) 
+      {
+        console.log(error)
+        setLoading(false)
+        if (error.status == 401) 
+        {
+          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+        }
+        else if (error.status == 403) 
+        {
+          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+          setStateApp(APP_STATE.PUBLIC)
+        }
+        else
+        {
+          showErrorToast(error.message);
+        }
+      }
+    }
+  }
+
+  const handleTagsTrend = async () => {
+    setLoading(true);
+    try 
+    {
+      let response = await api.tagsTrend();
+      setTagSelected(
+        response.result.map(item =>
+          ({
+            _id: item._id, name: item.name, active: false
+          })
+        )
+      )
+      setLoading(false)
+    } 
+    catch (error) 
+    {
+      console.log(error)
+      setLoading(false)
+      if (error.status == 401) 
+      {
+        showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+      }
+      else if (error.status == 403) 
+      {
+        showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+        setStateApp(APP_STATE.PUBLIC)
+      }
+      else
+      {
+        showErrorToast(error.message);
+      }
+    }
+  }
+  
+
+  const handlePush = (tag) => {
+    setTagSelected(
+      tagSelected.map(item => 
+        (item._id === tag._id) 
+        ? {...item, active : (item.active) ? false : true } 
+        : item )
+    )
   }
 
   return (
@@ -118,6 +215,15 @@ export default function({navigation}) {
 
         <Text style={styles.adjustText}> {t('registerChooseTags')} </Text>
         <Text style={styles.adjustText2}> {t('registerAddMore')} </Text>
+
+        <View style={styles.rowTag}>
+          {tagSelected.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handlePush(item)}>
+              <Text style={item.active ? styles.textTagActive : styles.textTag}> {item.name} </Text>
+            </TouchableOpacity>
+          ))}
+          
+        </View>
 
         <View style={styles.containerButtom2}>
           <Text style={styles.textButton}>

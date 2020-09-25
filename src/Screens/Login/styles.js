@@ -90,7 +90,7 @@ const style = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.medium,
     padding: 10,
-    bottom: -15,
+    bottom: -21,
     width: '100%'
   },
   textPrefi: {
@@ -108,7 +108,7 @@ const style = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    bottom: -9,
+    bottom: -20,
     justifyContent: "center",
   },
   containerInputPrefi: {

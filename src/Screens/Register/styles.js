@@ -394,10 +394,40 @@ const style = StyleSheet.create({
   adjustText2: {
     color: colors.white,
     fontFamily: fonts.regular,
-    fontSize: 14,
+    fontSize: 12,
     textAlign: "center",
     marginTop: 3,
   },
+  textTagActive : {
+    color: colors.cyan,
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 20,
+    textShadowColor: colors.cyan,
+    textShadowOffset: {width: 0, height: 0},
+    textShadowRadius: 8,
+    marginHorizontal: 6
+  },
+  textTag : {
+    color: colors.white,
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 20,
+    marginHorizontal: 6
+  },
+  rowTag: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    flexDirection: "row",
+    flexWrap: 'wrap',
+    marginTop: 5,
+    marginLeft: 30,
+    marginRight: 30
+  }
 });
 
 export default style

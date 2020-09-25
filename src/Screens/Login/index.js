@@ -181,7 +181,8 @@ export default function() {
             <TextInput
               keyboardType={'phone-pad'}
               maxLength={10}
-              placeholder="7454 123456"
+              placeholderTextColor={colors.lila}
+              placeholder="7454123456"
               onChangeText={(data) => {
                 resetErrors()
                 setPhone(data)
@@ -308,6 +309,7 @@ export default function() {
                   <TextInput
                     maxLength={25}
                     placeholder={t('country')}
+                    placeholderTextColor={colors.lila}
                     onChangeText={(data) => {
                       setFilters(data)
                     }}

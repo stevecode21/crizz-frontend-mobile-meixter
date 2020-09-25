@@ -1,25 +1,25 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import Routes from '../Routes';
-import MainStack from './MainStack';
-import DrawerScreen from '../../Screens/Drawer';
-import metrics from '../../Themes/Metrics';
+import Tab from './MainStack.js';
 
-const Drawer = createDrawerNavigator();
+import {createStackNavigator} from '@react-navigation/stack';
+import Routes from '../Routes';
+
+const Stack = createStackNavigator();
+
+const fadeConfig = ({ current }) => {
+  return {
+    cardStyle: {
+      opacity: current.progress,
+    },
+  }
+}
 
 export default props => {
+
+
   return (
-    <Drawer.Navigator
-      drawerPosition={'left'}
-      drawerType="slide"
-      edgeWidth={10}
-      drawerStyle={{
-        backgroundColor: '#fafafa',
-        width: metrics.drawerWidth,
-      }}
-      drawerContent={DrawerScreen}>
-      <Drawer.Screen name={Routes.HOME_STACK} component={MainStack} />
-    </Drawer.Navigator>
+    <Stack.Navigator headerMode="none" initialRouteName={Routes.HOME_TABS}>
+      <Stack.Screen name={Routes.HOME_TABS} component={Tab} options={{ cardStyleInterpolator: fadeConfig }} />
+    </Stack.Navigator>
   );
 };

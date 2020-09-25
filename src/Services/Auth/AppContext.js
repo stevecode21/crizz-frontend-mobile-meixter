@@ -33,6 +33,10 @@ export const AppContextProvider = props => {
 		{
 			let response = await api.account();
 			setLoading(false)
+			if (response.result.urlProfileImage != undefined) 
+			{
+				response.result.urlProfileImage = URI+''+response.result.urlProfileImage
+			}
 			console.log('account_info', response.result)
 			updateAccount(response.result)
 			if (response.result.fullRecord == false)
