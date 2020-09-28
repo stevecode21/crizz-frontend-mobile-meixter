@@ -17,9 +17,8 @@ export const AppContextProvider = props => {
 	const [loading, setLoading] = useState(false)
 	const {localeProvider} = useTranslation()
 
-	useEffect(() => {
-    (async () => {
-		_checkAccount()
+	useEffect(() => {(async () => {
+			_checkAccount()
 	    })();
 	}, []);
 	
@@ -53,6 +52,10 @@ export const AppContextProvider = props => {
 	}
 
 	const _changeAccount = account => {
+		if (account.urlProfileImage != undefined) 
+		{
+			account.urlProfileImage = URI+''+account.urlProfileImage
+		}
 		updateAccount(account)
 	}
 

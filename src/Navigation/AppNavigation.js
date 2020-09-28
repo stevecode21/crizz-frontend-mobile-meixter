@@ -27,7 +27,7 @@ export default function RootNavigation(props) {
     <NavigationContainer>
       <Stack.Navigator headerMode="none">
         {stateApp === APP_STATE.PUBLIC ? (
-          <Stack.Screen name={Routes.HOME_STACK} component={MainStack} options={{ cardStyleInterpolator: fadeConfig }}/>
+          <Stack.Screen name={Routes.LOGIN_STACK} component={LoginStack} options={{ cardStyleInterpolator: fadeConfig }}/>
         ) : stateApp === APP_STATE.REGISTER ? (
           <Stack.Screen name={Routes.REGISTER_STACK} component={RegisterStack} options={{ cardStyleInterpolator: fadeConfig }}/>
         ) : stateApp === APP_STATE.PRIVATE ? (

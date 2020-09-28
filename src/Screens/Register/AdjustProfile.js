@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   ScrollView,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  BackHandler
 } from 'react-native';
 
 import useTranslation from '../../i18n';
@@ -16,6 +17,7 @@ import useAuth from '../../Services/Auth';
 import styles from './styles';
 import colors from '../../Themes/Colors';
 import { APP_STATE } from "../../Constants";
+import Routes from '../../Navigation/Routes';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import ModalBottom from 'react-native-raw-bottom-sheet';
@@ -41,6 +43,20 @@ export default function({navigation}) {
     (async () => {
       handleTagsTrend()
     })();
+  }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate(Routes.PROFILE_SCREEN)
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   const eraseErrorAll = () => {

@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   ScrollView,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  BackHandler
 } from 'react-native';
 
 import useTranslation from '../../i18n';
@@ -60,6 +61,44 @@ export default function({navigation}) {
 
   const [viewMode, setViewMode] = useState('country')
 
+  useEffect(() => { (async () => {
+      console.log(account)
+      if(account.fullName != undefined)
+        setName(account.fullName)
+      if(account.nickname != undefined)
+        setNickname(account.nickname)
+      if(account.birthdate != undefined)
+      {
+        setYear(moment(account.birthdate, 'YYYY/MM/DD').format('YYYY'))
+        setBirth(moment(account.birthdate, 'YYYY/MM/DD').format('DD-MMM-YYYY'))
+        setToday(moment(account.birthdate, 'YYYY/MM/DD').format('YYYY-MM-DD'))
+      }
+        
+      codes.map((item) => {
+        if(item.code === account.country)
+        {
+          console.log('encontre', item.code, item.name)
+          setCountryName(item.name)
+          setCountry(item.code)
+        }
+      })
+
+    })();
+  }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate(Routes.IMAGE_PROFILE_SCREEN)
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
   
   const eraseErrorAll = () => {
     setErrorName(false)
@@ -122,6 +161,9 @@ export default function({navigation}) {
 
   const openModalCalendar = () => {
     setViewMode('calendar')
+    setCalendarActive(false)
+    setSelectedDate(today)
+    setTimeout(() => setCalendarActive(true), 100) 
     refModalBottom.current.open()
   }
 
@@ -283,6 +325,7 @@ export default function({navigation}) {
                 setErrorName(false)
               }}
               style={styles.inputName} 
+              value={name}
             />
           </View>
           <View style={styles.containerCenter}>
@@ -309,6 +352,7 @@ export default function({navigation}) {
               onChangeText={(data) => { setNickname(data) }}
               onBlur={() => handleNickname()}
               style={styles.inputName}
+              value={nickname}
             />
           </View>
           <View pointerEvents="box-none" style={styles.containerInputCheck}>

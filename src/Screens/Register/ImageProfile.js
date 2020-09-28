@@ -6,7 +6,8 @@ import {
   Text, 
   TouchableHighlight,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  BackHandler
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
@@ -28,8 +29,23 @@ export default function({navigation}) {
   const {logout, setLoading, checkAccount, showErrorToast, setStateApp, account, changeAccount} = useAuth()
   const {t, localeProvider} = useTranslation()
 
-  const [hasPermission, setHasPermission] = useState(null);
-  const [image, setImage] = useState(null);
+  const [hasPermission, setHasPermission] = useState(null)
+  const [image, setImage] = useState(null)
+
+
+  useEffect(() => {
+    const backAction = () => {
+      logout()
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const _handleResultImage = async (result) => {
     if (!result.cancelled) {
@@ -96,9 +112,15 @@ export default function({navigation}) {
     }
     else
     {
-      showErrorToast(t('registerUploadPhoto'));
+      if (account.urlProfileImage === undefined)
+      {
+        showErrorToast(t('registerUploadPhoto'))
+      }
+      else
+      {
+        navigation.navigate(Routes.PROFILE_SCREEN)
+      }
     }
-      
   }
 
   useEffect(() => {
@@ -125,17 +147,34 @@ export default function({navigation}) {
           source={require("../../../assets/img/loading1.png")}
           style={styles.imageCenter}
         />  
-        {image === null ? (
+
+        {account.urlProfileImage != undefined && image == null && (
           <Image
-            source={require("../../../assets/img/avatar.png")}
-            style={styles.imageCenterAvatar}
-          />  
-        ) : (
+            style={styles.imageCenter2}
+            source={{ uri: account.urlProfileImage }}
+          />
+        )}
+
+        {account.urlProfileImage !== undefined && image !== null && (
           <Image
             style={styles.imageCenter2}
             source={{ uri: `data:image;base64,${image}` }}
           />
-        )} 
+        )}
+
+        {account.urlProfileImage === undefined && image === null && (
+          <Image
+            style={styles.imageCenter2}
+            source={require("../../../assets/img/avatar.png")}
+          />
+        )}
+
+        {account.urlProfileImage === undefined && image !== null && (
+          <Image
+            style={styles.imageCenter2}
+            source={{ uri: `data:image;base64,${image}` }}
+          />
+        )}
            
         <Text style={styles.textUploadPhoto}> {t('registerUploadPhoto')} </Text>
         <View style={styles.row}>
