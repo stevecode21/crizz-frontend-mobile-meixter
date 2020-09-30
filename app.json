@@ -10,17 +10,20 @@
       "ios",
       "android"
     ],
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
     "userInterfaceStyle": "automatic",
     "ios": {
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "config" : {
+        "googleMobileAdsAppId": "ca-app-pub-7815010412581785~4857116020"
+      }
     },
     "android": {
       "userInterfaceStyle": "dark",
       "package": "com.meixter.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "config" : {
+        "googleMobileAdsAppId": "ca-app-pub-7815010412581785~4857116020"
+      }
     },
     "androidNavigationBar": {
       "barStyle": "dark-content",

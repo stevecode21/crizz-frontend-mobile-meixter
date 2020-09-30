@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {BoxShadow} from 'react-native-shadow'
 import Home from '../../Screens/Home';
+import Launch from '../../Screens/Launch';
 
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
@@ -154,9 +155,9 @@ export default function MainStack() {
   return (
     <Tab.Navigator initialRouteName="Home" tabBar={props => <MyTabBar {...props} />} >
       <Tab.Screen name="Lear" component={Home} />
-      <Tab.Screen name="Sesions" component={Home} />
-      <Tab.Screen name="Teach" component={Home} />
-      <Tab.Screen name="Me" component={Home} />      
+      <Tab.Screen name="Sesions" component={Launch} />
+      <Tab.Screen name="Teach" component={Launch} />
+      <Tab.Screen name="Me" component={Launch} />      
     </Tab.Navigator>
   );
 }

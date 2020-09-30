@@ -14,9 +14,13 @@ import Constants from 'expo-constants';
 import {LocaleContextProvider} from './src/i18n/LocaleContext';
 import {AppContextProvider} from './src/Services/Auth/AppContext';
 
-import { AppearanceProvider } from 'react-native-appearance';
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 
 export default function App() {
+
+  const colorScheme = useColorScheme();
+
+  const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
 
   const styles = StyleSheet.create({
     containerSafe: {
@@ -39,7 +43,7 @@ export default function App() {
         <AppearanceProvider>
           <AppContextProvider>
             <SafeAreaView style={styles.containerSafe}>
-              <StatusBar translucent backgroundColor={'rgba(0,0,0,0.2)'} />
+              <StatusBar translucent backgroundColor='transparent' barStyle={themeStatusBarStyle} />
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <RootNavigation />
               </TouchableWithoutFeedback>
