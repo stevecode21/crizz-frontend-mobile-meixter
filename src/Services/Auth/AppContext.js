@@ -19,8 +19,8 @@ export const AppContextProvider = props => {
 	const {localeProvider} = useTranslation()
 
 	useEffect(() => {(async () => {
-			setStateApp(APP_STATE.PRIVATE);
-			//_checkAccount()
+			//setStateApp(APP_STATE.PRIVATE);
+			_checkAccount()
 			//_logoutUser()
 	    })();
 	}, []);
@@ -29,7 +29,6 @@ export const AppContextProvider = props => {
 		api.setAuthorization(accessToken)
 		changeAccessToken(accessToken)
 		console.log('accessToken', accessToken)
-		console.log('consultando account')
 		setLoading(true)
 		try
 		{
@@ -93,27 +92,22 @@ export const AppContextProvider = props => {
 		else
 		{
 			console.log('accessToken', accessToken)
-			console.log('consultando account')
 			api.setAuthorization(accessToken)
 			setLoading(true)
 			try
 			{
 				let response = await api.account();
 				setLoading(false)
-				if (response.result.urlProfileImage != undefined) 
-				{
+				if (response.result.urlProfileImage != undefined)
 					response.result.urlProfileImage = URI+''+response.result.urlProfileImage
-				}
+				
+				
 				updateAccount(response.result)
 				console.log('account_info', response.result)
-				if (response.result.fullRecord == false)
-				{
+				if (!response.result.fullRecord)
 					setStateApp(APP_STATE.REGISTER)
-				}
 				else
-				{
 					setStateApp(APP_STATE.PRIVATE)
-				}
 			}
 		    catch (error) 
 		    {

@@ -61,7 +61,7 @@ const VideoPlayer = ({url, poster, isPlay}) => {
 			source={{uri: url}}
 			resizeMode='cover'
 			ref={handleVideoRef}
-			posterStyle={{opacity: 0.85, height: '100%', width: '100%', resizeMode: 'stretch'}}
+			posterStyle={{opacity: 0.85, height: '100%', width: '100%'}}
 		/>
 	) : (
 		<Poster source={poster} />

@@ -1,9 +1,8 @@
 import { Platform } from "react-native";
 
 //API URL API
-export const API_URL = 'http://crizz.com.co:8080/api/v1';
-//export const API_URL = 'http://192.168.43.72:8080/api/v1';
-export const URI = 'http://crizz.com.co:8080';
+export const API_URL = 'https://api.meixter.com/api/v1';
+export const URI = 'https://api.meixter.com';
 
 export const isAndroid = Platform.OS === "android" ? true : false;
 export const isIos = !isAndroid;
