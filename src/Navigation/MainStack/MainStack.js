@@ -14,6 +14,7 @@ import Launch from '../../Screens/Launch';
 
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
+import useAuth from '../../Services/Auth';
 
 const Tab = createBottomTabNavigator();
 
@@ -46,6 +47,7 @@ const styles = StyleSheet.create({
 
 
 function MyTabBar({ state, descriptors, navigation }) {
+  const {setInHome} = useAuth()
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
   if (focusedOptions.tabBarVisible === false) {
@@ -73,6 +75,7 @@ function MyTabBar({ state, descriptors, navigation }) {
           });
 
           if (!isFocused && !event.defaultPrevented) {
+            setInHome((route.name == 'Lear') ? true : false)
             navigation.navigate(route.name);
           }
         };

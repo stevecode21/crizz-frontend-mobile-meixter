@@ -1,9 +1,10 @@
 import React from 'react'
-
 import styled from 'styled-components/native'
+import fonts from '../Themes/Fonts';
+import colors from '../Themes/Colors';
 
 const Container = styled.View`
-	top: 22px;
+	top: 30px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
@@ -11,27 +12,53 @@ const Container = styled.View`
 	position: absolute;
 	z-index: 1;
 `
-const Menu = styled.Text`
-	color: #fff;
-	letter-spacing: 0.8px;
-	margin: 11px 12px;
-	font-weight: ${props => (props.bold ? 'bold' : 'normal')};
-	opacity: ${props => (props.bold ? 1 : 0.8)};
-	font-size: ${props => (props.bold ? '16px' : '15px')};
+const Menu = styled.View`
+	justify-content: center;
+	align-items: center;
+	width: 20%;
 `
-const Separator = styled.View`
-	width: 1px;
-	height: 13px;
-	background-color: #d8d8d8;
-	opacity: 0.6;
+const Icon = styled.Image`
+	height: 40px;
+	justify-content: center;
+	align-items: center;
+`
+const IconSearch = styled.Image`
+	height: 24px;
+	justify-content: center;
+	align-items: center;
+`
+const TextLeft = styled.Text`
+	color: #fff;
+	font-size: 10px;
+	text-align: center;
+	justify-content: center;
+	text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
+	font-family: ${fonts.medium};
+`
+const IconAlert = styled.Image`
+	height: 60px;
+	justify-content: center;
+	align-items: center;
 `
 
 const Header = () => {
 	return (
 		<Container>
-			<Menu>Seguindo</Menu>
-			<Separator />
-			<Menu bold='true'>Para você</Menu>
+			<Menu>
+				<IconSearch resizeMode='contain' source={require('../../assets/img/search.png')} />
+			</Menu>
+			<Menu>
+				<TextLeft>FOLLOWING</TextLeft>
+			</Menu>
+			<Menu>
+				<Icon resizeMode='contain' source={require('../../assets/img/LogoMeixter.png')} />
+			</Menu>
+			<Menu>
+				<TextLeft>SAVED</TextLeft>
+			</Menu>
+			<Menu>
+				<IconAlert resizeMode='contain' source={require('../../assets/img/alert.png')} />
+			</Menu>
 		</Container>
 	)
 }

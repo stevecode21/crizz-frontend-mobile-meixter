@@ -29,8 +29,6 @@ const Center = styled.View`
 
 const Hero = ({ videos }) => {
 	const [selected, setSelected] = useState(0)
-	const [pause, setPause] = useState(false)
-
 	return (
 		<Container
 			orientation='vertical'
@@ -43,15 +41,14 @@ const Hero = ({ videos }) => {
 							url={item.url}
 							poster={item.poster}
 							isPlay={selected === index}
-							isPause={pause}
 						/>
 						<Gradient
-							locations={[0, 0.26, 0.6, 1]}
+							locations={[0, 0.2, 0.6, 1]}
 							colors={[
-								'rgba(26,26,26,0.6)',
+								'rgba(26,26,26,0.3)',
 								'rgba(26,26,26,0)',
 								'rgba(26,26,26,0)',
-								'rgba(26,26,26,0.6)'
+								'rgba(26,26,26,0.9)'
 							]}>
 							<Center>
 								<Info user={item.user} />

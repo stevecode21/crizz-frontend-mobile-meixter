@@ -10,9 +10,9 @@ const videos = [
 			avatar: require('../../assets/avatar/01.jpg')
 		},
 		count: {
-			like: '1.1M',
-			comment: '4080',
-			share: '2800'
+			like: '20',
+			comment: '40',
+			share: '10'
 		}
 	},
 	{
@@ -27,9 +27,9 @@ const videos = [
 			avatar: require('../../assets/avatar/02.jpg')
 		},
 		count: {
-			like: '380K',
-			comment: '2388',
-			share: '535'
+			like: '8',
+			comment: '35',
+			share: '30'
 		}
 	}
 ]

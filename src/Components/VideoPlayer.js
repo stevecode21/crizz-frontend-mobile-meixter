@@ -1,6 +1,7 @@
 import React from 'react'
 import { Video } from 'expo-av'
 import styled from 'styled-components/native'
+import useAuth from '../Services/Auth';
 
 const Play = styled(Video)`
 	height: 100%;
@@ -11,8 +12,8 @@ const Poster = styled.ImageBackground`
 
 const handleVideoRef = component => {
   	const playbackObject = component
-  	if (playbackObject != null)
-  		playbackObject.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
+  	//if (playbackObject != null)
+  		//playbackObject.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
 }
 
 const _onPlaybackStatusUpdate = playbackStatus => {
@@ -45,19 +46,22 @@ const _onPlaybackStatusUpdate = playbackStatus => {
 	}
 }
 
-const VideoPlayer = ({url, poster, isPlay, isPause}) => {
+const VideoPlayer = ({url, poster, isPlay}) => {
+	const {inHome} = useAuth()
+	
 	return isPlay ? (
 		<Play
 			rate={1.0}
 			volume={1.0}
 			isMuted={false}
-			shouldPlay={!isPause}
+			shouldPlay={inHome}
 			useNativeControls={false}
+			usePoster
 			posterSource={poster}
-			//source={video}
 			source={{uri: url}}
 			resizeMode='cover'
 			ref={handleVideoRef}
+			posterStyle={{opacity: 0.85, height: '100%', width: '100%', resizeMode: 'stretch'}}
 		/>
 	) : (
 		<Poster source={poster} />

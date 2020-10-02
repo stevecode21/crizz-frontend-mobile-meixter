@@ -19,7 +19,6 @@ import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 export default function App() {
 
   const colorScheme = useColorScheme();
-
   const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
 
   const styles = StyleSheet.create({

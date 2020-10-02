@@ -15,10 +15,13 @@ export const AppContextProvider = props => {
 	const [account, updateAccount] = useStorage("@USER", {});
 	const [stateApp, setStateApp] = useStorage("@STATE", APP_STATE.UNKNOWN);
 	const [loading, setLoading] = useState(false)
+	const [inHome, setInHome] = useState(false)
 	const {localeProvider} = useTranslation()
 
 	useEffect(() => {(async () => {
-			_checkAccount()
+			setStateApp(APP_STATE.PRIVATE);
+			//_checkAccount()
+			//_logoutUser()
 	    })();
 	}, []);
 	
@@ -62,7 +65,7 @@ export const AppContextProvider = props => {
 	const _logoutUser = useCallback(async () => {
 		changeAccessToken('')
 		updateAccount({})
-	    setStateApp(APP_STATE.PUBLIC);
+	    setStateApp(APP_STATE.PRIVATE);
 	    api.deleteAuthorization()
 	}, []);
 
@@ -131,7 +134,9 @@ export const AppContextProvider = props => {
 				setStateApp: setStateApp,
 				setLoading: setLoading,
 				checkAccount: _checkAccount,
-				showErrorToast: showErrorToast
+				showErrorToast: showErrorToast,
+				inHome: inHome,
+				setInHome: setInHome,
 			}}
 		>
 			<Loading visible={loading} />
