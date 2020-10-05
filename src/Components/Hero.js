@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Dimensions, View } from 'react-native'
+import { Dimensions, TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback, View} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
 import ViewPager from '@react-native-community/viewpager'
@@ -7,8 +7,9 @@ import ViewPager from '@react-native-community/viewpager'
 import VideoPlayer from '../Components/VideoPlayer'
 import Info from '../Components/Info'
 import Sidebar from '../Components/Sidebar'
+import useAuth from '../Services/Auth';
 
-const { height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 
 const Container = styled(ViewPager)`
 	height: ${height}px;
@@ -26,36 +27,63 @@ const Center = styled.View`
 	flex: 1;
 	flex-direction: row;
 `
+const Boton = styled.View`
+	flex: 1;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50%;
+`
+const Icon = styled.Image`
+	height: 100px;
+	width: 100px;
+`
 
-const Hero = ({ videos }) => {
+const Hero = ({ videos, pause, setPause }) => {
 	const [selected, setSelected] = useState(0)
+	const {inHome, setInHome} = useAuth()
+	const [videoRef, setVideoRef] = useState(null)
+
 	return (
 		<Container
 			orientation='vertical'
-			onPageSelected={e => setSelected(e.nativeEvent.position)}
+			onPageSelected={e => {
+				setPause(false)
+				setSelected(e.nativeEvent.position)
+			}}
 			initialPage={0}>
 			{videos.map((item, index) => {
 				return (
-					<View key={index}>
-						<VideoPlayer
-							url={item.url}
-							poster={item.poster}
-							isPlay={selected === index}
-						/>
-						<Gradient
-							locations={[0, 0.2, 0.6, 1]}
-							colors={[
-								'rgba(26,26,26,0.3)',
-								'rgba(26,26,26,0)',
-								'rgba(26,26,26,0)',
-								'rgba(26,26,26,0.9)'
-							]}>
-							<Center>
-								<Info user={item.user} />
-								<Sidebar avatar={item.user.avatar} count={item.count} />
-							</Center>
-						</Gradient>
-					</View>
+					<TouchableWithoutFeedback onPress={() => {
+						setPause(!pause)
+						videoRef.setStatusAsync({ shouldPlay: pause, isMute: !pause })
+					}}>
+						<View key={index}>
+							<VideoPlayer
+								url={item.url}
+								poster={item.poster}
+								isPlay={selected === index}
+								videoRef={setVideoRef}
+							/>
+							<Gradient
+								locations={[0, 0.2, 0.6, 1]}
+								colors={[
+									'rgba(26,26,26,0.3)',
+									'rgba(26,26,26,0)',
+									'rgba(26,26,26,0)',
+									'rgba(26,26,26,0.9)'
+								]}>
+								<Boton>
+									{ pause && (
+										<Icon resizeMode='stretch' source={require('../../assets/img/add_lesson.png')} />
+									)}
+								</Boton>
+								<Center>
+									<Info user={item.user} />
+									<Sidebar avatar={item.user.avatar} count={item.count} />
+								</Center>
+							</Gradient>
+						</View>
+					</TouchableWithoutFeedback>
 				)
 			})}
 		</Container>

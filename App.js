@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { AppLoading } from 'expo';
 import { useFonts } from '@use-expo/font';
 import {
@@ -23,8 +23,7 @@ export default function App() {
 
   const styles = StyleSheet.create({
     containerSafe: {
-      flex: 1,
-      backgroundColor: 'transparent'
+      flex: 1
     }
   })
 

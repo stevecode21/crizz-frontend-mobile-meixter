@@ -2,6 +2,7 @@
   "expo": {
     "name": "Meixter App",
     "slug": "meixter-app",
+    "description": "App Meixter develop for Crizz.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
@@ -26,7 +27,7 @@
       }
     },
     "androidNavigationBar": {
-      "barStyle": "dark-content",
+      "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
     "splash": {

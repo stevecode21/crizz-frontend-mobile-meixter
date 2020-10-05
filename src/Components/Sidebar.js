@@ -3,6 +3,7 @@ import styled from 'styled-components/native'
 import fonts from '../Themes/Fonts';
 import colors from '../Themes/Colors';
 import {BoxShadow} from 'react-native-shadow'
+import { TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback} from 'react-native'
 
 const Container = styled.View`
 	width: 60px;
@@ -73,29 +74,45 @@ const Coins = styled.Text`
 const Sidebar = ({ avatar, count }) => {
 	return (
 		<Container>
-			<Menu>
-				<Icon resizeMode='contain' source={require('../../assets/img/save_home.png')} />
-				<Count>{count.like}</Count>
-			</Menu>
+			<TouchableOpacity onPress={() => {
+				console.log('press menu')
+			}}>
+				<Menu>
+					<Icon resizeMode='contain' source={require('../../assets/img/save_home.png')} />
+					<Count>{count.like}</Count>
+				</Menu>
+			</TouchableOpacity>
 
-			<Menu>
-				<Icon resizeMode='contain' source={require('../../assets/img/comment_home.png')} />
-				<Count>{count.comment}</Count>
-			</Menu>
+			<TouchableOpacity onPress={() => {
+				console.log('press menu')
+			}}>
+				<Menu>
+					<Icon resizeMode='contain' source={require('../../assets/img/comment_home.png')} />
+					<Count>{count.comment}</Count>
+				</Menu>
+			</TouchableOpacity>
 
-			<Menu>
-				<Icon resizeMode='contain' source={require('../../assets/img/share_home.png')} />
-				<Count>{count.share}</Count>
-			</Menu>
+			<TouchableOpacity onPress={() => {
+				console.log('press menu')
+			}}>
+				<Menu>
+					<Icon resizeMode='contain' source={require('../../assets/img/share_home.png')} />
+					<Count>{count.share}</Count>
+				</Menu>
+			</TouchableOpacity>
 
-			<Menu>
-				<SoundBg>
-					<BoxShadow style={{borderRadius: 50}} setting={shadowOpt}>
-          	<NumCoin>{count.share}</NumCoin>
-          </BoxShadow>
-        </SoundBg>
-        <Coins>COINS</Coins>
-			</Menu>
+			<TouchableOpacity onPress={() => {
+				console.log('press menu')
+			}}>
+				<Menu>
+					<SoundBg>
+						<BoxShadow style={{borderRadius: 50}} setting={shadowOpt}>
+	          				<NumCoin>{count.share}</NumCoin>
+	          			</BoxShadow>
+	        		</SoundBg>
+	        		<Coins>COINS</Coins>
+				</Menu>
+			</TouchableOpacity>
 		</Container>
 	)
 }

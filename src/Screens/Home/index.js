@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { BackHandler } from 'react-native'
 import styled from 'styled-components/native'
 import videos from '../../Services/videos'
@@ -15,8 +15,11 @@ const Container = styled.View`
 
 export default function() {
 	const {logout, setInHome} = useAuth()
+	const [pause, setPause] = useState(false)
+
 	useEffect(() => {
 		setInHome(true)
+		setPause(false)
 	    const backAction = () => {
 	      logout()
 	      return true;
@@ -33,7 +36,7 @@ export default function() {
 	return (
 		<Container>
 			<Header />
-			<Hero videos={videos} />
+			<Hero videos={videos} pause={pause} setPause={setPause} />
 		</Container>
 	)
 }
