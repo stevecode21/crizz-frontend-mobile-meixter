@@ -1,16 +1,18 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {
   Text,
   Image,
   StyleSheet,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  BackHandler
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import styled from 'styled-components/native'
 import {BoxShadow} from 'react-native-shadow'
 import Home from '../../Screens/Home';
 import Launch from '../../Screens/Launch';
+import TeachTab from '../TeachTab/';
 
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
@@ -26,25 +28,30 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   icon: {resizeMode: 'stretch', backgroundColor: "transparent", justifyContent: 'center', alignSelf: 'center'},
-  lineTab: {borderColor: colors.cyan, borderBottomWidth: 1, width: 100},
-  tabLayout: { 
-    flex: 1,
-    flexDirection: 'row', 
-    justifyContent: 'center',
-    alignSelf: 'center',
-    position: 'absolute', 
-    left: 0,
-    right: 0,
-    bottom: 0,  
-    paddingTop: 10,
-    backgroundColor: colors.transparent, 
-    height: 80,
-    width: '100%',
-    borderColor: colors.white, 
-    borderTopWidth: 0.3,  
-  }
+  lineTab: {borderColor: colors.cyanTransparent, borderBottomWidth: 1, width: '100%'},
 })
 
+const Container = styled.View`
+  flex: 1;
+  flex-direction: row; 
+  justify-content: center;
+  align-self: center;
+  position: absolute; 
+  left: 0;
+  right: 0;
+  bottom: 0;  
+  padding-top: 10px;
+  background-color: ${colors.transparent}; 
+  height: 70px;
+  width: 100%;
+`
+const Separator = styled.View`
+  width: 100%;
+  height: 1px;
+  background-color: ${colors.lila};
+  opacity: 0.5;
+  position: absolute;
+`
 
 function MyTabBar({ state, descriptors, navigation }) {
   const {setInHome} = useAuth()
@@ -55,7 +62,8 @@ function MyTabBar({ state, descriptors, navigation }) {
   }
 
   return (
-    <View style={styles.tabLayout}>
+    <Container>
+      <Separator />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -93,7 +101,7 @@ function MyTabBar({ state, descriptors, navigation }) {
             color: colors.cyan,
             border:5,
             radius:3,
-            opacity:0.8,
+            opacity:0.7,
             x:0,
             y:0
         }
@@ -136,11 +144,11 @@ function MyTabBar({ state, descriptors, navigation }) {
               (<Image style={[styles.icon, {width: 36, height: 32}]} source={require('../../../assets/img/menu_me-inactive.png')} />)
             }
 
-            <Text style={[styles.textLabel, { color: isFocused ? colors.white : colors.white }]}>
+            <Text style={[styles.textLabel, { color: isFocused ? colors.white : colors.whiteTrasparent }]}>
               {label}
             </Text>
             {isFocused && (
-              <View style={{flex: 1, position: 'absolute', bottom: 0}}>
+              <View style={{flex: 1, position: 'absolute', bottom: 0, width: '100%'}}>
                 <BoxShadow setting={shadowOpt}>
                   <View style={styles.lineTab}></View>
                 </BoxShadow>
@@ -149,19 +157,26 @@ function MyTabBar({ state, descriptors, navigation }) {
           </TouchableOpacity>
         );
       })}
-    </View>
+    </Container>
   );
 }
 
 export default function MainStack() {
-
+  const {logout} = useAuth()
   return (
-    <Tab.Navigator initialRouteName="Home" tabBar={props => <MyTabBar {...props} />} >
-      <Tab.Screen name="Lear" component={Home} />
+    <Tab.Navigator 
+      lazy={true} 
+      backBehavior="history" 
+      initialRouteName="Home" 
+      tabBar={props => <MyTabBar {...props} />} 
+    >
+      <Tab.Screen 
+        name="Lear" 
+        component={Home}
+      />
       <Tab.Screen name="Sesions" component={Launch} />
-      <Tab.Screen name="Teach" component={Launch} />
+      <Tab.Screen name="Teach" component={TeachTab} />
       <Tab.Screen name="Me" component={Launch} />      
     </Tab.Navigator>
   );
 }
-
