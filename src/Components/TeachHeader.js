@@ -5,9 +5,18 @@ import colors from '../Themes/Colors';
 import { TouchableOpacity } from 'react-native'
 import { StackActions } from '@react-navigation/native';
 import Routes from '../Navigation/Routes';
-
+import useTranslation from '../i18n';
 
 const Header = ({navigation}) => {
+
+	const {t} = useTranslation()
+
+	const redirect = (routeName, screenObject) => {
+		navigation.dispatch(
+			StackActions.replace(routeName, screenObject)
+		);
+	}
+
 	return (
 		<Fragment>
 			<Container>
@@ -20,17 +29,15 @@ const Header = ({navigation}) => {
 				</Menu>
 				
 				<Menu>
-					<Title>Teaching</Title>
+					<Title>{t('teaching')}</Title>
 				</Menu>
 
 				<Menu>
-					<TouchableOpacity onPress={() => {
-						navigation.dispatch(
-		                  StackActions.replace(Routes.LESSON_STACK, {
-		                    screen: Routes.CREATE_LESSON,
-		                    params: {navigation: navigation},
-		                  })
-		                );
+					<TouchableOpacity onPress={() => { 
+						redirect(Routes.LESSON_STACK, {
+							screen: Routes.CREATE_LESSON,
+							params: {navigation: navigation},
+						}) 
 					}}>
 						<IconAdd resizeMode='contain' source={require('../../assets/img/add_lesson.png')} />
 					</TouchableOpacity>
