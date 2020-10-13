@@ -20,17 +20,6 @@ export default function() {
 	useEffect(() => {
 		setInHome(true)
 		setPause(false)
-	    const backAction = () => {
-	      logout()
-	      return true;
-	    };
-
-	    const backHandler = BackHandler.addEventListener(
-	      "hardwareBackPress",
-	      backAction
-	    );
-
-	    return () => backHandler.remove();
 	}, []);
 
 	return (

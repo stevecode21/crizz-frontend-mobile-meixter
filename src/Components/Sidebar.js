@@ -3,7 +3,7 @@ import styled from 'styled-components/native'
 import fonts from '../Themes/Fonts';
 import colors from '../Themes/Colors';
 import {BoxShadow} from 'react-native-shadow'
-import { TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback} from 'react-native'
+import { TouchableOpacity } from 'react-native'
 
 const Container = styled.View`
 	width: 60px;

@@ -36,5 +36,7 @@
     "registerYourBio": "Your Bio",
     "registerPlaceBio": "About yourself...",
     "registerChooseTags": "Choose 5+ tags",
-    "registerAddMore": "Add more from your settings"
+    "registerAddMore": "Add more from your settings",
+    "teachUncomingTitle": "You don’t have any students yet",
+    "teachUncomingText": "As soon as a student books a session with you, it will appear here and we’ll notify you."
 }
