@@ -16,15 +16,16 @@
     "ios": {
       "supportsTablet": true,
       "userInterfaceStyle": "light",
-      "config" : {
+      "config": {
         "googleMobileAdsAppId": "ca-app-pub-7815010412581785~4857116020"
-      }
+      },
+      "bundleIdentifier": "com.meixter.app"
     },
     "android": {
       "userInterfaceStyle": "dark",
       "package": "com.meixter.app",
       "versionCode": 1,
-      "config" : {
+      "config": {
         "googleMobileAdsAppId": "ca-app-pub-7815010412581785~4857116020"
       }
     },
