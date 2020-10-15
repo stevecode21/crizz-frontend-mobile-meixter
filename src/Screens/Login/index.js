@@ -154,7 +154,7 @@ export default function() {
   return (
     <View style={styles.viewView}>
       <Video
-        source={require("../../../assets/Bg_MeiXter2.mp4")}
+        source={require("../../../assets/BG_App.mp4")}
         rate={1.0}
         volume={1.0}
         isMuted={true}
