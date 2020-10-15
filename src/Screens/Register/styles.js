@@ -274,7 +274,22 @@ const style = StyleSheet.create({
     marginTop: 40,
     marginBottom: 20
   },
+  containerButtomCalendar: {
+    alignSelf: 'center',
+    justifyContent: "center",
+    marginTop: 10,
+    marginBottom: 10
+  },
   buttom: {
+    width: 190,
+    height: 60,
+    borderRadius: 10,
+    marginTop: -40,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: 'center',
+  },
+  buttomCalendar: {
     width: 190,
     height: 60,
     borderRadius: 10,

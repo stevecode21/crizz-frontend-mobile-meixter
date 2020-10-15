@@ -8,7 +8,8 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  BackHandler
+  BackHandler,
+  Dimensions
 } from 'react-native';
 
 import useTranslation from '../../i18n';
@@ -27,6 +28,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import moment from "moment";
 //api services
 import * as api from "../../Services/register";
+
+const { width, height } = Dimensions.get('window')
 
 export default function({navigation}) {
   const {setLoading, showErrorToast, setStateApp, account, changeAccount} = useAuth()
@@ -56,7 +59,7 @@ export default function({navigation}) {
   const [today, setToday] = useState(moment().format('YYYY-MM-DD'))
   const [filters, setFilters] = useState('')
   const [selectedDate, setSelectedDate] = useState(today);
-  const [year, setYear] = useState('2020')
+  const [year, setYear] = useState(moment().format('YYYY'))
   const [calendarActive, setCalendarActive] = useState(true)
 
   const [viewMode, setViewMode] = useState('country')
@@ -154,6 +157,16 @@ export default function({navigation}) {
     return encontre
   }
 
+  const handleName = () => {
+    if (nickname == '')
+    {
+      let newNick = name
+      newNick = newNick.replace(/\s+/g, "")
+      let num = Math.floor(Math.random() * 99)
+      setNickname(newNick.toLowerCase()+num)
+    }
+  }
+
   const openModalCountry = () => {
     setViewMode('country')
     refModalBottom.current.open()
@@ -162,7 +175,10 @@ export default function({navigation}) {
   const openModalCalendar = () => {
     setViewMode('calendar')
     setCalendarActive(false)
-    setSelectedDate(today)
+    if (selectedDate != today)
+    {
+      setSelectedDate(moment(birth, 'DD-MMM-YYYY').format('YYYY-MM-DD'))
+    }
     setTimeout(() => setCalendarActive(true), 100) 
     refModalBottom.current.open()
   }
@@ -289,7 +305,7 @@ export default function({navigation}) {
       borderRadius: 2.5,
     },
     container: {
-      height: 520,
+      height: 600,
       borderTopLeftRadius: 35,
       borderTopRightRadius: 35,
       backgroundColor: colors.background
@@ -323,6 +339,9 @@ export default function({navigation}) {
               onChangeText={(data) => { 
                 setName(data) 
                 setErrorName(false)
+              }}
+              onBlur={() => {
+                handleName()
               }}
               style={styles.inputName} 
               value={name}
@@ -567,6 +586,23 @@ export default function({navigation}) {
                 />
               )
             }
+
+            <View style={styles.containerButtomCalendar}>
+              <Text style={styles.textButton}>
+                {t('select')} {'       '}
+                <Image
+                  source={require('../../../assets/img/arrowRight.png')}
+                />
+              </Text>
+              <TouchableHighlight
+                onPress={() => closeModal()}
+                style={styles.buttomCalendar}
+              >
+                <Image
+                  source={require("../../../assets/img/button-bg.png")}
+                />
+              </TouchableHighlight>
+            </View>
                 
           </View>
         )}
