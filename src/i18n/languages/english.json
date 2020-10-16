@@ -59,5 +59,6 @@
     "buyYourMembership": "Buy your membership",
     "chooseMonthly": "Choose monthly or yearly",
     "zeroCommissions": "Zero commissions 9.99% when you sell a Lesson",
-    "select": "Select"
+    "select": "Select",
+    "permissions": "Hey! You have not enabled selected permissions"
 }

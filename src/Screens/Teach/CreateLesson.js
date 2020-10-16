@@ -4,6 +4,9 @@ import styled from 'styled-components/native'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
 import ModalBottom from 'react-native-raw-bottom-sheet';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-file-system';
 import fonts from '../../Themes/Fonts';
 import colors from '../../Themes/Colors';
 //import { BlurView } from 'expo-blur';
@@ -25,6 +28,7 @@ export default function CreateLesson({navigation}) {
   	const [coins60, setCoins60] = useState(20)
   	const [totalCoins30, setTotalCoins30] = useState(9.01)
   	const [totalCoins60, setTotalCoins60] = useState(18.02)
+  	const [video, setVideo] = useState('')
 
   	const customStyles = {
 		wrapper: {
@@ -53,6 +57,33 @@ export default function CreateLesson({navigation}) {
 
 	    return () => backHandler.remove();
 	}, []);
+
+	useEffect(() => {(async () => {
+
+		const { status: existingStatus } = await Permissions.getAsync(
+			Permissions.CAMERA,
+			Permissions.AUDIO_RECORDING,
+			Permissions.CAMERA_ROLL
+		)
+
+		let finalStatus = existingStatus
+
+		if (existingStatus !== 'granted') 
+		{
+			const { status } = await Permissions.askAsync(
+				Permissions.CAMERA,
+				Permissions.AUDIO_RECORDING,
+				Permissions.CAMERA_ROLL
+			)
+			finalStatus = status
+		}
+
+		if (finalStatus !== 'granted') 
+		{
+			showErrorToast(t('permissions'))
+		}
+
+	})()}, [])
 
 	const backAction = () => {
 		navigation.dispatch(
@@ -92,11 +123,48 @@ export default function CreateLesson({navigation}) {
 	    refModalBottom.current.open()
 	}
 
+	const handleResultVideo = async (result) => {
+		if (!result.cancelled) {
+			console.log(result.duration)
+			if (result.duration <= 60000)
+			{
+				console.log(result.uri)
+				setVideo(result.uri);
+			}
+			else
+			{
+				showErrorToast(t('maximunVerticalVideo'))
+			}
+		}
+	}
+
+	const pickImage = async (value) => {
+		if (value === 'camera') 
+		{
+			let result = await ImagePicker.launchCameraAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+				videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality,
+				videoMaxDuration: 60,
+				allowsEditing: true
+			});
+			handleResultVideo(result);
+		} 
+		else 
+		{
+			let result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+				videoExportPreset: ImagePicker.VideoExportPreset.MediumQuality,
+				allowsEditing: true
+			});
+			handleResultVideo(result);
+		}
+	};
+
 	return (
 		<Container>
 			<Header>
 				<Menu>
-					<TouchableOpacity onPress={backAction}>
+					<TouchableOpacity style={{width: 40}} onPress={backAction}>
 						<IconCalendar resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
 					</TouchableOpacity>
 				</Menu>
@@ -114,15 +182,27 @@ export default function CreateLesson({navigation}) {
 			<Separator />
 
 			<ScrollView>
-				<MaximunVerticalVideo>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
-				
+
+				{video != '' ? (
+					<RowVideo>
+						<IconCheckVideo resizeMode='contain' source={require('../../../assets/img/check.png')} />
+						<MaximunVerticalVideo video={video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
+					</RowVideo>
+				): (
+					<MaximunVerticalVideo video={video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
+				)}
+					
 				<RowIcons>
 					<Col50>
+						<TouchableOpacity onPress={() => pickImage('camera')} >
 						<IconRecord resizeMode='contain' source={require('../../../assets/img/camera.png')} />
+						</TouchableOpacity>
 						<TextRecord>{t('record')}</TextRecord>
 					</Col50>
 					<Col50>
+						<TouchableOpacity onPress={() => pickImage('gallery')} >
 						<IconGalery resizeMode='contain' source={require('../../../assets/img/gallery.png')} />
+						</TouchableOpacity>
 						<TextGallery>{t('gallery')}</TextGallery>
 					</Col50>
 				</RowIcons>
@@ -292,6 +372,12 @@ const ScrollView = styled.ScrollView`
 	width: 100%;
     height: 100%;
 `
+const RowVideo = styled.View`
+	flex-direction: row;
+	margin-top: 15px;
+	height: 20px;
+`
+
 const RowLanguage = styled.View`
 	flex-direction: row;
 	justify-content: flex-start;
@@ -348,6 +434,14 @@ const TextMins = styled.Text`
 	align-content: center;
 	align-self: center;
 `
+const IconCheckVideo = styled.Image`
+	height: 30px;
+	margin-right: -40px;
+	margin-left: 9%;
+	align-items: center;
+	align-content: center;
+	align-self: center;
+`
 const IconMins = styled.Image`
 	height: 30px;
 	margin-right: -40px;
@@ -384,13 +478,13 @@ const TextValueCoins = styled.Text`
 	align-self: center;
 `
 const MaximunVerticalVideo = styled.Text`
-	color: ${colors.lila};
+	color: ${props => props.video ? colors.cyan : colors.lila};
 	font-size: 12px;
 	text-align: center;
 	justify-content: center;
 	align-self: center;
 	font-family: ${fonts.regular};
-	margin-top: 15px;
+	margin-top: ${props => props.video ? '2px' : '20px'};
 `
 const RowIcons = styled.View`
 	width: 100%;

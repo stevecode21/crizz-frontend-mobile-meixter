@@ -31,11 +31,11 @@ const Boton = styled.View`
 	flex: 1;
     justify-content: center;
     align-items: center;
-    margin-top: 50%;
+    margin-top: 55%;
 `
 const Icon = styled.Image`
-	height: 100px;
-	width: 100px;
+	height: 130px;
+	width: 130px;
 `
 
 const Hero = ({ videos, pause, setPause }) => {
@@ -74,7 +74,7 @@ const Hero = ({ videos, pause, setPause }) => {
 								]}>
 								<Boton>
 									{ pause && (
-										<Icon resizeMode='stretch' source={require('../../assets/img/add_lesson.png')} />
+										<Icon resizeMode='stretch' source={require('../../assets/img/PlayButton.png')} />
 									)}
 								</Boton>
 								<Center>
