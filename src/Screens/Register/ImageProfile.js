@@ -164,7 +164,7 @@ export default function({navigation}) {
 
         {account.urlProfileImage === undefined && image === null && (
           <Image
-            style={styles.imageCenter2}
+            style={styles.imageCenter3}
             source={require("../../../assets/img/avatar.png")}
           />
         )}

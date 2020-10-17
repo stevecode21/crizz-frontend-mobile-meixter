@@ -100,7 +100,6 @@ function TopBar({ state, descriptors, navigation, position }) {
               accessibilityRole="button"
               accessibilityStates={isFocused ? ['selected'] : []}
               accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarTestID}
               onPress={onPress}
               onLongPress={onLongPress}
               style={{ flex: 1 }}
@@ -126,8 +125,6 @@ export default function TeachStack() {
 
   return (
     <Tab.Navigator 
-      lazy={true}
-      backBehavior="history"
       swipeEnabled={true} 
       initialRouteName="Uncoming" 
       tabBar={props => <TopBar {...props} />} 

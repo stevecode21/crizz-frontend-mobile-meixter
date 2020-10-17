@@ -23,19 +23,28 @@ const style = StyleSheet.create({
     backgroundColor: "transparent",
     marginTop: 36,
     alignSelf: 'center',
-    width: 143,
-    height: 143,
+    width: 160,
+    height: 160,
     resizeMode: 'stretch',
     zIndex: 1
   },
   imageCenter2: {
-    position: 'absolute',
+    position: 'relative',
     backgroundColor: "transparent",
     alignSelf: 'center',
-    width: 92,
-    height: 92,
-    top: 184,
-    borderRadius: 50
+    width: 103,
+    height: 103,
+    marginTop: -131,
+    borderRadius: 100
+  },
+  imageCenter3: {
+    position: 'relative',
+    backgroundColor: "transparent",
+    alignSelf: 'center',
+    width: 175,
+    height: 175,
+    marginTop: -166,
+    borderRadius: 100
   },
   imageCenterAvatar: {
     position: 'absolute',

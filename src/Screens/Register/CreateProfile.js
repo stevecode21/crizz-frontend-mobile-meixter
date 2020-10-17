@@ -111,7 +111,7 @@ export default function({navigation}) {
     setErrorCountry(false)
     setTextErrorCountry('')
     setErrorBirth(false)
-    setTextErrorBirth('')
+    setTextErrorBirth()
   }
 
   const validateAllForm = () => {
@@ -157,13 +157,39 @@ export default function({navigation}) {
     return encontre
   }
 
-  const handleName = () => {
+  const handleName = async () => {
     if (nickname == '')
     {
       let newNick = name
       newNick = newNick.replace(/\s+/g, "")
-      let num = Math.floor(Math.random() * 99)
+      let num = Math.floor(Math.random() * 9999)
       setNickname(newNick.toLowerCase()+num)
+      setLoading(true)
+      try 
+      {
+        setErrorNickname(false) 
+        let data = {
+          nickname: newNick.toLowerCase()+num
+        }
+        let response = await api.verifyNickname(data);
+        setLoading(false);
+        setCheckNickname(response.result.perm)
+      } 
+      catch (error) 
+      {
+        setLoading(false)
+        setCheckNickname(false)
+        if (error.status == 401) 
+        {
+          setErrorNickname(true) 
+          setTextErrorNickname(localeProvider.name == 'en' ? error.message_en : error.message_es)
+          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+        }
+        else
+        {
+          showErrorToast(error.message);
+        }
+      }
     }
   }
 
@@ -274,6 +300,26 @@ export default function({navigation}) {
       setTextErrorNickname(t('errorInputEmpty'))
     }
   }
+
+  const validateDate = (day) => {
+    let years = moment().diff(day.dateString, 'years')
+    console.log('yearOld', years)
+    if (years >= 18)
+    {
+      setErrorBirth(false)
+      setBirth(moment(day.dateString, 'YYYY-MM-DD').format('DD-MMM-YYYY'))
+      setSelectedDate(day.dateString);
+    }
+    else
+    {
+      setYear(moment().format('YYYY'))
+      setSelectedDate(today)
+      showErrorToast(t('notLegal'))
+      setBirth('')
+      setErrorBirth(true)
+      setTextErrorBirth(t('notLegal'))
+    }
+  }
   
   const CalendarTheme = {
     backgroundColor: 'transparent',
@@ -330,7 +376,7 @@ export default function({navigation}) {
           source={{ uri: account.urlProfileImage }}
         />
           
-        <Text style={styles.textInputs}> {t('registerYourName')} </Text>
+        <Text style={[styles.textInputs, {marginTop: 50}]}> {t('registerYourName')} </Text>
         <View style={( errorName ) ? styles.containerInputError : styles.containerInput}>  
           <View pointerEvents="box-none" style={styles.containerInputNumber}>
             <TextInput
@@ -550,16 +596,11 @@ export default function({navigation}) {
                   current={selectedDate}
                   monthFormat={'MMMM'}
                   theme={CalendarTheme}
-                  maxDate={new Date()}
                   onDayPress={(day) => {
-                    setErrorBirth(false)
-                    setBirth(moment(day.dateString, 'YYYY-MM-DD').format('DD-MMM-YYYY'))
-                    setSelectedDate(day.dateString);
+                    validateDate(day)
                   }}
                   onDayLongPress={(day) => {
-                    setErrorBirth(false)
-                    setBirth(moment(day.dateString, 'YYYY-MM-DD').format('DD-MMM-YYYY'))
-                    setSelectedDate(day.dateString);
+                    validateDate(day)
                   }}
                   renderArrow={(direction) => 
                     direction === 'left' ? 
@@ -587,22 +628,25 @@ export default function({navigation}) {
               )
             }
 
-            <View style={styles.containerButtomCalendar}>
-              <Text style={styles.textButton}>
-                {t('select')} {'       '}
-                <Image
-                  source={require('../../../assets/img/arrowRight.png')}
-                />
-              </Text>
-              <TouchableHighlight
-                onPress={() => closeModal()}
-                style={styles.buttomCalendar}
-              >
-                <Image
-                  source={require("../../../assets/img/button-bg.png")}
-                />
-              </TouchableHighlight>
-            </View>
+            {birth != '' && (
+              <View style={styles.containerButtomCalendar}>
+                <Text style={styles.textButton}>
+                  {t('select')} {'       '}
+                  <Image
+                    source={require('../../../assets/img/arrowRight.png')}
+                  />
+                </Text>
+                <TouchableHighlight
+                  onPress={closeModal}
+                  style={styles.buttomCalendar}
+                >
+                  <Image
+                    source={require("../../../assets/img/button-bg.png")}
+                  />
+                </TouchableHighlight>
+              </View>
+            )}
+              
                 
           </View>
         )}

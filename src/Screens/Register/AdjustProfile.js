@@ -181,7 +181,7 @@ export default function({navigation}) {
           source={{ uri: account.urlProfileImage }}
         />
            
-        <View style={styles.row3}>
+        <View style={[styles.row3, {marginTop: 30}]}>
           <View style={styles.containerOptions2} >
             <TouchableOpacity
               style={styles.iconContainer}

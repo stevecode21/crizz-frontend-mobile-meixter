@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment} from 'react'
 import {
   Text,
   Image,
@@ -6,17 +6,18 @@ import {
   View,
   TouchableOpacity,
   BackHandler
-} from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+} from 'react-native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import styled from 'styled-components/native'
 import {BoxShadow} from 'react-native-shadow'
-import Home from '../../Screens/Home';
-import Launch from '../../Screens/Launch';
-import TeachTab from '../TeachTab/';
+import Lear from '../../Screens/Home'
+import Launch from '../../Screens/Launch'
+import TeachTab from '../TeachTab/'
+import MeStack from '../MeStack'
 
-import colors from '../../Themes/Colors';
-import fonts from '../../Themes/Fonts';
-import useAuth from '../../Services/Auth';
+import colors from '../../Themes/Colors'
+import fonts from '../../Themes/Fonts'
+import useAuth from '../../Services/Auth'
 
 const Tab = createBottomTabNavigator();
 
@@ -111,7 +112,6 @@ function MyTabBar({ state, descriptors, navigation }) {
             accessibilityRole="button"
             accessibilityStates={isFocused ? ['selected'] : []}
             accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
             style={{ flex: 1 }}
@@ -161,22 +161,32 @@ function MyTabBar({ state, descriptors, navigation }) {
   );
 }
 
+const getTabBarVisibility = (route) => {
+  const routeName = route.state
+    ? route.state.routes[route.state.index].name
+    : '';
+
+  if (routeName === 'OPTIONS') {
+    return false;
+  }
+
+  return true;
+}
+
 export default function MainStack() {
-  const {logout} = useAuth()
   return (
     <Tab.Navigator 
       lazy={true} 
-      backBehavior="history" 
-      initialRouteName="Home" 
+      backBehavior="initialRoute" 
+      initialRouteName="Lear" 
       tabBar={props => <MyTabBar {...props} />} 
     >
-      <Tab.Screen 
-        name="Lear" 
-        component={Home}
-      />
+      <Tab.Screen name="Lear" component={Lear}/>
       <Tab.Screen name="Sesions" component={Launch} />
       <Tab.Screen name="Teach" component={TeachTab} />
-      <Tab.Screen name="Me" component={Launch} />      
+      <Tab.Screen name="Me" component={MeStack} options={({ route }) => ({
+        tabBarVisible: getTabBarVisibility(route)
+      })}/>      
     </Tab.Navigator>
   );
 }

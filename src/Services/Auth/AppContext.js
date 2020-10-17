@@ -64,8 +64,8 @@ export const AppContextProvider = props => {
 	const _logoutUser = useCallback(async () => {
 		changeAccessToken('')
 		updateAccount({})
+		api.deleteAuthorization()
 	    setStateApp(APP_STATE.PUBLIC)
-	    api.deleteAuthorization()
 	}, []);
 
 	const _logout = useCallback(() => {
@@ -124,6 +124,7 @@ export const AppContextProvider = props => {
 				account: account,
 				changeAccount: _changeAccount,
 				logout: _logout,
+				logoutDirect: _logoutUser,
 				stateApp: stateApp,
 				setStateApp: setStateApp,
 				setLoading: setLoading,
