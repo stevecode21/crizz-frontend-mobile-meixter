@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   TextInput,
   BackHandler,
-  Dimensions
+  Dimensions,
+  Keyboard
 } from 'react-native';
 
 import useTranslation from '../../i18n';
@@ -61,6 +62,7 @@ export default function({navigation}) {
   const [selectedDate, setSelectedDate] = useState(today);
   const [year, setYear] = useState(moment().format('YYYY'))
   const [calendarActive, setCalendarActive] = useState(true)
+  const [birthValidate, setBirthValidate] = useState(false)
 
   const [viewMode, setViewMode] = useState('country')
 
@@ -201,8 +203,10 @@ export default function({navigation}) {
   const openModalCalendar = () => {
     setViewMode('calendar')
     setCalendarActive(false)
+    setBirthValidate(false)
     if (selectedDate != today)
     {
+      setYear(moment(birth, 'DD-MMM-YYYY').format('YYYY'))
       setSelectedDate(moment(birth, 'DD-MMM-YYYY').format('YYYY-MM-DD'))
     }
     setTimeout(() => setCalendarActive(true), 100) 
@@ -306,18 +310,29 @@ export default function({navigation}) {
     console.log('yearOld', years)
     if (years >= 18)
     {
+      setBirthValidate(true)
       setErrorBirth(false)
       setBirth(moment(day.dateString, 'YYYY-MM-DD').format('DD-MMM-YYYY'))
       setSelectedDate(day.dateString);
     }
     else
     {
-      setYear(moment().format('YYYY'))
-      setSelectedDate(today)
+      setBirthValidate(false)
+      if (birth != '')
+      {
+        setYear(moment(birth, 'DD-MMM-YYYY').format('YYYY'))
+        setSelectedDate(moment(birth, 'DD-MMM-YYYY').format('YYYY-MM-DD'))
+      }
+      else
+      {
+        setYear(moment().format('YYYY'))
+        setSelectedDate(today)
+        setErrorBirth(true)
+        setTextErrorBirth(t('notLegal'))
+      }
+      
       showErrorToast(t('notLegal'))
-      setBirth('')
-      setErrorBirth(true)
-      setTextErrorBirth(t('notLegal'))
+      
     }
   }
   
@@ -559,8 +574,16 @@ export default function({navigation}) {
                   placeholderTextColor={colors.lila}
                   onChangeText={(data) => { 
                     setYear(data)
+                    setBirthValidate(false)
+                    if (parseInt(data) > 1900)
+                    {
+                      Keyboard.dismiss()
+                      let da = selectedDate.split('-')
+                      setSelectedDate(data+'-'+da[1]+'-'+da[2])
+                    }
                   }}
                   onBlur={() => {
+                    setBirthValidate(false)
                     if (year != "")
                     {
                       if (parseInt(year) <= 1900)
@@ -569,11 +592,11 @@ export default function({navigation}) {
                       }
                       else
                       {
+                        Keyboard.dismiss()
                         setCalendarActive(false)
                         let da = selectedDate.split('-')
                         setSelectedDate(year+'-'+da[1]+'-'+da[2])
                         setTimeout(() => setCalendarActive(true), 100) 
-                        //console.log(selectedDate)
                       }
                     }
                     else
@@ -597,9 +620,11 @@ export default function({navigation}) {
                   monthFormat={'MMMM'}
                   theme={CalendarTheme}
                   onDayPress={(day) => {
+                    Keyboard.dismiss()
                     validateDate(day)
                   }}
                   onDayLongPress={(day) => {
+                    Keyboard.dismiss()
                     validateDate(day)
                   }}
                   renderArrow={(direction) => 
@@ -628,7 +653,7 @@ export default function({navigation}) {
               )
             }
 
-            {birth != '' && (
+            {birthValidate && (
               <View style={styles.containerButtomCalendar}>
                 <Text style={styles.textButton}>
                   {t('select')} {'       '}
