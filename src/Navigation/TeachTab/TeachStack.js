@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment} from 'react'
 import {
   Text,
   Image,
@@ -6,22 +6,22 @@ import {
   View,
   TouchableOpacity,
   Dimensions
-} from 'react-native';
+} from 'react-native'
 
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import styled from 'styled-components/native'
 import {BoxShadow} from 'react-native-shadow'
 
-import Mylessons from '../../Screens/Teach/Mylessons';
-import Uncoming from '../../Screens/Teach/Uncoming';
-import Completed from '../../Screens/Teach/Completed';
-import Header from '../../Components/TeachHeader';
+import Mylessons from '../../Screens/Teach/Mylessons'
+import Upcoming from '../../Screens/Teach/Upcoming'
+import Completed from '../../Screens/Teach/Completed'
+import Header from '../../Components/TeachHeader'
 
-import colors from '../../Themes/Colors';
-import fonts from '../../Themes/Fonts';
-import useAuth from '../../Services/Auth';
+import colors from '../../Themes/Colors'
+import fonts from '../../Themes/Fonts'
+import useAuth from '../../Services/Auth'
 
-const Tab = createMaterialTopTabNavigator();
+const Tab = createMaterialTopTabNavigator()
 
 const { width, height } = Dimensions.get('window')
 
@@ -37,17 +37,17 @@ const styles = StyleSheet.create({
 })
 
 const Container = styled.View`
-  flex-direction: row;
-  height: 50px;
-  background-color: ${colors.blueDark};
-  margin-top: 0px;
+  flex-direction: row
+  height: 50px
+  background-color: ${colors.blueDark}
+  margin-top: 0px
 `
 
 function TopBar({ state, descriptors, navigation, position }) {
-  const focusedOptions = descriptors[state.routes[state.index].key].options;
+  const focusedOptions = descriptors[state.routes[state.index].key].options
 
   if (focusedOptions.tabBarVisible === false) {
-    return null;
+    return null
   }
 
   return (
@@ -55,34 +55,34 @@ function TopBar({ state, descriptors, navigation, position }) {
       <Header navigation={navigation}/>
       <Container>
         {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
+          const { options } = descriptors[route.key]
           const label =
             options.tabBarLabel !== undefined
               ? options.tabBarLabel
               : options.title !== undefined
               ? options.title
-              : route.name;
+              : route.name
 
-          const isFocused = state.index === index;
+          const isFocused = state.index === index
 
           const onPress = () => {
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,
               canPreventDefault: true,
-            });
+            })
 
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+              navigation.navigate(route.name)
             }
-          };
+          }
 
           const onLongPress = () => {
             navigation.emit({
               type: 'tabLongPress',
               target: route.key,
-            });
-          };
+            })
+          }
 
           const shadowOpt = {
               width:200,
@@ -113,11 +113,11 @@ function TopBar({ state, descriptors, navigation, position }) {
                 <View style={[styles.lineTab, {borderColor: colors.lila, borderBottomWidth: 2,}]}></View>
               )}
             </TouchableOpacity>
-          );
+          )
         })}
       </Container>
     </Fragment>
-  );
+  )
 }
 
 
@@ -126,12 +126,12 @@ export default function TeachStack() {
   return (
     <Tab.Navigator 
       swipeEnabled={true} 
-      initialRouteName="Uncoming" 
+      initialRouteName="Upcoming" 
       tabBar={props => <TopBar {...props} />} 
     >
       <Tab.Screen name="My lessons" component={Mylessons} />
-      <Tab.Screen name="Uncoming" component={Uncoming} />
+      <Tab.Screen name="Upcoming" component={Upcoming} />
       <Tab.Screen name="Completed" component={Completed} />   
     </Tab.Navigator>
-  );
+  )
 }

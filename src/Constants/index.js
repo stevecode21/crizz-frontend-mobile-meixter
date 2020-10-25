@@ -1,30 +1,30 @@
-import { Platform } from "react-native";
+import { Platform } from "react-native"
 
 //API URL API
-export const API_URL = 'https://api.meixter.com/api/v1';
-export const URI = 'https://api.meixter.com/';
+export const API_URL = 'https://api.meixter.com/api/v1'
+export const URI = 'https://api.meixter.com/'
 
-export const isAndroid = Platform.OS === "android" ? true : false;
-export const isIos = !isAndroid;
+export const isAndroid = Platform.OS === "android" ? true : false
+export const isIos = !isAndroid
 
 export const APP_STATE = {
 	PUBLIC 		: "PUBLIC_LOGIN",
 	PRIVATE 	: "MAIN_APP",
 	REGISTER 	: "REGISTER",
 	UNKNOWN 	: "UNKNOWN"
-};
+}
 
 export const STATUS = {
 	SUCCESS 	: "SUCCESS",
 	NOT_STARTED : "NOT_STARTED",
 	FETCHING 	: "FETCHING",
 	FAILED 		: "FAILED"
-};
+}
 
 export const LOCALES = {
 	ENGLISH: { id: 1, name: "en", label: "ENGLISH" },
 	SPANISH: { id: 2, name: "es", label: "ESPAÑOL" }
-};
+}
 
 export const ROUTES = {
 	VERIFY 			:`${API_URL}/account/phoneVerify`,
@@ -36,5 +36,7 @@ export const ROUTES = {
 	ADJUSTPROFILE 	:`${API_URL}/account/profileAdjust`,
 	TAGSTREND		:`${API_URL}/tag/trend`,
 	TAGSALL 		:`${API_URL}/tag/all`,
-	MYTAGS 			:`${API_URL}/tag/user/all`
-};
+	MYTAGS 			:`${API_URL}/tag/user/all`,
+	CONFIG_GENERAL  :`${API_URL}/Config/General`,
+	CONFIG_LANGUAGE :`${API_URL}/Config/Language`,
+}

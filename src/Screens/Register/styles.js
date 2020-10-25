@@ -129,7 +129,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 24,
     textAlign: "center",
-    marginTop: 70,
+    marginTop: 40,
   },
   textCreateProfile: {
     color: colors.violet,
@@ -192,7 +192,7 @@ const style = StyleSheet.create({
   },
   inputName: {
     fontSize: 18,
-    color: colors.lila,
+    color: colors.white,
     fontFamily: fonts.regular,
     padding: 10,
     bottom: -15,
@@ -200,7 +200,7 @@ const style = StyleSheet.create({
   },
   inputBio: {
     fontSize: 18,
-    color: colors.lila,
+    color: colors.white,
     fontFamily: fonts.regular,
     padding: 10,
     bottom: -15,
@@ -216,7 +216,7 @@ const style = StyleSheet.create({
   },
   inputRegisterCountry: {
     fontSize: 18,
-    color: colors.lila,
+    color: colors.white,
     fontFamily: fonts.regular,
     top: 30,
     marginLeft: 2,

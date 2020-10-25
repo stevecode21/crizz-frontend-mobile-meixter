@@ -34,10 +34,7 @@ const Header = ({navigation}) => {
 
 				<Menu>
 					<TouchableOpacity onPress={() => { 
-						redirect(Routes.LESSON_STACK, {
-							screen: Routes.CREATE_LESSON,
-							params: {navigation: navigation},
-						}) 
+						navigation.navigate(Routes.CREATE_LESSON)
 					}}>
 						<IconAdd resizeMode='contain' source={require('../../assets/img/add_lesson.png')} />
 					</TouchableOpacity>

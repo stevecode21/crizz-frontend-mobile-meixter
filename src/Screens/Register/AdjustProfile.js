@@ -10,7 +10,7 @@ import {
   TextInput,
   BackHandler
 } from 'react-native';
-
+import styled from 'styled-components/native'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
 
@@ -23,6 +23,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ModalBottom from 'react-native-raw-bottom-sheet';
 //api services
 import * as api from "../../Services/register";
+
+const IconBack = styled.Image`
+  width: 34px;
+  justify-content: center;
+  align-items: center;
+`
 
 export default function({navigation}) {
   const {logout, setLoading, checkAccount, showErrorToast, setStateApp, account, changeAccount} = useAuth()
@@ -170,6 +176,9 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <ScrollView style={styles.scroll}>
+        <TouchableOpacity style={{top: 40, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.PROFILE_SCREEN)}}>
+            <IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
+        </TouchableOpacity>
         <Text style={styles.title}> {t('registerPreparing')} </Text>
         <Text style={styles.textCreateProfile}> {t('adjustAccount')} </Text>
         <Image

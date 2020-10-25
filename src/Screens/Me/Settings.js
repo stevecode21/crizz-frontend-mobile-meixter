@@ -49,13 +49,13 @@ export default function Settings({navigation}) {
 		<Container>
 			<Header>
 				<Menu>
-					<TouchableOpacity style={{width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.ME)}}>
+					<TouchableOpacity style={{left: -20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.ME)}}>
 						<IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
 					</TouchableOpacity>
 				</Menu>
-				<Menu>
+				<MenuCenter>
 					<Title>{t('settings')}</Title>
-				</Menu>
+				</MenuCenter>
 				<Menu>
 				</Menu>				
 			</Header>
@@ -303,7 +303,12 @@ const Header = styled.View`
 const Menu = styled.View`
 	justify-content: center;
 	align-items: center;
-	width: 33%;
+	width: 25%;
+`
+const MenuCenter = styled.View`
+	justify-content: center;
+	align-items: center;
+	width: 50%;
 `
 const Title = styled.Text`
 	color: ${colors.white};
@@ -316,7 +321,7 @@ const IconBack = styled.Image`
 	width: 34px;
 	justify-content: center;
 	align-items: center;
-	left: -25px;
+	align-self: center;
 `
 const Separator = styled.View`
 	width: 100%;

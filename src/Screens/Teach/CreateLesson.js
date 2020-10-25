@@ -1,34 +1,44 @@
 import React, {useEffect, useRef, useState, Fragment} from 'react'
-import { BackHandler, TouchableOpacity, Dimensions, TouchableHighlight} from 'react-native'
+import { BackHandler, TouchableOpacity, Dimensions, TouchableHighlight, TextInput} from 'react-native'
 import styled from 'styled-components/native'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
 import ModalBottom from 'react-native-raw-bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
 import fonts from '../../Themes/Fonts';
 import colors from '../../Themes/Colors';
-//import { BlurView } from 'expo-blur';
+import Ripple from 'react-native-material-ripple';
 const { width, height } = Dimensions.get('window')
 
 import { StackActions } from '@react-navigation/native';
 import Routes from '../../Navigation/Routes';
 
+//api services
+import * as apiconfig from "../../Services/config";
+
 
 export default function CreateLesson({navigation}) {
 	const {t, localeProvider} = useTranslation()
-  	const {setLoading, showErrorToast, stateApp, checkAccount} = useAuth()
+  	const {setLoading, showErrorToast, stateApp, checkAccount, account} = useAuth()
   	const refModalBottom = useRef()
   	const [viewMode, setViewMode] = useState('help')
   	const [errorDescription, setErrorDescription] = useState(false)
   	const [textErrorDesc, setTextErrorDesc] = useState('')
   	const [mtm, setMtm] = useState(180)
   	const [coins30, setCoins30] = useState(10)
+  	const [selected30, setSelected30] = useState(true)
   	const [coins60, setCoins60] = useState(20)
-  	const [totalCoins30, setTotalCoins30] = useState(9.01)
-  	const [totalCoins60, setTotalCoins60] = useState(18.02)
+  	const [selected60, setSelected60] = useState(false)
+  	const [totalCoins30, setTotalCoins30] = useState(0)
+  	const [totalCoins60, setTotalCoins60] = useState(0)
   	const [video, setVideo] = useState('')
+  	const [selectedDescount, setSelectedDescount] = useState(false)
+  	const [valueCoin, setValueCoin] = useState(0)
+  	const [languages, setLanguages] = useState([])
+  	const [selectedLanguage, setSelectedLanguage] = useState('')
+  	const [idLanguage, setIdLanguage] = useState('')
+  	const [description, setDescription] = useState('')
 
   	const customStyles = {
 		wrapper: {
@@ -46,9 +56,6 @@ export default function CreateLesson({navigation}) {
 		}
 	}
 
-	const valueCoin = 0.901
-	const listCoins = [10, 20, 30, 40, 60, 70, 80, 90, 100]
-
   	useEffect(() => {
 	    const backHandler = BackHandler.addEventListener(
 	      "hardwareBackPress",
@@ -59,7 +66,6 @@ export default function CreateLesson({navigation}) {
 	}, []);
 
 	useEffect(() => {(async () => {
-
 		const { status: existingStatus } = await Permissions.getAsync(
 			Permissions.CAMERA,
 			Permissions.AUDIO_RECORDING,
@@ -83,30 +89,54 @@ export default function CreateLesson({navigation}) {
 			showErrorToast(t('permissions'))
 		}
 
+		setLoading(true)
+		await getConfigData()
+		setLoading(false)
+
 	})()}, [])
 
-	const backAction = () => {
-		navigation.dispatch(
-			StackActions.replace(Routes.HOME_STACK, {
-				screen: Routes.HOME_TABS,
-				params: {
-					screen: 'Teach',
-					params: {}
-				}
-			})
-		);
-      	return true;
-    };
+	const getConfigData = async () => {
+		try 
+		{
+			let response = await apiconfig.general()
+			let resLanguage = await apiconfig.language()
+			console.log(resLanguage)
+			let general = response.result[0]
+			setLanguages(resLanguage.result)
+			setSelectedLanguage(resLanguage.result[0].name)
+			setIdLanguage(resLanguage.result[0]._id)
+			setValueCoin(parseFloat(general.coinValue))
+			let val1 = (parseFloat(general.coinValue) * parseInt(coins30))
+			if (account.premium == undefined || account.premium == false)
+				val1 = val1 - (val1 * 0.099)
+			
+			val1 = val1.toFixed(2)
+			let val2 = (parseFloat(general.coinValue) * parseInt(coins60))
+			if (account.premium == undefined || account.premium == false)
+				val2 = val2 - (val2 * 0.099)
+			
+			val2 = val2.toFixed(2)
+			setTotalCoins30(val1)
+			setTotalCoins60(val2)
+		} 
+		catch (error) 
+		{
+			setLoading(false)
+			console.log(error)
+			if (error.message == 'Network Error') 
+			{
+				showErrorToast(error.message);
+			}
+			else
+			{
+				showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+			}
+		}
+	}
 
-    const calculate = (type) => {
-    	if (type == 'sesenta')
-    	{
-    		setTotalCoins60(coins60 * valueCoin)
-    	}
-    	else
-    	{
-    		setTotalCoins30(coins30 * valueCoin)
-    	}
+	const backAction = () => {
+		navigation.goBack();
+      	return true;
     }
 
     const closeModal = () => {
@@ -118,6 +148,8 @@ export default function CreateLesson({navigation}) {
     		setMtm(230)
     	if (type == 'help')
     		setMtm(180)
+    	if (type == 'coins30' || type == 'coins60' || type == 'language')
+    		setMtm(450)
 
 	    setViewMode(type)
 	    refModalBottom.current.open()
@@ -133,7 +165,8 @@ export default function CreateLesson({navigation}) {
 			}
 			else
 			{
-				showErrorToast(t('maximunVerticalVideo'))
+				setVideo('')
+				showErrorToast(t('errorMaximunVerticalVideo'))
 			}
 		}
 	}
@@ -158,7 +191,44 @@ export default function CreateLesson({navigation}) {
 			});
 			handleResultVideo(result);
 		}
-	};
+	}
+
+	const handleSelectecLanguage = (lang) => {
+		setSelectedLanguage(lang.name)
+		setIdLanguage(lang._id)
+		closeModal()
+	}
+
+	const validate = () => {
+		if (video == '')
+		{
+			showErrorToast(t('validateMaximunVerticalVideo'))
+			return false
+		}
+		if (description == '')
+		{
+			setErrorDescription(true)
+			setTextErrorDesc(t('errorInputEmpty'))
+			return false
+		}
+		else
+		{
+			setErrorDescription(false)
+		}
+		if (!selected30 && !selected60)
+		{
+			showErrorToast(t('validateCoins'))
+			return false
+		}
+		return true
+	}
+
+	const nextStep = () => {
+		if(validate())
+		{
+
+		}
+	}
 
 	return (
 		<Container>
@@ -219,6 +289,8 @@ export default function CreateLesson({navigation}) {
 						maxLength={100}
 						placeholder={t('placeholderCreateLessonDescription')}
 						placeholderTextColor={colors.lilaLight}
+						value={description}
+						onChangeText={setDescription}
 					/>
 				</RowDescription>
 				{errorDescription && (<ErrorText>{textErrorDesc}</ErrorText>)}
@@ -231,57 +303,97 @@ export default function CreateLesson({navigation}) {
 				</RowYouGet>
 
 				<RowCoins>
-					<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-					<TextMins>30 mins</TextMins>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
-					>
-						<TextSelectCoins>{coins30} Coins</TextSelectCoins>
+					<TouchableOpacity onPress={() => setSelected30(!selected30)}>
+						{selected30 ? (
+							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
+						) : (
+							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
+						)}
 					</TouchableOpacity>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
-					>
-						<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
-					</TouchableOpacity>
-					<TextValueCoins>{totalCoins30} USD</TextValueCoins>
+					<TextMins selected={selected30}>30 mins</TextMins>
+					{selected30 ? (
+						<Fragment>
+							<TouchableOpacity 
+								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
+								onPress={() => openModal('coins30')}
+							>
+								<TextSelectCoins selected={selected30}>{coins30} Coins</TextSelectCoins>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
+								onPress={() => openModal('coins30')}
+							>
+								<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
+							</TouchableOpacity>
+							<TextValueCoins>{totalCoins30} USD</TextValueCoins>
+						</Fragment>
+					) : (
+						<Fragment>
+							<TextSelectCoins selected={selected30}>-- Coins</TextSelectCoins>
+							<TextValueCoins>-- USD</TextValueCoins>
+						</Fragment>
+					)}
+						
 				</RowCoins>
 
 				<RowCoins>
-					<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-					<TextMins>60 mins</TextMins>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
-					>
-						<TextSelectCoins>{coins60} Coins</TextSelectCoins>
+					<TouchableOpacity onPress={() => setSelected60(!selected60)}>
+						{selected60 ? (
+							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
+						) : (
+							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
+						)}
 					</TouchableOpacity>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
-					>
-						<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
-					</TouchableOpacity>
-					<TextValueCoins>{totalCoins60} USD</TextValueCoins>
+					<TextMins selected={selected60}>60 mins</TextMins>
+
+					{selected60 ? (
+						<Fragment>
+							<TouchableOpacity 
+								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
+								onPress={() => openModal('coins60')}
+							>
+								<TextSelectCoins selected={selected60}>{coins60} Coins</TextSelectCoins>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
+								onPress={() => openModal('coins60')}
+							>
+								<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
+							</TouchableOpacity>
+							<TextValueCoins>{totalCoins60} USD</TextValueCoins>
+						</Fragment>
+					) : (
+						<Fragment>
+							<TextSelectCoins selected={selected60}>-- Coins</TextSelectCoins>
+							<TextValueCoins>-- USD</TextValueCoins>
+						</Fragment>
+					)}
+
+							
 				</RowCoins>
 
 				<RowCoins>
-					<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-					<TextMins>{t('createLessonDiscount')}</TextMins>
+					<TouchableOpacity onPress={() => setSelectedDescount(!selectedDescount)}>
+						{selectedDescount ? (
+							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
+						) : (
+							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
+						)}
+					</TouchableOpacity>
+					<TextMins selected={selectedDescount}>{t('createLessonDiscount')}</TextMins>
 				</RowCoins>
 
 				<RowLanguage>
 					<TextLanguage>{t('language')}:</TextLanguage>
 					<TouchableOpacity 
 						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
+						onPress={() => openModal('language')}
 					>
-						<TextSelectLanguage>English</TextSelectLanguage>
+						<TextSelectLanguage>{selectedLanguage}</TextSelectLanguage>
 					</TouchableOpacity>
 					<TouchableOpacity 
 						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('YouGet')}
+						onPress={() => openModal('language')}
 					>
 						<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
 					</TouchableOpacity>
@@ -302,20 +414,19 @@ export default function CreateLesson({navigation}) {
 						    justifyContent: 'center',
 						    alignItems: 'center'
 						}}
-						onPress={openModal}
+						onPress={nextStep}
 					>
 						<BottomContinue resizeMode='contain' source={require("../../../assets/img/button-bg.png")} />
 					</TouchableHighlight>
 				</ContainerButtom>
-
 			</ScrollView>
 
 			<ModalBottom
-			ref={refModalBottom}
-			closeOnDragDown
-			dragFromTopOnly
-			animationType={'slide'}
-			customStyles={customStyles}>
+				ref={refModalBottom}
+				closeOnDragDown
+				dragFromTopOnly
+				animationType={'slide'}
+				customStyles={customStyles}>
 				<ContainerModal>
 					<HeaderModal>
 						<Menu></Menu>
@@ -323,6 +434,7 @@ export default function CreateLesson({navigation}) {
 							<Title>
 								{viewMode == 'help' && t('aboutYourTrailer')}
 								{viewMode == 'YouGet' && t('buyMembership')}
+								{viewMode == 'language' && t('language')}
 							</Title>
 						</Menu>
 						<Menu>
@@ -332,7 +444,7 @@ export default function CreateLesson({navigation}) {
 						</Menu>
 					</HeaderModal>
 					<SeparatorModal />
-					<ScrollView>
+					<ScrollViewModal>
 					{viewMode == 'help' && (
 						<Fragment>
 							<TipsCreateLesson>{t('tipsCreateLesson')}</TipsCreateLesson>
@@ -342,11 +454,31 @@ export default function CreateLesson({navigation}) {
 							</Row>
 							<Row>
 								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip1CreateLesson')}</SubTipsCreateLesson>
+								<SubTipsCreateLesson>{t('tip2CreateLesson')}</SubTipsCreateLesson>
 							</Row>
 							<Row>
 								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip1CreateLesson')}</SubTipsCreateLesson>
+								<SubTipsCreateLesson>{t('tip3CreateLesson')}</SubTipsCreateLesson>
+							</Row>
+							<Row>
+								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+								<SubTipsCreateLesson>{t('tip4CreateLesson')}</SubTipsCreateLesson>
+							</Row>
+							<Row>
+								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+								<SubTipsCreateLesson>{t('tip5CreateLesson')}</SubTipsCreateLesson>
+							</Row>
+							<Row>
+								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+								<SubTipsCreateLesson>{t('tip6CreateLesson')}</SubTipsCreateLesson>
+							</Row>
+							<Row>
+								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+								<SubTipsCreateLesson>{t('tip7CreateLesson')}</SubTipsCreateLesson>
+							</Row>
+							<Row>
+								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+								<SubTipsCreateLesson>{t('tip8CreateLesson')}</SubTipsCreateLesson>
 							</Row>
 							<ImageShadowPlayer resizeMode='contain' source={require('../../../assets/img/BgShadowVideo.png')} />
 						</Fragment>
@@ -361,7 +493,88 @@ export default function CreateLesson({navigation}) {
 
 						</Fragment>
 					)}
-					</ScrollView>
+
+					{viewMode == 'coins30' && (
+						<Fragment>
+							<BuyYourMembership>{t('priceCoins')}</BuyYourMembership>
+							<ChooseMonthly>min: 10 & max: 999 Coins</ChooseMonthly>
+
+							<InputCoins
+								keyboardType="numeric"
+								defaultValue={coins30.toString()}
+								placeholder="999"
+								maxLength={3}
+								placeholderTextColor={colors.lila}
+								onChangeText={(data) => {
+									if (data == '')
+										data = 0
+
+									let valor = (parseInt(data) * valueCoin)
+									if (account.premium == undefined || account.premium == false)
+										valor = valor - (valor * 0.099)
+
+									valor = valor.toFixed(2)
+									setTotalCoins30(valor)
+									setCoins30(data)
+								}}
+							/>
+
+							<TotalAmountCoins>Total: {totalCoins30} USD</TotalAmountCoins>
+
+						</Fragment>
+					)}
+
+					{viewMode == 'coins60' && (
+						<Fragment>
+							<BuyYourMembership>{t('priceCoins')}</BuyYourMembership>
+							<ChooseMonthly>min: 10 & max: 999 Coins</ChooseMonthly>
+
+							<InputCoins
+								keyboardType="numeric"
+								defaultValue={coins60.toString()}
+								placeholder="999"
+								maxLength={3}
+								placeholderTextColor={colors.lila}
+								onChangeText={(data) => {
+									if (data == '')
+										data = 0
+
+									let valor = (parseInt(data) * valueCoin)
+									if (account.premium == undefined || account.premium == false)
+										valor = valor - (valor * 0.099)
+									
+									valor = valor.toFixed(2)
+									setTotalCoins60(valor)
+									setCoins60(data)
+								}}
+							/>
+
+							<TotalAmountCoins>Total: {totalCoins60} USD</TotalAmountCoins>
+
+						</Fragment>
+					)}
+
+					{viewMode == 'language' && (
+						<Fragment>
+							<SelectLanguage>{t('selectLanguage')}</SelectLanguage>
+							<ScrollViewLanguage>
+								{languages.map((item) => (
+									<Ripple
+										key={item._id}
+							 			onPress={() => handleSelectecLanguage(item)}
+							 			rippleColor={colors.whiteTrasparent}
+							 			rippleDuration={1000}
+							 			rippleSize={1000}
+							 		>
+									    <ItemList>
+									      	<TextItem> {item.name} </TextItem>
+									    </ItemList>
+								  	</Ripple>
+								))}
+							</ScrollViewLanguage>
+						</Fragment>
+					)}
+					</ScrollViewModal>
 				</ContainerModal>
         	</ModalBottom>
 		</Container>
@@ -372,12 +585,33 @@ const ScrollView = styled.ScrollView`
 	width: 100%;
     height: 100%;
 `
+const ScrollViewModal = styled.ScrollView`
+	width: 100%;
+    height: 100%;
+    margin-top: 22px;
+`
+const ScrollViewLanguage = styled.ScrollView`
+	width: 100%;
+    height: 100%;
+    margin-top: 20px;
+`
 const RowVideo = styled.View`
 	flex-direction: row;
 	margin-top: 15px;
 	height: 20px;
 `
-
+const ItemList = styled.View`
+	padding: 15px;
+    border-color: ${colors.lila};
+    border-bottom-width: 1px;
+    margin-horizontal: 30px;
+`
+const TextItem = styled.Text`
+	color: ${colors.lila};
+    font-family: ${fonts.regular};
+    font-size: 18px;
+    text-align: left;
+`
 const RowLanguage = styled.View`
 	flex-direction: row;
 	justify-content: flex-start;
@@ -425,7 +659,7 @@ const RowCoins = styled.View`
 	height: 30px;
 `
 const TextMins = styled.Text`
-	color: ${colors.white};
+	color: ${props => props.selected ? colors.white : colors.whiteTrasparent};
 	font-size: 14px;
 	line-height: 20px;
 	font-family: ${fonts.regular};
@@ -450,8 +684,17 @@ const IconMins = styled.Image`
 	align-content: center;
 	align-self: center;
 `
+const IconMinsOut = styled.Image`
+	height: 22px;
+	margin-right: -33px;
+	margin-left: -13px;
+	margin-top: 4px;
+	align-items: center;
+	align-content: center;
+	align-self: center;
+`
 const TextSelectCoins = styled.Text`
-	color: ${colors.cyan};
+	color:  ${props => props.selected ? colors.cyan : colors.whiteTrasparent};
 	text-shadow: 0px 0px 8px ${colors.cyan};
 	font-size: 14px;
 	line-height: 20px;
@@ -473,6 +716,8 @@ const TextValueCoins = styled.Text`
 	line-height: 20px;
 	font-family: ${fonts.regular};
 	flex: 1;
+	margin-right: 30px;
+	text-align: right;
 	align-items: center;
 	align-content: center;
 	align-self: center;
@@ -559,7 +804,7 @@ const InputDescription = styled.TextInput`
     height: 70px;
     font-family: ${fonts.regular};
     font-size: 14px;
-    color: ${colors.lila};
+    color: ${colors.white};
 `
 const ErrorText = styled.Text`
 	color: ${colors.fucsia};
@@ -649,7 +894,16 @@ const BuyYourMembership = styled.Text`
 	justify-content: center;
 	font-family: ${fonts.medium};
 	align-self: center;
-	margin-top: 70px;
+	margin-top: 20px;
+`
+const SelectLanguage = styled.Text`
+	color: ${colors.white};
+	font-size: 14px;
+	text-align: center;
+	justify-content: center;
+	font-family: ${fonts.medium};
+	align-self: center;
+	margin-top: 20px;
 `
 const ChooseMonthly = styled.Text`
 	color: ${colors.white};
@@ -706,7 +960,7 @@ const TipsCreateLesson = styled.Text`
 	text-align: center;
 	align-self: center;
 	font-family: ${fonts.regular};
-	margin-top: 70px;
+	margin-top: 20px;
 	margin-bottom: 30px;
 `
 const SubTipsCreateLesson = styled.Text`
@@ -751,4 +1005,28 @@ const ImageZero = styled.Image`
 	align-items: center;
 	align-self: center;
 	margin-top: 30px;
+`
+const InputCoins = styled.TextInput`
+	border-color: ${props => props.error ? colors.fucsia : colors.grayLight};
+    border-bottom-width: 1px;
+    width: 150px;
+    margin-top: 30px;
+    font-family: ${fonts.regular};
+    font-size: 30px;
+    color: ${colors.white};
+    align-self: center;
+    align-items: center;
+    align-content: center;
+    text-align:center;
+`
+const TotalAmountCoins = styled.Text`
+	color: ${colors.white};
+	font-size: 14px;
+	margin-top: 30px;
+	line-height: 20px;
+	align-self: center;
+    align-items: center;
+    align-content: center;
+    text-align:center;
+	font-family: ${fonts.regular};
 `

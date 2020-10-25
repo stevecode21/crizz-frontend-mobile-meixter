@@ -141,7 +141,7 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <ScrollView style={styles.scroll}>
-        <Text style={styles.title}> {t('registerPreparing')} </Text>
+        <Text style={[styles.title, {marginTop: 70}]}> {t('registerPreparing')} </Text>
         <Text style={styles.textCreateProfile}> {t('registerCreateProfile')} </Text>
         <Image
           source={require("../../../assets/img/loading1.png")}

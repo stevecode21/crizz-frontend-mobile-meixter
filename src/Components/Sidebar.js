@@ -64,7 +64,7 @@ const Coins = styled.Text`
 	color: #fff;
 	font-size: 12px;
 	margin-right: 37px;
-	width: 40px;
+	width: 60px;
 	text-align: center;
 	text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
 	font-family: ${fonts.medium};

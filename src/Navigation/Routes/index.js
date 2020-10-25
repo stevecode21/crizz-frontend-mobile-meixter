@@ -23,4 +23,4 @@ const Routes = {
 	OPTIONS: 'OPTIONS'
 };
 
-export default Routes;
+export default Routes

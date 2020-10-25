@@ -10,7 +10,7 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import styled from 'styled-components/native'
 import {BoxShadow} from 'react-native-shadow'
-import Lear from '../../Screens/Home'
+import Learn from '../../Screens/Home'
 import Launch from '../../Screens/Launch'
 import TeachTab from '../TeachTab/'
 import MeStack from '../MeStack'
@@ -116,17 +116,17 @@ function MyTabBar({ state, descriptors, navigation }) {
             onLongPress={onLongPress}
             style={{ flex: 1 }}
           >
-            {label == 'Lear' && isFocused && 
+            {label == 'Learn' && isFocused && 
               (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_learn-active.png')} />)
             }
-            {label == 'Lear' && !isFocused &&  
+            {label == 'Learn' && !isFocused &&  
               (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_learn-inactive.png')} />)
             }
 
-            {label == 'Sesions' && isFocused && 
+            {label == 'Sessions' && isFocused && 
               (<Image style={[styles.icon, {width: 32, height: 30}]} source={require('../../../assets/img/menu_session-active.png')} />)
             }
-            {label == 'Sesions' && !isFocused &&  
+            {label == 'Sessions' && !isFocused &&  
               (<Image style={[styles.icon, {width: 32, height: 30}]} source={require('../../../assets/img/menu_session-inactive.png')} />)
             }
 
@@ -166,7 +166,7 @@ const getTabBarVisibility = (route) => {
     ? route.state.routes[route.state.index].name
     : '';
 
-  if (routeName === 'OPTIONS') {
+  if (routeName === 'OPTIONS' || routeName === 'CREATE_LESSON') {
     return false;
   }
 
@@ -178,12 +178,14 @@ export default function MainStack() {
     <Tab.Navigator 
       lazy={true} 
       backBehavior="initialRoute" 
-      initialRouteName="Lear" 
+      initialRouteName="Teach" 
       tabBar={props => <MyTabBar {...props} />} 
     >
-      <Tab.Screen name="Lear" component={Lear}/>
-      <Tab.Screen name="Sesions" component={Launch} />
-      <Tab.Screen name="Teach" component={TeachTab} />
+      <Tab.Screen name="Learn" component={Learn}/>
+      <Tab.Screen name="Sessions" component={Launch} />
+      <Tab.Screen name="Teach" component={TeachTab} options={({ route }) => ({
+        tabBarVisible: getTabBarVisibility(route)
+      })}/>
       <Tab.Screen name="Me" component={MeStack} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route)
       })}/>      

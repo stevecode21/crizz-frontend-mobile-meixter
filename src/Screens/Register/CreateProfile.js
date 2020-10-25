@@ -12,7 +12,7 @@ import {
   Dimensions,
   Keyboard
 } from 'react-native';
-
+import styled from 'styled-components/native'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
 
@@ -31,6 +31,12 @@ import moment from "moment";
 import * as api from "../../Services/register";
 
 const { width, height } = Dimensions.get('window')
+
+const IconBack = styled.Image`
+  width: 34px;
+  justify-content: center;
+  align-items: center;
+`
 
 export default function({navigation}) {
   const {setLoading, showErrorToast, setStateApp, account, changeAccount} = useAuth()
@@ -160,7 +166,7 @@ export default function({navigation}) {
   }
 
   const handleName = async () => {
-    if (nickname == '')
+    if (nickname == '' && name != '')
     {
       let newNick = name
       newNick = newNick.replace(/\s+/g, "")
@@ -380,6 +386,9 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <KeyboardAwareScrollView ref={scrollRef} style={styles.scroll}>
+        <TouchableOpacity style={{top: 40, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.IMAGE_PROFILE_SCREEN)}}>
+            <IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
+        </TouchableOpacity>
         <Text style={styles.title}> {t('registerPreparing')} </Text>
         <Text style={styles.textCreateProfile}> {t('registerCreateProfile')} </Text>
         <Image

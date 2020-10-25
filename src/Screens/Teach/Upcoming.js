@@ -36,7 +36,7 @@ const Subtitle = styled.Text`
 	width: 320px;
 `
 
-export default function Uncoming() {
+export default function Upcoming() {
 	const {t, localeProvider} = useTranslation()
   	const {setLoading, showErrorToast, stateApp, checkAccount} = useAuth()
 

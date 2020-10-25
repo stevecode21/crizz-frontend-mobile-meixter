@@ -19,9 +19,9 @@ export default function Me({navigation}) {
 				<Menu>
 				</Menu>
 				
-				<Menu>
+				<MenuCenter>
 					<Title>{account.fullName}</Title>
-				</Menu>
+				</MenuCenter>
 
 				<Menu>
 					<TouchableOpacity style={{width: 50}} onPress={() => {navigation.navigate(Routes.OPTIONS)}}>
@@ -60,7 +60,12 @@ const Header = styled.View`
 const Menu = styled.View`
 	justify-content: center;
 	align-items: center;
-	width: 33%;
+	width: 25%;
+`
+const MenuCenter = styled.View`
+	justify-content: center;
+	align-items: center;
+	width: 50%;
 `
 const Title = styled.Text`
 	color: ${colors.white};
@@ -73,7 +78,7 @@ const IconOptions = styled.Image`
 	width: 34px;
 	justify-content: center;
 	align-items: center;
-	right: -25px;
+	align-self: center;
 `
 const Separator = styled.View`
 	width: 100%;

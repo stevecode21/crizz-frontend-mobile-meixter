@@ -5,17 +5,17 @@ import useAuth from '../Services/Auth';
 import {Dimensions} from 'react-native';
 const { width, height } = Dimensions.get('window')
 const Play = styled(Video)`
-	height: 100%;
-	width: 100%;
+	height: ${height};
+	width: ${width};
 `
 const Poster = styled.ImageBackground`
-	height: 100%;
-	width: 100%;
+	height: ${height};
+	width: ${width};
 `
 
 const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
 	const {inHome} = useAuth()
-	const { width, height } = Dimensions.get("screen")
+	
 
 	const handleVideoRef = component => {
 	  	const playbackObject = component

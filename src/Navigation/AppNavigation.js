@@ -1,16 +1,15 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react'
 
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native'
+import {createStackNavigator} from '@react-navigation/stack'
 
-import Routes from './Routes';
-import LaunchScreen from '../Screens/Launch';
-import LoginStack from './LoginStack';
-import RegisterStack from './RegisterStack';
-import LessonRegisterStack from './LessonRegisterStack'
-import MainStack from './MainStack';
-import {APP_STATE} from '../Constants';
-import useAuth from '../Services/Auth';
+import Routes from './Routes'
+import LaunchScreen from '../Screens/Launch'
+import LoginStack from './LoginStack'
+import RegisterStack from './RegisterStack'
+import MainStack from './MainStack'
+import {APP_STATE} from '../Constants'
+import useAuth from '../Services/Auth'
 
 export default function RootNavigation(props) {
 
@@ -34,7 +33,6 @@ export default function RootNavigation(props) {
         ) : stateApp === APP_STATE.PRIVATE ? (
           <React.Fragment>
             <Stack.Screen name={Routes.HOME_STACK} component={MainStack} options={{ cardStyleInterpolator: fadeConfig }}/>
-            <Stack.Screen name={Routes.LESSON_STACK} component={LessonRegisterStack} options={{ cardStyleInterpolator: fadeConfig }}/>
           </React.Fragment>
         ) : (
           <Stack.Screen name={Routes.LAUNCH_SCREEN} component={LaunchScreen} options={{ cardStyleInterpolator: fadeConfig }}/>
@@ -44,4 +42,4 @@ export default function RootNavigation(props) {
   );
 }
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator()
