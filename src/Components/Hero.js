@@ -9,10 +9,10 @@ import Info from '../Components/Info'
 import Sidebar from '../Components/Sidebar'
 import useAuth from '../Services/Auth';
 
-const { width, height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('screen')
 
 const Container = styled(ViewPager)`
-	height: ${height}px;
+	height: 100%;
 `
 const Gradient = styled(LinearGradient)`
 	height: 100%;

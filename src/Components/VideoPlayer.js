@@ -64,11 +64,12 @@ const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
 			shouldPlay={inHome}
 			useNativeControls={false}
 			usePoster
+			isLooping
 			posterSource={poster}
 			source={{uri: url}}
 			resizeMode='cover'
 			ref={handleVideoRef}
-			posterStyle={{opacity: 0.85, height: height, width: width, resizeMode: 'stretch'}}
+			posterStyle={{opacity: 0.85, height: '100%', width: '100%', resizeMode: 'stretch'}}
 		/>
 	) : (
 		<Poster source={poster} />
