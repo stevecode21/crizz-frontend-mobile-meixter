@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  YellowBox
 } from 'react-native';
 import RootNavigation from './src/Navigation/AppNavigation';
 import Constants from 'expo-constants';
@@ -18,6 +19,7 @@ import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 
 export default function App() {
 
+  YellowBox.ignoreWarnings(['Animated: `useNativeDriver`'])
   const colorScheme = useColorScheme();
   const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
 

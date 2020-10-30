@@ -5,7 +5,8 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  BackHandler
+  BackHandler,
+  Dimensions
 } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import styled from 'styled-components/native'
@@ -18,6 +19,7 @@ import MeStack from '../MeStack'
 import colors from '../../Themes/Colors'
 import fonts from '../../Themes/Fonts'
 import useAuth from '../../Services/Auth'
+const { width, height } = Dimensions.get('screen')
 
 const Tab = createBottomTabNavigator();
 
@@ -97,7 +99,7 @@ function MyTabBar({ state, descriptors, navigation }) {
         };
 
         const shadowOpt = {
-            width:102,
+            width: parseInt(width/4),
             height:6,
             color: colors.cyan,
             border:5,
@@ -166,7 +168,10 @@ const getTabBarVisibility = (route) => {
     ? route.state.routes[route.state.index].name
     : '';
 
-  if (routeName === 'OPTIONS' || routeName === 'CREATE_LESSON') {
+  if (routeName === 'OPTIONS' || 
+      routeName === 'CREATE_LESSON' || 
+      routeName === 'CREATE_LESSON_TWO') 
+  {
     return false;
   }
 

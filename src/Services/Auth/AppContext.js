@@ -19,7 +19,7 @@ export const AppContextProvider = props => {
 	const {localeProvider} = useTranslation()
 
 	useEffect(() => {(async () => {
-			//setStateApp(APP_STATE.PRIVATE);
+			//setStateApp(APP_STATE.PRIVATE)
 			_checkAccount()
 			//_logoutUser()
 	    })();

@@ -19,6 +19,15 @@ export async function language(){
     }
 }
 
+export async function tracks(){
+    try{
+        let res = await axios.get(ROUTES.CONFIG_TRACKS);
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
+
 export function handler(err) {
     if (err.response && err.response.data)
     {

@@ -28,8 +28,7 @@ const { width, height } = Dimensions.get('window')
 const styles = StyleSheet.create({
   textLabel: {
     paddingTop: 17,
-    color: colors.white,
-    fontSize: 12, 
+    fontSize: 14, 
     fontFamily: fonts.regular, 
     textAlign: 'center'
   },

@@ -5,12 +5,12 @@ import useAuth from '../Services/Auth';
 import {Dimensions} from 'react-native';
 const { width, height } = Dimensions.get('window')
 const Play = styled(Video)`
-	height: ${height};
-	width: ${width};
+	height: 100%;
+	width: 100%;
 `
 const Poster = styled.ImageBackground`
-	height: ${height};
-	width: ${width};
+	height: 100%;
+	width: 100%;
 `
 
 const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
@@ -64,7 +64,7 @@ const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
 			shouldPlay={inHome}
 			useNativeControls={false}
 			usePoster
-			isLooping
+			isLooping={true}
 			posterSource={poster}
 			source={{uri: url}}
 			resizeMode='cover'

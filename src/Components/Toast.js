@@ -6,7 +6,7 @@ let toast;
 
 export default function showToast(message, type, duration = 5000) {
   Toast.show(message, {
-    position: 24,
+    position: 32,
     duration: duration,
     textColor: colors.white,
     containerStyle: {

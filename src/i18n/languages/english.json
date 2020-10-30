@@ -91,5 +91,15 @@
     "notLegal": "MeiXter is for over 18, please read our T&Cs",
     "priceCoins": "Enter the price in coins of the lesson",
     "selectLanguage": "Select the language of the lesson",
-    "validateCoins": "Sorry, you must select the duration of the lesson"
+    "validateCoins": "Sorry, you must select the duration of the lesson",
+    "TouchUploadCover":"Touch to Upload your cover",
+    "AddMusic":"Add music",
+    "Tags":"Tags",
+    "TypeSomething":"Type something",
+    "AddTag":"Add tag",
+    "Add":"Add",
+    "PostMyLesson":"Post my Lesson",
+    "sorryUploadImage":"Sorry, first upload your cover of the lesson",
+    "sorryTags":"Sorry, write one tag",
+    "sorryMinCoinValue":"Sorry, minimum coin value allowed is 10"
 }

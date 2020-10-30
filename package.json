@@ -66,6 +66,7 @@
     "react-native-smooth-pincode-input": "^1.0.9",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "12.1.0",
+    "react-native-switch": "^2.0.0",
     "react-native-tab-view": "^2.15.2",
     "react-native-tiny-toast": "^1.0.7",
     "react-native-unimodules": "~0.10.1",

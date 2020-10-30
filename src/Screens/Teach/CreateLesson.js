@@ -1,44 +1,53 @@
 import React, {useEffect, useRef, useState, Fragment} from 'react'
-import { BackHandler, TouchableOpacity, Dimensions, TouchableHighlight, TextInput} from 'react-native'
+import { BackHandler, TouchableOpacity, Dimensions, TouchableHighlight} from 'react-native'
 import styled from 'styled-components/native'
-import useTranslation from '../../i18n';
-import useAuth from '../../Services/Auth';
-import ModalBottom from 'react-native-raw-bottom-sheet';
-import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
-import fonts from '../../Themes/Fonts';
-import colors from '../../Themes/Colors';
-import Ripple from 'react-native-material-ripple';
-const { width, height } = Dimensions.get('window')
-
+import useTranslation from '../../i18n'
+import useAuth from '../../Services/Auth'
+import ModalBottom from 'react-native-raw-bottom-sheet'
+import * as ImagePicker from 'expo-image-picker'
+import * as Permissions from 'expo-permissions'
+import * as FileSystem from 'expo-file-system'
+import { Audio } from 'expo-av'
+import { Switch } from 'react-native-switch'
+import fonts from '../../Themes/Fonts'
+import colors from '../../Themes/Colors'
+import Ripple from 'react-native-material-ripple'
 import { StackActions } from '@react-navigation/native';
 import Routes from '../../Navigation/Routes';
-
 //api services
 import * as apiconfig from "../../Services/config";
+import { URI } from "../../Constants";
 
+
+
+//const { width, height } = Dimensions.get('screen')
 
 export default function CreateLesson({navigation}) {
 	const {t, localeProvider} = useTranslation()
   	const {setLoading, showErrorToast, stateApp, checkAccount, account} = useAuth()
   	const refModalBottom = useRef()
+
   	const [viewMode, setViewMode] = useState('help')
-  	const [errorDescription, setErrorDescription] = useState(false)
-  	const [textErrorDesc, setTextErrorDesc] = useState('')
-  	const [mtm, setMtm] = useState(180)
-  	const [coins30, setCoins30] = useState(10)
-  	const [selected30, setSelected30] = useState(true)
-  	const [coins60, setCoins60] = useState(20)
-  	const [selected60, setSelected60] = useState(false)
-  	const [totalCoins30, setTotalCoins30] = useState(0)
-  	const [totalCoins60, setTotalCoins60] = useState(0)
-  	const [video, setVideo] = useState('')
-  	const [selectedDescount, setSelectedDescount] = useState(false)
-  	const [valueCoin, setValueCoin] = useState(0)
-  	const [languages, setLanguages] = useState([])
-  	const [selectedLanguage, setSelectedLanguage] = useState('')
-  	const [idLanguage, setIdLanguage] = useState('')
-  	const [description, setDescription] = useState('')
+  	const [mtm, setMtm] = useState('80%')
+  	  	
+  	const [params, setParams] = useState({
+  		video: '',
+  		cover: '',
+  		track: null
+  	})
+
+  	//controller playlist
+  	const [listTrack, setListTrack] = useState([])
+  	const [isPlaying, setIsPlaying] = useState(false)
+  	const [currentPlaying, setCurrentPlaying] = useState()
+  	const [currentIndex, setCurrentIndex] = useState(null)
+  	const [volume, setVolume] = useState(0.5)
+  	const [track, setTrack] = useState(false)
+
+  	const nextStep = () => {
+		//if(validate())
+			navigation.navigate(Routes.CREATE_LESSON_TWO, params)
+	}
 
   	const customStyles = {
 		wrapper: {
@@ -48,7 +57,7 @@ export default function CreateLesson({navigation}) {
 		  backgroundColor: colors.transparent
 		},
 		container: {
-		  height: height-mtm,
+		  height: mtm,
 		  borderTopLeftRadius: 35,
 		  borderTopRightRadius: 35,
 		  backgroundColor: colors.blueDark,
@@ -98,26 +107,13 @@ export default function CreateLesson({navigation}) {
 	const getConfigData = async () => {
 		try 
 		{
-			let response = await apiconfig.general()
-			let resLanguage = await apiconfig.language()
-			console.log(resLanguage)
-			let general = response.result[0]
-			setLanguages(resLanguage.result)
-			setSelectedLanguage(resLanguage.result[0].name)
-			setIdLanguage(resLanguage.result[0]._id)
-			setValueCoin(parseFloat(general.coinValue))
-			let val1 = (parseFloat(general.coinValue) * parseInt(coins30))
-			if (account.premium == undefined || account.premium == false)
-				val1 = val1 - (val1 * 0.099)
-			
-			val1 = val1.toFixed(2)
-			let val2 = (parseFloat(general.coinValue) * parseInt(coins60))
-			if (account.premium == undefined || account.premium == false)
-				val2 = val2 - (val2 * 0.099)
-			
-			val2 = val2.toFixed(2)
-			setTotalCoins30(val1)
-			setTotalCoins60(val2)
+			let response = await apiconfig.tracks()
+			//console.log(response)
+			setListTrack(
+				response.result.map(item => ({
+					_id:item._id, track: URI+item.track, name:item.name, play:false
+				}))
+			)		
 		} 
 		catch (error) 
 		{
@@ -135,8 +131,8 @@ export default function CreateLesson({navigation}) {
 	}
 
 	const backAction = () => {
-		navigation.goBack();
-      	return true;
+		navigation.goBack()
+		return true;
     }
 
     const closeModal = () => {
@@ -144,12 +140,10 @@ export default function CreateLesson({navigation}) {
 	}
 
     const openModal = (type) => {
-    	if (type == 'YouGet')
-    		setMtm(230)
+    	if (type == 'addmusic')
+    		setMtm('85%')
     	if (type == 'help')
-    		setMtm(180)
-    	if (type == 'coins30' || type == 'coins60' || type == 'language')
-    		setMtm(450)
+    		setMtm('80%')
 
 	    setViewMode(type)
 	    refModalBottom.current.open()
@@ -161,17 +155,26 @@ export default function CreateLesson({navigation}) {
 			if (result.duration <= 60000)
 			{
 				console.log(result.uri)
-				setVideo(result.uri);
+				setParams(prevState => ({...prevState, video: result.uri }))
 			}
 			else
 			{
-				setVideo('')
+				setParams(prevState => ({...prevState, video: '' }))
 				showErrorToast(t('errorMaximunVerticalVideo'))
 			}
 		}
 	}
 
-	const pickImage = async (value) => {
+	const handleResultImage = async (result) => {
+		if (!result.cancelled) {
+			let base64 = await FileSystem.readAsStringAsync(result.uri, {
+				encoding: 'base64',
+			})
+			setParams(prevState => ({...prevState, cover: base64 }))
+		}
+	}
+
+	const pickVideo = async (value) => {
 		if (value === 'camera') 
 		{
 			let result = await ImagePicker.launchCameraAsync({
@@ -193,49 +196,194 @@ export default function CreateLesson({navigation}) {
 		}
 	}
 
-	const handleSelectecLanguage = (lang) => {
-		setSelectedLanguage(lang.name)
-		setIdLanguage(lang._id)
-		closeModal()
+	const pickImage = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [9, 16],
+			quality: 0.3,
+		});
+		handleResultImage(result)
 	}
 
 	const validate = () => {
-		if (video == '')
+		if (params.video == '')
 		{
-			showErrorToast(t('validateMaximunVerticalVideo'))
+			showErrorToast(t('errorMaximunVerticalVideo'))
 			return false
 		}
-		if (description == '')
+		if (params.cover == '')
 		{
-			setErrorDescription(true)
-			setTextErrorDesc(t('errorInputEmpty'))
-			return false
-		}
-		else
-		{
-			setErrorDescription(false)
-		}
-		if (!selected30 && !selected60)
-		{
-			showErrorToast(t('validateCoins'))
+			showErrorToast(t('sorryUploadImage'))
 			return false
 		}
 		return true
 	}
 
-	const nextStep = () => {
-		if(validate())
-		{
+	const Help = () => {
+		return (
+			<Fragment>
+				<TipsCreateLesson>{t('tipsCreateLesson')}</TipsCreateLesson>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip1CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip2CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip3CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip4CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip5CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip6CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip7CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<Row>
+					<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
+					<SubTipsCreateLesson>{t('tip8CreateLesson')}</SubTipsCreateLesson>
+				</Row>
+				<ImageShadowPlayer resizeMode='contain' source={require('../../../assets/img/BgShadowVideo.png')} />
+			</Fragment>
+		)
+	}
 
+	const stopTrack = async () => {
+    	setTrack(params.idTrack == '' ? false:true)
+    	let playbackInstance = currentPlaying
+		if (playbackInstance){
+			await playbackInstance.unloadAsync()
+			setCurrentIndex(null)
+			setIsPlaying(false)
+			setListTrack(
+		      listTrack.map(item => ({...item, play : false }))
+		    )
 		}
+    }
+
+	const handleRepro = async (track, index) => {
+		setListTrack(
+	    	listTrack.map(item => 
+		        (item._id === track._id) 
+		        ? {...item, play : !item.play } 
+		        : {...item, play : false } 
+	        )
+	    )
+		if (currentIndex != index)
+		{
+			let playbackInstance = currentPlaying
+			if (playbackInstance)
+				await playbackInstance.unloadAsync()
+			
+			await loadAudio(index) //play now
+		}
+		else
+		{
+			//pause o play
+			await handlePlayPause()
+		}
+
+		setCurrentIndex(index)
+	}
+
+	const handlePlayPause = async () => {
+		let playbackInstance = currentPlaying
+		isPlaying ? await playbackInstance.pauseAsync() : await playbackInstance.playAsync()
+		setIsPlaying(!isPlaying)
+	}
+
+	const loadAudio = async (index) => {
+		try {
+			let playbackInstance = new Audio.Sound()
+			setCurrentPlaying(playbackInstance)
+			let source = {
+				uri: listTrack[index].track
+			}
+			let status = {
+				shouldPlay: true,
+				volume: volume
+			}   
+			playbackInstance.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
+			let res = await playbackInstance.loadAsync(source, status, false)
+			setIsPlaying(res.isPlaying)
+			//console.log('res', res)
+		} catch (e) {
+			//showErrorToast()
+			console.log(e)
+		}
+	}
+
+	const _onPlaybackStatusUpdate = (playbackStatus) => {
+		if (!playbackStatus.isLoaded) {
+			if (playbackStatus.error) {
+			  	console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
+			  	setListTrack(
+			    	listTrack.map(item => ({...item, play : false }))
+			    )
+			    let playbackInstance = currentPlaying
+				if (playbackInstance)
+					playbackInstance.unloadAsync()
+			    
+			    setCurrentIndex(null)
+			}
+		} else {
+			if (playbackStatus.isPlaying) {
+			  //console.log('play', playbackStatus.positionMillis, playbackStatus.durationMillis)
+			  console.log(playbackStatus.shouldCorrectPitch)
+			} else {
+			  //console.log('pause')
+			}
+
+			if (playbackStatus.isBuffering) {
+			  console.log('loading...')
+			}
+
+			if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
+				console.log('finish!!!')
+
+				setListTrack(
+			    	listTrack.map(item => ({...item, play : false }))
+			    )
+			    let playbackInstance = currentPlaying
+				if (playbackInstance){
+					playbackInstance.unloadAsync()
+				}
+			    
+			    setCurrentIndex(null)
+			}
+		}
+	}
+
+	const addRepro = async (track, index) => {
+		let playbackInstance = currentPlaying
+		if (playbackInstance)
+			await playbackInstance.unloadAsync()
+
+		setTrack(true)
+		setParams(prevState => ({...prevState, track: track }))
+		setListTrack(listTrack.map(item => ({...item, play : false })))
+		setCurrentIndex(index)
 	}
 
 	return (
 		<Container>
 			<Header>
 				<Menu>
-					<TouchableOpacity style={{width: 40}} onPress={backAction}>
-						<IconCalendar resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
+					<TouchableOpacity style={{ left: -30, padding: 5}} onPress={backAction}>
+						<IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
 					</TouchableOpacity>
 				</Menu>
 				
@@ -245,33 +393,32 @@ export default function CreateLesson({navigation}) {
 
 				<Menu>
 					<TouchableOpacity onPress={() => openModal('help')}>
-						<IconAdd resizeMode='contain' source={require('../../../assets/img/help.png')} />
+						<IconHelp resizeMode='contain' source={require('../../../assets/img/help.png')} />
 					</TouchableOpacity>
 				</Menu>
 			</Header>
 			<Separator />
 
 			<ScrollView>
-
-				{video != '' ? (
+				{params.video != '' ? (
 					<RowVideo>
 						<IconCheckVideo resizeMode='contain' source={require('../../../assets/img/check.png')} />
-						<MaximunVerticalVideo video={video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
+						<MaximunVerticalVideo video={params.video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
 					</RowVideo>
 				): (
-					<MaximunVerticalVideo video={video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
+					<MaximunVerticalVideo video={params.video != '' ? true : false}>{t('maximunVerticalVideo')}</MaximunVerticalVideo>
 				)}
 					
 				<RowIcons>
 					<Col50>
-						<TouchableOpacity onPress={() => pickImage('camera')} >
-						<IconRecord resizeMode='contain' source={require('../../../assets/img/camera.png')} />
+						<TouchableOpacity onPress={() => pickVideo('camera')} >
+							<IconRecord resizeMode='contain' source={require('../../../assets/img/camera.png')} />
 						</TouchableOpacity>
 						<TextRecord>{t('record')}</TextRecord>
 					</Col50>
 					<Col50>
-						<TouchableOpacity onPress={() => pickImage('gallery')} >
-						<IconGalery resizeMode='contain' source={require('../../../assets/img/gallery.png')} />
+						<TouchableOpacity onPress={() => pickVideo('gallery')} >
+							<IconGalery resizeMode='contain' source={require('../../../assets/img/gallery.png')} />
 						</TouchableOpacity>
 						<TextGallery>{t('gallery')}</TextGallery>
 					</Col50>
@@ -280,124 +427,64 @@ export default function CreateLesson({navigation}) {
 				<CopyrightedSuspended>{t('copyrightedSuspended')}</CopyrightedSuspended>
 				<Hr />
 
-				<Description>{t('createLessonDescription')}</Description>
-				<RowDescription>
-					<InputDescription 
-						error={errorDescription}
-						multiline
-						numberOfLines={4}
-						maxLength={100}
-						placeholder={t('placeholderCreateLessonDescription')}
-						placeholderTextColor={colors.lilaLight}
-						value={description}
-						onChangeText={setDescription}
+				<TouchableOpacity onPress={() => pickImage()} >
+					{params.cover != '' ? (
+						<Fragment>
+							<RowCover>
+								<IconCheckCover resizeMode='contain' source={require('../../../assets/img/check.png')} />
+								<TouchUploadCover cover={params.cover != '' ? true : false}>{t('TouchUploadCover')}</TouchUploadCover>
+							</RowCover>
+							<ImageRecord resizeMode='contain' source={{ uri: `data:image;base64,${params.cover}` }} />
+						</Fragment>
+					): (
+						<Fragment>
+							<TouchUploadCover cover={params.cover != '' ? true : false}>{t('TouchUploadCover')}</TouchUploadCover>
+							<ImageRecord resizeMode='contain' source={require('../../../assets/img/BgShadowCover.png')} />
+						</Fragment>
+					)}
+				</TouchableOpacity>
+				<Hr />
+
+				<RowSwitch>
+					<AddMusic>{t('AddMusic')}:</AddMusic>
+					<Switch
+					    value={track}
+					    onValueChange={(val) => {
+							setTrack(val)
+							if (val)
+								openModal('addmusic')
+						}}
+					    disabled={false}
+					    activeText={''}
+					    inActiveText={''}
+					    circleSize={24}
+					    barHeight={32}
+					    circleBorderWidth={0}
+					    backgroundActive={colors.violet}
+					    backgroundInactive={colors.grays}
+					    circleActiveColor={colors.white}
+					    circleInActiveColor={colors.white}
+					    switchLeftPx={2} 
+					    switchRightPx={2} 
+					    switchWidthMultiplier={2.5}
+					    switchBorderRadius={30} 
 					/>
-				</RowDescription>
-				{errorDescription && (<ErrorText>{textErrorDesc}</ErrorText>)}
+				</RowSwitch>
 
-				<RowYouGet>
-					<YouGet>{t('youGet')}:</YouGet>
-					<TouchableOpacity onPress={() => openModal('YouGet')}>
-						<IconYouGet resizeMode='contain' source={require('../../../assets/img/help.png')} />
-					</TouchableOpacity>
-				</RowYouGet>
-
-				<RowCoins>
-					<TouchableOpacity onPress={() => setSelected30(!selected30)}>
-						{selected30 ? (
-							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-						) : (
-							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
-						)}
-					</TouchableOpacity>
-					<TextMins selected={selected30}>30 mins</TextMins>
-					{selected30 ? (
-						<Fragment>
-							<TouchableOpacity 
-								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-								onPress={() => openModal('coins30')}
-							>
-								<TextSelectCoins selected={selected30}>{coins30} Coins</TextSelectCoins>
-							</TouchableOpacity>
-							<TouchableOpacity 
-								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-								onPress={() => openModal('coins30')}
-							>
-								<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
-							</TouchableOpacity>
-							<TextValueCoins>{totalCoins30} USD</TextValueCoins>
-						</Fragment>
-					) : (
-						<Fragment>
-							<TextSelectCoins selected={selected30}>-- Coins</TextSelectCoins>
-							<TextValueCoins>-- USD</TextValueCoins>
-						</Fragment>
-					)}
-						
-				</RowCoins>
-
-				<RowCoins>
-					<TouchableOpacity onPress={() => setSelected60(!selected60)}>
-						{selected60 ? (
-							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-						) : (
-							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
-						)}
-					</TouchableOpacity>
-					<TextMins selected={selected60}>60 mins</TextMins>
-
-					{selected60 ? (
-						<Fragment>
-							<TouchableOpacity 
-								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-								onPress={() => openModal('coins60')}
-							>
-								<TextSelectCoins selected={selected60}>{coins60} Coins</TextSelectCoins>
-							</TouchableOpacity>
-							<TouchableOpacity 
-								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-								onPress={() => openModal('coins60')}
-							>
-								<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
-							</TouchableOpacity>
-							<TextValueCoins>{totalCoins60} USD</TextValueCoins>
-						</Fragment>
-					) : (
-						<Fragment>
-							<TextSelectCoins selected={selected60}>-- Coins</TextSelectCoins>
-							<TextValueCoins>-- USD</TextValueCoins>
-						</Fragment>
-					)}
-
-							
-				</RowCoins>
-
-				<RowCoins>
-					<TouchableOpacity onPress={() => setSelectedDescount(!selectedDescount)}>
-						{selectedDescount ? (
-							<IconMins resizeMode='contain' source={require('../../../assets/img/check.png')} />
-						) : (
-							<IconMinsOut resizeMode='contain' source={require('../../../assets/img/checkOut.png')} />
-						)}
-					</TouchableOpacity>
-					<TextMins selected={selectedDescount}>{t('createLessonDiscount')}</TextMins>
-				</RowCoins>
-
-				<RowLanguage>
-					<TextLanguage>{t('language')}:</TextLanguage>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('language')}
-					>
-						<TextSelectLanguage>{selectedLanguage}</TextSelectLanguage>
-					</TouchableOpacity>
-					<TouchableOpacity 
-						style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
-						onPress={() => openModal('language')}
-					>
-						<IconSelect resizeMode='contain' source={require('../../../assets/img/arrowdown.png')} />
-					</TouchableOpacity>
-				</RowLanguage>
+				{(params.track != null) && track==true && (
+					<RowSwitch>
+						<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
+						<TrackSelected>{params.track.name}</TrackSelected>
+						<TouchableOpacity onPress={() =>  {
+							setParams(prevState => ({...prevState, track: null}))
+							setTrack(false)
+							setCurrentIndex(null)
+						}}>
+							<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
+						</TouchableOpacity>
+					</RowSwitch>
+				)}
+					
 
 				<ContainerButtom>
 					<TextButton>
@@ -424,156 +511,71 @@ export default function CreateLesson({navigation}) {
 			<ModalBottom
 				ref={refModalBottom}
 				closeOnDragDown
+				onClose={stopTrack}
 				dragFromTopOnly
+				keyboardAvoidingViewEnabled={true}
 				animationType={'slide'}
 				customStyles={customStyles}>
 				<ContainerModal>
 					<HeaderModal>
-						<Menu></Menu>
-						<Menu>
+						<MenuExt></MenuExt>
+						<MenuCenter>
 							<Title>
 								{viewMode == 'help' && t('aboutYourTrailer')}
-								{viewMode == 'YouGet' && t('buyMembership')}
-								{viewMode == 'language' && t('language')}
+								{viewMode == 'addmusic' && t('AddMusic')}
 							</Title>
-						</Menu>
-						<Menu>
+						</MenuCenter>
+						<MenuExt>
 							<TouchableOpacity onPress={closeModal}>
 								<IconClose resizeMode='contain' source={require('../../../assets/img/close-circle-outline.png')} />
 							</TouchableOpacity>
-						</Menu>
+						</MenuExt>
 					</HeaderModal>
 					<SeparatorModal />
 					<ScrollViewModal>
-					{viewMode == 'help' && (
-						<Fragment>
-							<TipsCreateLesson>{t('tipsCreateLesson')}</TipsCreateLesson>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip1CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip2CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip3CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip4CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip5CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip6CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip7CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<Row>
-								<IconTips resizeMode='contain' source={require('../../../assets/img/Elipse25.png')} />
-								<SubTipsCreateLesson>{t('tip8CreateLesson')}</SubTipsCreateLesson>
-							</Row>
-							<ImageShadowPlayer resizeMode='contain' source={require('../../../assets/img/BgShadowVideo.png')} />
-						</Fragment>
-					)}
-
-					{viewMode == 'YouGet' && (
-						<Fragment>
-							<BuyYourMembership>{t('buyYourMembership')}</BuyYourMembership>
-							<ChooseMonthly>{t('chooseMonthly')}</ChooseMonthly>
-							<ImageZero resizeMode='contain' source={require('../../../assets/img/iconZeroComission.png')}/>
-							<ZeroCommissions>{t('zeroCommissions')}</ZeroCommissions>
-
-						</Fragment>
-					)}
-
-					{viewMode == 'coins30' && (
-						<Fragment>
-							<BuyYourMembership>{t('priceCoins')}</BuyYourMembership>
-							<ChooseMonthly>min: 10 & max: 999 Coins</ChooseMonthly>
-
-							<InputCoins
-								keyboardType="numeric"
-								defaultValue={coins30.toString()}
-								placeholder="999"
-								maxLength={3}
-								placeholderTextColor={colors.lila}
-								onChangeText={(data) => {
-									if (data == '')
-										data = 0
-
-									let valor = (parseInt(data) * valueCoin)
-									if (account.premium == undefined || account.premium == false)
-										valor = valor - (valor * 0.099)
-
-									valor = valor.toFixed(2)
-									setTotalCoins30(valor)
-									setCoins30(data)
-								}}
-							/>
-
-							<TotalAmountCoins>Total: {totalCoins30} USD</TotalAmountCoins>
-
-						</Fragment>
-					)}
-
-					{viewMode == 'coins60' && (
-						<Fragment>
-							<BuyYourMembership>{t('priceCoins')}</BuyYourMembership>
-							<ChooseMonthly>min: 10 & max: 999 Coins</ChooseMonthly>
-
-							<InputCoins
-								keyboardType="numeric"
-								defaultValue={coins60.toString()}
-								placeholder="999"
-								maxLength={3}
-								placeholderTextColor={colors.lila}
-								onChangeText={(data) => {
-									if (data == '')
-										data = 0
-
-									let valor = (parseInt(data) * valueCoin)
-									if (account.premium == undefined || account.premium == false)
-										valor = valor - (valor * 0.099)
-									
-									valor = valor.toFixed(2)
-									setTotalCoins60(valor)
-									setCoins60(data)
-								}}
-							/>
-
-							<TotalAmountCoins>Total: {totalCoins60} USD</TotalAmountCoins>
-
-						</Fragment>
-					)}
-
-					{viewMode == 'language' && (
-						<Fragment>
-							<SelectLanguage>{t('selectLanguage')}</SelectLanguage>
-							<ScrollViewLanguage>
-								{languages.map((item) => (
-									<Ripple
-										key={item._id}
-							 			onPress={() => handleSelectecLanguage(item)}
-							 			rippleColor={colors.whiteTrasparent}
-							 			rippleDuration={1000}
-							 			rippleSize={1000}
-							 		>
-									    <ItemList>
-									      	<TextItem> {item.name} </TextItem>
-									    </ItemList>
-								  	</Ripple>
+						{viewMode == 'help' && <Help />}
+						{(viewMode == 'addmusic') && (params.track == null) && (
+							<ContainerPlaylist>
+								{listTrack.map((item, index) => (
+									<RowPlaylist key={index}>
+										<FlexLeftPlaylist>
+											<TouchableOpacity onPress={() =>  handleRepro(item, index)}>
+												<BottomPlaylist>
+													{ (item.play) ?
+														<IconPlay resizeMode='contain' source={require('../../../assets/img/iconPause.png')} />
+														:
+														<IconPlay resizeMode='contain' source={require('../../../assets/img/iconPlay.png')} />
+													}
+												</BottomPlaylist>
+											</TouchableOpacity>
+										</FlexLeftPlaylist>
+										<FlexCenterPlaylist>
+											<TitlePlaylist play={(item.play)}>{item.name}</TitlePlaylist>
+										</FlexCenterPlaylist>
+										<TouchableOpacity onPress={() =>  addRepro(item, index)}>
+											<FlexRightPlaylist>
+												<Add>{t('Add')} {' '} <IconArrow resizeMode='contain' source={require('../../../assets/img/arrowRight.png')} /></Add>
+											</FlexRightPlaylist>
+										</TouchableOpacity>
+									</RowPlaylist>
 								))}
-							</ScrollViewLanguage>
-						</Fragment>
-					)}
+							</ContainerPlaylist>
+						)}
+						{(viewMode == 'addmusic') && (params.track != null) && (
+							<ContainerCoverPlay>
+								<FlexLeftCoverPlay></FlexLeftCoverPlay>
+								<FlexCenterCoverPlay>
+									{ params.cover != '' ? 
+										<ImageCoverPlay resizeMode='contain' source={{ uri: `data:image;base64,${params.cover}` }} />
+									: 
+										<ImageCoverPlay resizeMode='contain' source={require('../../../assets/img/BgShadowCover.png')} />
+									}
+								</FlexCenterCoverPlay>
+								<FlexRightCoverPlay>
+
+								</FlexRightCoverPlay>
+							</ContainerCoverPlay>
+						)}
 					</ScrollViewModal>
 				</ContainerModal>
         	</ModalBottom>
@@ -581,143 +583,71 @@ export default function CreateLesson({navigation}) {
 	)
 }
 
+const Container = styled.View`
+	flex: 1;
+	background: ${colors.blueDark};
+	align-items: flex-start;
+`
+
+//--- styleheader ------
+const Header = styled.View`
+	height: 90px;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	background-color: ${colors.blueDark};
+	padding-top: 40px;
+	padding-bottom: 10px;
+`
+const Menu = styled.View`
+	justify-content: center;
+	align-items: center;
+	width: 33%;
+`
+const IconBack = styled.Image`
+	height: 32px;
+	justify-content: center;
+  	align-items: center;
+`
+const Title = styled.Text`
+	color: ${colors.white};
+	font-size: 14px;
+	text-align: center;
+	justify-content: center;
+	font-family: ${fonts.medium};
+`
+const IconHelp = styled.Image`
+	height: 32px;
+	justify-content: center;
+	align-items: center;
+	right: -25px;
+`
+const Separator = styled.View`
+	width: 100%;
+	height: 1px;
+	background-color: ${colors.lila};
+	opacity: 0.4;
+	position: absolute;
+	margin-top: 90px;
+	z-index: 3;
+`
+//--- end ----------
+
+//--- stylebody ----
 const ScrollView = styled.ScrollView`
 	width: 100%;
     height: 100%;
-`
-const ScrollViewModal = styled.ScrollView`
-	width: 100%;
-    height: 100%;
-    margin-top: 22px;
-`
-const ScrollViewLanguage = styled.ScrollView`
-	width: 100%;
-    height: 100%;
-    margin-top: 20px;
 `
 const RowVideo = styled.View`
 	flex-direction: row;
 	margin-top: 15px;
 	height: 20px;
 `
-const ItemList = styled.View`
-	padding: 15px;
-    border-color: ${colors.lila};
-    border-bottom-width: 1px;
-    margin-horizontal: 30px;
-`
-const TextItem = styled.Text`
-	color: ${colors.lila};
-    font-family: ${fonts.regular};
-    font-size: 18px;
-    text-align: left;
-`
-const RowLanguage = styled.View`
-	flex-direction: row;
-	justify-content: flex-start;
-	margin-top: 25px;
-	height: 30px;
-	margin-left: 30px;
-`
-const TextLanguage = styled.Text`
-	color: ${colors.lila};
-	font-size: 14px;
-	margin-top: 7px;
-	text-align: left;
-	font-family: ${fonts.regular};
-`
-const TextSelectLanguage = styled.Text`
-	color: ${colors.white};
-	font-size: 14px;
-	line-height: 20px;
-	text-align: left;
-	margin-left: 20px;
-	font-family: ${fonts.regular};
-`
-const IconArrow = styled.Image`
-    width: 20px;
-`
-const ContainerButtom = styled.View`
-	align-self: center;
-    justify-content: center;
-    margin-top: 60px;
-    margin-bottom: 20px;
-`
-const TextButton = styled.Text`
-	color: ${colors.cyan};
-	font-size: 18px;
-	font-family: ${fonts.SemiBold};
-	text-shadow: 0px 0px 8px ${colors.cyan};
-	margin-left: 20px;
-`
-const BottomContinue = styled.Image`
-    background-color: ${colors.transparent};
-`
-const RowCoins = styled.View`
-	flex-direction: row;
-	margin-top: 15px;
-	height: 30px;
-`
-const TextMins = styled.Text`
-	color: ${props => props.selected ? colors.white : colors.whiteTrasparent};
-	font-size: 14px;
-	line-height: 20px;
-	font-family: ${fonts.regular};
-	flex: 1;
-	align-items: center;
-	align-content: center;
-	align-self: center;
-`
 const IconCheckVideo = styled.Image`
 	height: 30px;
 	margin-right: -40px;
 	margin-left: 9%;
-	align-items: center;
-	align-content: center;
-	align-self: center;
-`
-const IconMins = styled.Image`
-	height: 30px;
-	margin-right: -40px;
-	margin-left: -20px;
-	align-items: center;
-	align-content: center;
-	align-self: center;
-`
-const IconMinsOut = styled.Image`
-	height: 22px;
-	margin-right: -33px;
-	margin-left: -13px;
-	margin-top: 4px;
-	align-items: center;
-	align-content: center;
-	align-self: center;
-`
-const TextSelectCoins = styled.Text`
-	color:  ${props => props.selected ? colors.cyan : colors.whiteTrasparent};
-	text-shadow: 0px 0px 8px ${colors.cyan};
-	font-size: 14px;
-	line-height: 20px;
-	text-align: right;
-	font-family: ${fonts.regular};
-	flex: 1;
-	width: 100px;
-	margin-top: 5px;
-`
-const IconSelect = styled.Image`
-	height: 20px;
-	align-items: center;
-	align-content: center;
-	align-self: center;
-`
-const TextValueCoins = styled.Text`
-	color: ${colors.whiteTrasparent};
-	font-size: 14px;
-	line-height: 20px;
-	font-family: ${fonts.regular};
-	flex: 1;
-	margin-right: 30px;
-	text-align: right;
 	align-items: center;
 	align-content: center;
 	align-self: center;
@@ -781,75 +711,99 @@ const Hr = styled.View`
 	background-color: ${colors.lila};
 	opacity: 0.3;
 	margin-top: 20px;
-	margin-bottom: 20px;
 `
-const RowDescription = styled.View`
-	width: 100%;
+const RowCover = styled.View`
 	flex-direction: row;
-	padding-left: 30px;
-	padding-right: 30px;
+	margin-top: 15px;
+	height: 20px;
 `
-const Description = styled.Text`
-	color: ${colors.fucsia};
-	font-size: 14px;
-	font-family: ${fonts.regular};
-	text-align: left;
-	padding-left: 30px;
-	width: 100%;
+const IconCheckCover = styled.Image`
+	height: 30px;
+	margin-right: -40px;
+	margin-left: 9%;
+	align-items: center;
+	align-content: center;
+	align-self: center;
 `
-const InputDescription = styled.TextInput`
-	border-color: ${props => props.error ? colors.fucsia : colors.grayLight};
-    border-bottom-width: 1px;
-    width: 100%;
-    height: 70px;
-    font-family: ${fonts.regular};
-    font-size: 14px;
-    color: ${colors.white};
-`
-const ErrorText = styled.Text`
-	color: ${colors.fucsia};
+const TouchUploadCover = styled.Text`
+	color: ${props => props.cover ? colors.cyan : colors.lila};
 	font-size: 12px;
-	font-family: ${fonts.regular};
 	text-align: center;
 	justify-content: center;
 	align-self: center;
-	margin-top: 5px;
-`
-const RowYouGet = styled.View`
-	width: 100%;
-	flex-direction: row;
-	justify-content: flex-end;
-`
-const YouGet = styled.Text`
-	color: ${colors.lila};
-	font-size: 12px;
 	font-family: ${fonts.regular};
-	text-align: right;
-	margin-top: 30px;
-	margin-right: -20px;
+	margin-top: ${props => props.cover ? '5px' : '10px'};
 `
-const IconYouGet = styled.Image`
+const ImageRecord = styled.Image`
+	height: 237px;
+	width: 166px;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	margin-top: 20px;
+`
+const RowSwitch = styled.View`
+	flex-direction: row;
+	align-content: flex-start;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 35px;
+	margin-horizontal:20px;
+`
+const AddMusic = styled.Text`
+	color: ${colors.lila};
+	font-size: 13px;
+	text-align: center;
+	justify-content: center;
+	align-self: center;
+	font-family: ${fonts.regular};
+	margin-bottom: 5px;
+	margin-right: 20px;
+`
+const IconDelete = styled.Image`
 	height: 20px;
-	margin-top: 27px;
+	justify-content: center;
+	align-items: center;
 `
-const Container = styled.View`
-	flex: 1;
-	background: ${colors.blueDark};
-	align-items: flex-start;
+const IconMusic = styled.Image`
+	width: 20px;
+	margin-right: 10px;
 `
+const TrackSelected = styled.Text`
+	color: ${colors.white};
+	font-size: 14px;
+	font-family: ${fonts.regular};
+	text-align: center;
+	margin-right: 10px;
+`
+//--- end ----------
+
+//--- stylepie -----
+const ContainerButtom = styled.View`
+	align-self: center;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+`
+const TextButton = styled.Text`
+	color: ${colors.cyan};
+	font-size: 18px;
+	font-family: ${fonts.SemiBold};
+	text-shadow: 0px 0px 8px ${colors.cyan};
+	margin-left: 20px;
+`
+const IconArrow = styled.Image`
+    width: 20px;
+`
+const BottomContinue = styled.Image`
+    background-color: ${colors.transparent};
+`
+//--- end ----------
+
+//--- stylemodal ------
 const ContainerModal = styled.View`
 	flex: 1;
 	align-items: flex-start;
-`
-const Header = styled.View`
-	height: 90px;
-	width: 100%;
-	justify-content: center;
-	align-items: center;
-	flex-direction: row;
-	background-color: ${colors.blueDark};
-	padding-top: 40px;
-	padding-bottom: 10px;
 `
 const HeaderModal = styled.View`
 	height: 30px;
@@ -858,14 +812,20 @@ const HeaderModal = styled.View`
 	align-items: center;
 	flex-direction: row;
 `
-const Separator = styled.View`
-	width: 100%;
-	height: 1px;
-	background-color: ${colors.lila};
-	opacity: 0.4;
-	position: absolute;
-	margin-top: 90px;
-	z-index: 3;
+const MenuExt = styled.View`
+	justify-content: center;
+	align-items: center;
+	flex:1;
+`
+const MenuCenter = styled.View`
+	justify-content: center;
+	align-items: center;
+	flex: 5;
+`
+const IconClose = styled.Image`
+	height: 26px;
+	justify-content: center;
+	align-items: center;
 `
 const SeparatorModal = styled.View`
 	width: 100%;
@@ -876,82 +836,10 @@ const SeparatorModal = styled.View`
 	margin-top: 55px;
 	z-index: 3;
 `
-const Menu = styled.View`
-	justify-content: center;
-	align-items: center;
-	width: 33%;
-`
-const IconCalendar = styled.Image`
-	height: 32px;
-	justify-content: center;
-	align-items: center;
-	left: -25px;
-`
-const BuyYourMembership = styled.Text`
-	color: ${colors.white};
-	font-size: 14px;
-	text-align: center;
-	justify-content: center;
-	font-family: ${fonts.medium};
-	align-self: center;
-	margin-top: 20px;
-`
-const SelectLanguage = styled.Text`
-	color: ${colors.white};
-	font-size: 14px;
-	text-align: center;
-	justify-content: center;
-	font-family: ${fonts.medium};
-	align-self: center;
-	margin-top: 20px;
-`
-const ChooseMonthly = styled.Text`
-	color: ${colors.white};
-	font-size: 12px;
-	text-align: center;
-	justify-content: center;
-	font-family: ${fonts.regular};
-	align-self: center;
-	margin-top: 8px;
-`
-const ZeroCommissions = styled.Text`
-	color: ${colors.white};
-	font-size: 18px;
-	text-align: center;
-	justify-content: center;
-	font-family: ${fonts.medium};
-	align-self: center;
-	margin-top: 10px;
-	width: 250px;
-	line-height: 21px;
-`
-const Title = styled.Text`
-	color: ${colors.white};
-	font-size: 14px;
-	text-align: center;
-	justify-content: center;
-	font-family: ${fonts.medium};
-`
-const IconAdd = styled.Image`
-	height: 32px;
-	justify-content: center;
-	align-items: center;
-	right: -25px;
-`
-const Icon = styled.Image`
-	height: 308px;
-	top: 10px;
-	align-self: center;
-`
-const Subtitle = styled.Text`
-	color: ${colors.lilaLight};
-	font-size: 14px;
-	line-height: 20px;
-	text-align: center;
-	align-self: center;
-	font-family: ${fonts.regular};
-	margin-top: 20px;
-	width: 320px;
+const ScrollViewModal = styled.ScrollView`
+	width: 100%;
+    height: 100%;
+    margin-top: 22px;
 `
 const TipsCreateLesson = styled.Text`
 	color: ${colors.white};
@@ -971,21 +859,6 @@ const SubTipsCreateLesson = styled.Text`
 	font-family: ${fonts.regular};
 	flex: 4;
 `
-const IconClose = styled.Image`
-	height: 26px;
-	justify-content: center;
-	align-items: center;
-	right: -30px;
-`
-const Row = styled.View`
-	width: 100%;
-	justify-content: center;
-	align-items: center;
-	flex-direction: row;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	padding-right: 30px;
-`
 const IconTips = styled.Image`
 	height: 20px;
 	justify-content: center;
@@ -999,34 +872,98 @@ const ImageShadowPlayer = styled.Image`
 	align-self: center;
 	margin-top: 20px;
 `
-const ImageZero = styled.Image`
-	height: 100px;
+const Row = styled.View`
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-right: 30px;
+`
+const TitlePlaylist = styled.Text`
+	color: ${props => props.play ? colors.cyan : colors.white};
+	font-size: 14px;
+	text-align: left;
+	font-family: ${fonts.medium};
+`
+const Add = styled.Text`
+	color: ${colors.cyan};
+	font-size: 18px;
+	text-align: right;
+	font-family: ${fonts.SemiBold};
+`
+const IconPlay = styled.Image`
+	height: 50px;
+	align-self: center;
+	justify-content: center;
+	align-items: center;
+`
+const IconPause = styled.Image`
+	height: 50px;
+	align-self: center;
+	justify-content: center;
+	align-items: center;
+`
+const BottomPlaylist = styled.View`
+	background-color: ${colors.violet};
+	border-radius: 100px;
+	width: 50px;
+	height: 50px;
+`
+const ContainerPlaylist = styled.View`
+    margin-top: 0px;
+`
+const RowPlaylist = styled.View`
+	flex-direction: row;
+	border-color: ${colors.grayLight};
+    border-bottom-width: 1px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+`
+const FlexLeftPlaylist = styled.View`
+	flex:1;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+`
+const FlexRightPlaylist = styled.View`
+	flex:2;
+	justify-content: center;
+	padding: 10px;
+`
+const FlexCenterPlaylist = styled.View`
+	flex:6;
+	justify-content: center;
+	padding: 10px;
+	margin-left: 10px;
+`
+const ImageCoverPlay = styled.Image`
+	height: 237px;
+	width: 166px;
 	justify-content: center;
 	align-items: center;
 	align-self: center;
-	margin-top: 30px;
+	margin-top: 20px;
 `
-const InputCoins = styled.TextInput`
-	border-color: ${props => props.error ? colors.fucsia : colors.grayLight};
-    border-bottom-width: 1px;
-    width: 150px;
-    margin-top: 30px;
-    font-family: ${fonts.regular};
-    font-size: 30px;
-    color: ${colors.white};
-    align-self: center;
-    align-items: center;
-    align-content: center;
-    text-align:center;
+const ContainerCoverPlay = styled.View`
+	flex-direction: row;
+	margin-top: 10%;
 `
-const TotalAmountCoins = styled.Text`
-	color: ${colors.white};
-	font-size: 14px;
-	margin-top: 30px;
-	line-height: 20px;
+const FlexLeftCoverPlay = styled.View`
+	flex:1;
+`
+const FlexRightCoverPlay = styled.View`
+	flex:1;
+	justify-content: center;
+	align-items: center;
 	align-self: center;
-    align-items: center;
-    align-content: center;
-    text-align:center;
-	font-family: ${fonts.regular};
 `
+const FlexCenterCoverPlay = styled.View`
+	flex:6;
+	justify-content: center;
+	padding: 10px;
+`
+//--- end ----------
+
