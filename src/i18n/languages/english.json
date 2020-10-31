@@ -101,5 +101,6 @@
     "PostMyLesson":"Post my Lesson",
     "sorryUploadImage":"Sorry, first upload your cover of the lesson",
     "sorryTags":"Sorry, write one tag",
-    "sorryMinCoinValue":"Sorry, minimum coin value allowed is 10"
+    "sorryMinCoinValue":"Sorry, minimum coin value allowed is 10",
+    "AddThisSong":"Add this song"
 }

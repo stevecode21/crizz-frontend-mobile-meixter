@@ -41,7 +41,7 @@ export default function CreateLesson({navigation}) {
   	const [isPlaying, setIsPlaying] = useState(false)
   	const [currentPlaying, setCurrentPlaying] = useState()
   	const [currentIndex, setCurrentIndex] = useState(null)
-  	const [volume, setVolume] = useState(0.5)
+  	const [volume, setVolume] = useState(50)
   	const [track, setTrack] = useState(false)
 
   	const nextStep = () => {
@@ -262,15 +262,28 @@ export default function CreateLesson({navigation}) {
 	}
 
 	const stopTrack = async () => {
-    	setTrack(params.idTrack == '' ? false:true)
+    	setTrack(params.track == null ? false:true)
     	let playbackInstance = currentPlaying
 		if (playbackInstance){
 			await playbackInstance.unloadAsync()
 			setCurrentIndex(null)
 			setIsPlaying(false)
+			setCurrentPlaying(null)
 			setListTrack(
 		      listTrack.map(item => ({...item, play : false }))
 		    )
+		}
+    }
+
+    const deleteTrack = async () => {
+    	setParams(prevState => ({...prevState, track: null}))
+		setTrack(false)
+		setCurrentIndex(null)
+    	let playbackInstance = currentPlaying
+		if (playbackInstance){
+			await playbackInstance.unloadAsync()
+			setIsPlaying(false)
+			setCurrentPlaying(null)
 		}
     }
 
@@ -312,9 +325,12 @@ export default function CreateLesson({navigation}) {
 			let source = {
 				uri: listTrack[index].track
 			}
+			let newVolume = parseInt(volume) / 100 
+			newVolume = newVolume.toFixed(1)
+			console.log(newVolume)
 			let status = {
 				shouldPlay: true,
-				volume: volume
+				volume: parseFloat(newVolume)
 			}   
 			playbackInstance.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
 			let res = await playbackInstance.loadAsync(source, status, false)
@@ -322,6 +338,46 @@ export default function CreateLesson({navigation}) {
 			//console.log('res', res)
 		} catch (e) {
 			//showErrorToast()
+			console.log(e)
+		}
+	}
+
+	const loadAudioPreview = async (uri) => {
+		try {
+			if (!isPlaying)
+			{
+				let playbackInstance = currentPlaying
+				if (playbackInstance != null)
+				{
+					await handlePlayPause()
+				}
+				else
+				{
+					playbackInstance = new Audio.Sound()
+					setCurrentPlaying(playbackInstance)
+					let source = {
+						uri: uri
+					}
+					let newVolume = parseInt(volume) / 100 
+					newVolume = newVolume.toFixed(1)
+					console.log(newVolume)
+					let status = {
+						shouldPlay: true,
+						volume: parseFloat(newVolume)
+					}   
+					playbackInstance.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
+					let res = await playbackInstance.loadAsync(source, status, false)
+					setIsPlaying(true)
+				}
+					
+			}
+			else 
+			{
+				await handlePlayPause()
+			}
+		} 
+		catch (e) 
+		{
 			console.log(e)
 		}
 	}
@@ -341,8 +397,8 @@ export default function CreateLesson({navigation}) {
 			}
 		} else {
 			if (playbackStatus.isPlaying) {
-			  //console.log('play', playbackStatus.positionMillis, playbackStatus.durationMillis)
-			  console.log(playbackStatus.shouldCorrectPitch)
+			  console.log('play', playbackStatus.positionMillis, playbackStatus.durationMillis)
+			  //console.log(playbackStatus.shouldCorrectPitch)
 			} else {
 			  //console.log('pause')
 			}
@@ -372,10 +428,34 @@ export default function CreateLesson({navigation}) {
 		if (playbackInstance)
 			await playbackInstance.unloadAsync()
 
+		
 		setTrack(true)
 		setParams(prevState => ({...prevState, track: track }))
 		setListTrack(listTrack.map(item => ({...item, play : false })))
+		setCurrentPlaying(null)
 		setCurrentIndex(index)
+		setIsPlaying(false)
+	}
+
+	const changeVolume = async (type) => {
+		if (type == 'up' && parseInt(volume) < 100){
+			let playbackInstance = currentPlaying
+			if (playbackInstance){
+				let newVolume = parseInt(volume + 5) / 100
+				newVolume = newVolume.toFixed(1) 
+				await playbackInstance.setVolumeAsync(parseFloat(newVolume))
+			}
+			setVolume(volume + 5)
+		}
+		if (type == 'down' && parseInt(volume) > 5){
+			let playbackInstance = currentPlaying
+			if (playbackInstance){
+				let newVolume = parseInt(volume - 5) / 100
+				newVolume = newVolume.toFixed(1) 
+				await playbackInstance.setVolumeAsync(parseFloat(newVolume))
+			}
+			setVolume(volume - 5)
+		}
 	}
 
 	return (
@@ -473,8 +553,12 @@ export default function CreateLesson({navigation}) {
 
 				{(params.track != null) && track==true && (
 					<RowSwitch>
-						<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
-						<TrackSelected>{params.track.name}</TrackSelected>
+						<TouchableOpacity onPress={() => openModal('addmusic') }>
+							<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => openModal('addmusic') }>
+							<TrackSelected>{params.track.name}</TrackSelected>
+						</TouchableOpacity>
 						<TouchableOpacity onPress={() =>  {
 							setParams(prevState => ({...prevState, track: null}))
 							setTrack(false)
@@ -503,7 +587,7 @@ export default function CreateLesson({navigation}) {
 						}}
 						onPress={nextStep}
 					>
-						<BottomContinue resizeMode='contain' source={require("../../../assets/img/button-bg.png")} />
+						<BottomContinue resizeMode='stretch' source={require("../../../assets/img/button-bg.png")} />
 					</TouchableHighlight>
 				</ContainerButtom>
 			</ScrollView>
@@ -562,19 +646,64 @@ export default function CreateLesson({navigation}) {
 							</ContainerPlaylist>
 						)}
 						{(viewMode == 'addmusic') && (params.track != null) && (
-							<ContainerCoverPlay>
-								<FlexLeftCoverPlay></FlexLeftCoverPlay>
-								<FlexCenterCoverPlay>
-									{ params.cover != '' ? 
-										<ImageCoverPlay resizeMode='contain' source={{ uri: `data:image;base64,${params.cover}` }} />
-									: 
-										<ImageCoverPlay resizeMode='contain' source={require('../../../assets/img/BgShadowCover.png')} />
-									}
-								</FlexCenterCoverPlay>
-								<FlexRightCoverPlay>
-
-								</FlexRightCoverPlay>
-							</ContainerCoverPlay>
+							<Fragment>
+								<ContainerCoverPlay>
+									<FlexLeftCoverPlay></FlexLeftCoverPlay>
+									<FlexCenterCoverPlay>
+										<TouchableOpacity onPress={() =>  loadAudioPreview(params.track.track)}>
+											<Fragment>
+												{ params.cover != '' ? 
+													<ImageCoverPlay resizeMode='contain' source={{ uri: `data:image;base64,${params.cover}` }} />
+												: 
+													<ImageCoverPlay resizeMode='contain' source={require('../../../assets/img/BgShadowCover.png')} />
+												}
+												{!isPlaying && <IconCoverPlay resizeMode='contain' source={require('../../../assets/img/PlayButton.png')} /> }
+											</Fragment>
+										</TouchableOpacity>
+										<RowCenter>
+											<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
+											<TrackSelected>{params.track.name}</TrackSelected>
+											<TouchableOpacity onPress={() =>  deleteTrack()}>
+												<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
+											</TouchableOpacity>
+										</RowCenter>
+									</FlexCenterCoverPlay>
+									<FlexRightCoverPlay>
+										<ContainerCoverPlay>
+											<VolumeNum>{volume}</VolumeNum>
+											<TouchableOpacity onPress={() => changeVolume('up')}>
+												<IconUp resizeMode='contain' source={require('../../../assets/img/arrowup.png')}/>	
+											</TouchableOpacity>
+										</ContainerCoverPlay>
+										<ContainerCoverPlay>
+											<VolumeText>Volume</VolumeText>
+											<TouchableOpacity onPress={() => changeVolume('down')}>
+												<IconDown resizeMode='contain' source={require('../../../assets/img/arrowdown.png')}/>	
+											</TouchableOpacity>
+										</ContainerCoverPlay>
+									</FlexRightCoverPlay>
+								</ContainerCoverPlay>
+								<ContainerButtom>
+									<TextButton>
+										{t('AddThisSong')} {'     '}
+										<IconArrow resizeMode='contain' source={require('../../../assets/img/arrowRight.png')} />
+									</TextButton>
+									<TouchableHighlight
+										style={{
+											width: 190,
+										    height: 60,
+										    borderRadius: 10,
+										    marginTop: -40,
+										    backgroundColor: colors.transparent,
+										    justifyContent: 'center',
+										    alignItems: 'center'
+										}}
+										onPress={closeModal}
+									>
+										<BottomContinue resizeMode='stretch' source={require("../../../assets/img/button-bg.png")} />
+									</TouchableHighlight>
+								</ContainerButtom>
+							</Fragment>
 						)}
 					</ScrollViewModal>
 				</ContainerModal>
@@ -790,13 +919,17 @@ const TextButton = styled.Text`
 	font-size: 18px;
 	font-family: ${fonts.SemiBold};
 	text-shadow: 0px 0px 8px ${colors.cyan};
-	margin-left: 20px;
+	justify-content: center;
+	align-items:center;
+	text-align: center;
 `
 const IconArrow = styled.Image`
-    width: 20px;
+    height: 20px;
 `
 const BottomContinue = styled.Image`
     background-color: ${colors.transparent};
+    width: 240px;
+    height: 90px;
 `
 //--- end ----------
 
@@ -947,6 +1080,14 @@ const ImageCoverPlay = styled.Image`
 	align-self: center;
 	margin-top: 20px;
 `
+const IconCoverPlay = styled.Image`
+	width: 80px;
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	top: 75px;
+`
 const ContainerCoverPlay = styled.View`
 	flex-direction: row;
 	margin-top: 10%;
@@ -959,11 +1100,50 @@ const FlexRightCoverPlay = styled.View`
 	justify-content: center;
 	align-items: center;
 	align-self: center;
+	padding-right: 15px;
 `
 const FlexCenterCoverPlay = styled.View`
 	flex:6;
 	justify-content: center;
 	padding: 10px;
+`
+const RowCenter = styled.View`
+	flex-direction: row;
+	align-content: center;
+	justify-content:center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	height: 35px;
+`
+const IconUp = styled.Image`
+	width: 34px;
+	height: 20px;
+	margin-right: 20px;
+`
+const IconDown = styled.Image`
+	width: 34px;
+	height: 20px;
+	margin-right: 20px;
+`
+const VolumeText = styled.Text`
+	color: ${colors.cyan};
+	font-size: 12px;
+	text-align: center;
+	justify-content:center;
+	align-items:center;
+	align-self: center;
+	font-family: ${fonts.regular};
+	width: 50px;
+`
+const VolumeNum = styled.Text`
+	color: ${colors.white};
+	font-size: 16px;
+	text-align: center;
+	justify-content:center;
+	align-items:center;
+	align-self: center;
+	font-family: ${fonts.regular};
+	width: 50px;
 `
 //--- end ----------
 

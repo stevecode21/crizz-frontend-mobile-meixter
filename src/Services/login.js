@@ -38,10 +38,10 @@ export function deleteAuthorization(){
 
 
 export function handler(err) {
+    console.log('err', err)
     if (err.response && err.response.data)
     {
         return err.response.data;
     }
-    console.log('err', err['Error'])
     return {'message': err['Error']};
 }

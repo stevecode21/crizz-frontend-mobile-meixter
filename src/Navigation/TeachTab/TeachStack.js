@@ -96,6 +96,7 @@ function TopBar({ state, descriptors, navigation, position }) {
 
           return (
             <TouchableOpacity
+              key={index}
               accessibilityRole="button"
               accessibilityStates={isFocused ? ['selected'] : []}
               accessibilityLabel={options.tabBarAccessibilityLabel}
