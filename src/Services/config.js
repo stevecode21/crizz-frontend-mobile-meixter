@@ -28,6 +28,15 @@ export async function tracks(){
     }
 }
 
+export async function createLesson(data){
+    try{
+        let res = await axios.post(ROUTES.LESSON, data);
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
+
 export function handler(err) {
     if (err.response && err.response.data)
     {

@@ -53,11 +53,11 @@ const Hero = ({ videos, pause, setPause }) => {
 			initialPage={0}>
 			{videos.map((item, index) => {
 				return (
-					<TouchableWithoutFeedback onPress={() => {
+					<TouchableWithoutFeedback key={index} onPress={() => {
 						setPause(!pause)
 						videoRef.setStatusAsync({ shouldPlay: pause, isMute: !pause })
 					}}>
-						<View key={index}>
+						<View>
 							<VideoPlayer
 								url={item.url}
 								poster={item.poster}

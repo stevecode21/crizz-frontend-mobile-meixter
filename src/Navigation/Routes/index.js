@@ -15,13 +15,20 @@ const Routes = {
 
 	TEACH_STACK: 'TEACH_STACK', // TEACH CONTAINER FOR TABS
 	TEACH_TABS: 'TEACH_TABS', //TEACH TABS
+	UPCOMING:'Upcoming',
+	MY_LESSONS:'My lessons',
+	COMPLETED:'Completed',
 
-	LESSON_STACK: 'LESSON_STACK',
 	CREATE_LESSON: 'CREATE_LESSON',
 	CREATE_LESSON_TWO: 'CREATE_LESSON_TWO',
 
 	ME: 'ME',
-	OPTIONS: 'OPTIONS'
+	OPTIONS: 'OPTIONS',
+
+	TEACH:'Teach',
+	SESSIONS:'Sessions',
+	LEARN:'Learn',
+	ME:'Me',
 };
 
 export default Routes

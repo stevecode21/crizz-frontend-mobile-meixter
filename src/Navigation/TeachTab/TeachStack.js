@@ -11,6 +11,7 @@ import {
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import styled from 'styled-components/native'
 import {BoxShadow} from 'react-native-shadow'
+import Routes from '../Routes'
 
 import Mylessons from '../../Screens/Teach/Mylessons'
 import Upcoming from '../../Screens/Teach/Upcoming'
@@ -20,6 +21,7 @@ import Header from '../../Components/TeachHeader'
 import colors from '../../Themes/Colors'
 import fonts from '../../Themes/Fonts'
 import useAuth from '../../Services/Auth'
+import useTranslation from '../../i18n'
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -44,6 +46,7 @@ const Container = styled.View`
 
 function TopBar({ state, descriptors, navigation, position }) {
   const focusedOptions = descriptors[state.routes[state.index].key].options
+  const {t} = useTranslation()
 
   if (focusedOptions.tabBarVisible === false) {
     return null
@@ -105,7 +108,7 @@ function TopBar({ state, descriptors, navigation, position }) {
               style={{ flex: 1 }}
             >
               <Text style={[styles.textLabel, { color: isFocused ? colors.cyan : colors.whiteTrasparent }]}>
-                {label}
+                {t(label)}
               </Text>
               {isFocused ? (
                 <View style={[styles.lineTab, {borderColor: colors.cyan, borderBottomWidth: 4,}]}></View>
@@ -126,12 +129,12 @@ export default function TeachStack() {
   return (
     <Tab.Navigator 
       swipeEnabled={true} 
-      initialRouteName="Upcoming" 
+      initialRouteName={Routes.UPCOMING} 
       tabBar={props => <TopBar {...props} />} 
     >
-      <Tab.Screen name="My lessons" component={Mylessons} />
-      <Tab.Screen name="Upcoming" component={Upcoming} />
-      <Tab.Screen name="Completed" component={Completed} />   
+      <Tab.Screen name={Routes.MY_LESSONS} component={Mylessons} />
+      <Tab.Screen name={Routes.UPCOMING} component={Upcoming} />
+      <Tab.Screen name={Routes.COMPLETED} component={Completed} />   
     </Tab.Navigator>
   )
 }

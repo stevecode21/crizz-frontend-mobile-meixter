@@ -2,7 +2,7 @@ import { Platform } from "react-native"
 
 //API URL API
 export const API_URL = 'https://api.meixter.com/api/v1'
-//export const API_URL = 'http://localhost:8080/api/v1'
+//export const API_URL = 'http://192.168.43.220:8080/api/v1'
 
 export const URI = 'https://api.meixter.com/'
 
@@ -43,4 +43,7 @@ export const ROUTES = {
 	CONFIG_GENERAL  :`${API_URL}/Config/General`,
 	CONFIG_LANGUAGE :`${API_URL}/Config/Language`,
 	CONFIG_TRACKS	:`${API_URL}/Config/Track`,
+	LESSON 			:`${API_URL}/Lesson/Lesson`,
+	LOAD_COVER 		:`${API_URL}/Lesson/loadCover`,
+	LOAD_MEDIA 		:`${API_URL}/Lesson/loadMedia`,
 }

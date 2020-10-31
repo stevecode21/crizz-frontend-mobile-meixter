@@ -121,6 +121,7 @@ export const AppContextProvider = props => {
 		<AppStateContext.Provider
 			value={{
 				setToken: _setToken,
+				accessToken: accessToken,
 				account: account,
 				changeAccount: _changeAccount,
 				logout: _logout,

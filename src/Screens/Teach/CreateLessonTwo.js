@@ -8,15 +8,19 @@ import fonts from '../../Themes/Fonts';
 import colors from '../../Themes/Colors';
 import Ripple from 'react-native-material-ripple';
 import Routes from '../../Navigation/Routes';
+import * as FileSystem from 'expo-file-system'
 
 //api services
-import * as apiconfig from "../../Services/config";
+import * as apiconfig from "../../Services/config"
+import * as api from "../../Services/lesson"
+
+import {ROUTES, APP_STATE} from '../../Constants';
 
 
 export default function CreateLesson({navigation, route}) {
 	const {video, cover, track, volume} = route.params
 	const {t, localeProvider} = useTranslation()
-  	const {setLoading, showErrorToast, stateApp, checkAccount, account} = useAuth()
+  	const {setLoading, showErrorToast, stateApp, checkAccount, account, accessToken, setStateApp} = useAuth()
   	const refModalBottom = useRef()
 
   	const [valueCoin, setValueCoin] = useState(0)
@@ -49,10 +53,74 @@ export default function CreateLesson({navigation, route}) {
   	const [tag, setTag] = useState('')
   	const [listTags, setListTags] = useState([])
 
-  	const nextStep = () => {
+  	const handleCreateLesson = async () => {
 		if(validate())
 		{
-			
+			setLoading(true);
+			try
+			{
+				let data = {
+					description: params.description,
+					sixtymin: params.selected60,
+					thirtymin: params.selected30,
+					sixtymincoins: params.coins60,
+					thirtymincoins: params.coins30,
+					language: params.language,
+					discount: params.selectedDescount,
+					tags: listTags
+				}
+				if (params.idTrack != undefined)
+				{
+					data.track = params.idTrack
+					data.volume = params.volume
+				}
+				//console.log(data)
+				//let response = await api.createLesson(data)
+				//console.log(response)
+				let dataCover = {
+					file: `data:image/png;base64,${params.cover}`,
+					id: '5f9d98b4c4dd1a7f83004ac7' //response.result._id
+				}
+				//let resLoadCover = await api.loadCover(dataCover)
+				let options = {
+					headers : {
+						'Accept': 'application/json',
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': accessToken
+					},
+					httpMethod: 'post',
+					uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+					fieldName: 'video',
+					parameters: {
+						type: 'video',
+						id: '5f9d98b4c4dd1a7f83004ac7'
+					},
+				}
+				let responseLoad = await FileSystem.uploadAsync(params.video, ROUTES.LOAD_MEDIA, options)
+
+				//let resLoadMedia = await api.loadMedia(formData)
+				console.log(responseLoad)
+
+				setLoading(false)
+			}
+			catch (error)
+			{
+				setLoading(false)
+				console.log(error)
+		        if (error.status == 401) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+		        }
+		        else if (error.status == 403) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+		          setStateApp(APP_STATE.PUBLIC)
+		        }
+		        else
+		        {
+		          showErrorToast(error.message);
+		        }
+			}
 		}
 	}
 
@@ -116,14 +184,19 @@ export default function CreateLesson({navigation, route}) {
 		{
 			setLoading(false)
 			console.log(error)
-			if (error.message == 'Network Error') 
-			{
-				showErrorToast(error.message);
-			}
-			else
-			{
-				showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
-			}
+	        if (error.status == 401) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	        }
+	        else if (error.status == 403) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	          setStateApp(APP_STATE.PUBLIC)
+	        }
+	        else
+	        {
+	          showErrorToast(error.message);
+	        }
 		}
 	}
 
@@ -150,7 +223,7 @@ export default function CreateLesson({navigation, route}) {
 
 	const handleSelectecLanguage = (lang) => {
 		setParams(prevState => ({...prevState, selectedLanguage: lang.name }))
-		setParams(prevState => ({...prevState, idLanguage: lang._id }))
+		setParams(prevState => ({...prevState, language: lang._id }))
 		closeModal()
 	}
 
@@ -161,14 +234,14 @@ export default function CreateLesson({navigation, route}) {
 			showErrorToast(t('errorInputEmpty'))
 			return false
 		}
-		if (listTags.length == 0)
-		{
-			showErrorToast(t('errorInputEmpty'))
-			return false
-		}
 		else
 		{
-			setErrorDescription(false)
+			setError(prevState => ({...prevState, description: '' }))
+		}
+		if (listTags.length == 0)
+		{
+			showErrorToast(t('sorryTags'))
+			return false
 		}
 		if (!params.selected30 && !params.selected60)
 		{
@@ -279,7 +352,6 @@ export default function CreateLesson({navigation, route}) {
 			<Separator />
 
 			<ScrollView>
-
 				<Description>{t('createLessonDescription')}</Description>
 				<RowDescription>
 					<InputDescription 
@@ -291,10 +363,6 @@ export default function CreateLesson({navigation, route}) {
 						placeholderTextColor={colors.lilaLight}
 						value={params.description}
 						onChangeText={(data) => setParams(prevState => ({...prevState, description: data }))}
-						onBlur={(data) => {
-							console.log('data', data)
-							setError(prevState => ({...prevState, description: data == '' ? t(errorInputEmpty) : '' }))
-						}}
 					/>
 				</RowDescription>
 				{error.description != '' && (<ErrorText>{error.description}</ErrorText>)}
@@ -448,12 +516,11 @@ export default function CreateLesson({navigation, route}) {
 						    justifyContent: 'center',
 						    alignItems: 'center'
 						}}
-						onPress={nextStep}
+						onPress={handleCreateLesson}
 					>
 						<BottomContinue resizeMode='contain' source={require("../../../assets/img/button-bg.png")} />
 					</TouchableHighlight>
 				</ContainerButtom>
-				
 			</ScrollView>
 
 			<ModalBottom

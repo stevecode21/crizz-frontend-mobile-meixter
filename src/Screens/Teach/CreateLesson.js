@@ -16,7 +16,7 @@ import { StackActions } from '@react-navigation/native';
 import Routes from '../../Navigation/Routes';
 //api services
 import * as apiconfig from "../../Services/config";
-import { URI } from "../../Constants";
+import { URI, APP_STATE } from "../../Constants";
 
 
 
@@ -24,7 +24,7 @@ import { URI } from "../../Constants";
 
 export default function CreateLesson({navigation}) {
 	const {t, localeProvider} = useTranslation()
-  	const {setLoading, showErrorToast, stateApp, checkAccount, account} = useAuth()
+  	const {setLoading, showErrorToast, stateApp, checkAccount, account, setStateApp} = useAuth()
   	const refModalBottom = useRef()
 
   	const [viewMode, setViewMode] = useState('help')
@@ -45,8 +45,16 @@ export default function CreateLesson({navigation}) {
   	const [track, setTrack] = useState(false)
 
   	const nextStep = () => {
-		//if(validate())
-			navigation.navigate(Routes.CREATE_LESSON_TWO, params)
+		if(validate())
+			navigation.navigate(Routes.CREATE_LESSON_TWO, 
+				{
+		            cover: params.cover,
+		            video: params.video,
+		            track: params.track,
+		            volume: volume
+		        }
+			)
+		
 	}
 
   	const customStyles = {
@@ -119,14 +127,19 @@ export default function CreateLesson({navigation}) {
 		{
 			setLoading(false)
 			console.log(error)
-			if (error.message == 'Network Error') 
-			{
-				showErrorToast(error.message);
-			}
-			else
-			{
-				showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
-			}
+	        if (error.status == 401) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	        }
+	        else if (error.status == 403) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	          setStateApp(APP_STATE.PUBLIC)
+	        }
+	        else
+	        {
+	          showErrorToast(error.message);
+	        }
 		}
 	}
 
@@ -154,7 +167,6 @@ export default function CreateLesson({navigation}) {
 			console.log(result.duration)
 			if (result.duration <= 60000)
 			{
-				console.log(result.uri)
 				setParams(prevState => ({...prevState, video: result.uri }))
 			}
 			else
@@ -442,7 +454,7 @@ export default function CreateLesson({navigation}) {
 			let playbackInstance = currentPlaying
 			if (playbackInstance){
 				let newVolume = parseInt(volume + 5) / 100
-				newVolume = newVolume.toFixed(1) 
+				newVolume = newVolume.toFixed(2) 
 				await playbackInstance.setVolumeAsync(parseFloat(newVolume))
 			}
 			setVolume(volume + 5)
@@ -451,7 +463,7 @@ export default function CreateLesson({navigation}) {
 			let playbackInstance = currentPlaying
 			if (playbackInstance){
 				let newVolume = parseInt(volume - 5) / 100
-				newVolume = newVolume.toFixed(1) 
+				newVolume = newVolume.toFixed(2) 
 				await playbackInstance.setVolumeAsync(parseFloat(newVolume))
 			}
 			setVolume(volume - 5)

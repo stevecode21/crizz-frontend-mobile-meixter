@@ -15,10 +15,14 @@ import Learn from '../../Screens/Home'
 import Launch from '../../Screens/Launch'
 import TeachTab from '../TeachTab/'
 import MeStack from '../MeStack'
-
+import Routes from '../Routes'
 import colors from '../../Themes/Colors'
 import fonts from '../../Themes/Fonts'
+
+import useTranslation from '../../i18n'
 import useAuth from '../../Services/Auth'
+
+
 const { width, height } = Dimensions.get('screen')
 
 const Tab = createBottomTabNavigator();
@@ -58,6 +62,7 @@ const Separator = styled.View`
 
 function MyTabBar({ state, descriptors, navigation }) {
   const {setInHome} = useAuth()
+  const {t} = useTranslation()
   const focusedOptions = descriptors[state.routes[state.index].key].options;
 
   if (focusedOptions.tabBarVisible === false) {
@@ -86,7 +91,7 @@ function MyTabBar({ state, descriptors, navigation }) {
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            setInHome((route.name == 'Lear') ? true : false)
+            setInHome((route.name == 'Learn') ? true : false)
             navigation.navigate(route.name);
           }
         };
@@ -148,7 +153,7 @@ function MyTabBar({ state, descriptors, navigation }) {
             }
 
             <Text style={[styles.textLabel, { color: isFocused ? colors.white : colors.whiteTrasparent }]}>
-              {label}
+              {t(label)}
             </Text>
             {isFocused && (
               <View style={{flex: 1, position: 'absolute', bottom: 0, width: '100%'}}>
@@ -184,15 +189,15 @@ export default function MainStack() {
     <Tab.Navigator 
       lazy={true} 
       backBehavior="initialRoute" 
-      initialRouteName="Teach" 
+      initialRouteName={Routes.TEACH} 
       tabBar={props => <MyTabBar {...props} />} 
     >
-      <Tab.Screen name="Learn" component={Learn}/>
-      <Tab.Screen name="Sessions" component={Launch} />
-      <Tab.Screen name="Teach" component={TeachTab} options={({ route }) => ({
+      <Tab.Screen name={Routes.LEARN} component={Learn}/>
+      <Tab.Screen name={Routes.SESSIONS} component={Launch} />
+      <Tab.Screen name={Routes.TEACH} component={TeachTab} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route)
       })}/>
-      <Tab.Screen name="Me" component={MeStack} options={({ route }) => ({
+      <Tab.Screen name={Routes.ME} component={MeStack} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route)
       })}/>      
     </Tab.Navigator>
