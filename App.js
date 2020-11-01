@@ -7,7 +7,7 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
-  YellowBox
+  LogBox
 } from 'react-native';
 import RootNavigation from './src/Navigation/AppNavigation';
 import Constants from 'expo-constants';
@@ -19,7 +19,7 @@ import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 
 export default function App() {
 
-  YellowBox.ignoreWarnings(['Animated: `useNativeDriver`'])
+  LogBox.ignoreLogs(['Animated: `useNativeDriver`'])
   const colorScheme = useColorScheme();
   const themeStatusBarStyle = colorScheme === 'light' ? 'dark-content' : 'light-content';
 
@@ -42,12 +42,10 @@ export default function App() {
       <LocaleContextProvider>
         <AppearanceProvider>
           <AppContextProvider>
-            <SafeAreaView style={styles.containerSafe}>
               <StatusBar translucent backgroundColor='transparent' barStyle={themeStatusBarStyle} />
               <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <RootNavigation />
               </TouchableWithoutFeedback>
-            </SafeAreaView>
           </AppContextProvider>
         </AppearanceProvider>
       </LocaleContextProvider>

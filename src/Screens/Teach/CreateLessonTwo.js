@@ -75,13 +75,13 @@ export default function CreateLesson({navigation, route}) {
 					data.volume = params.volume
 				}
 				//console.log(data)
-				//let response = await api.createLesson(data)
+				let response = await api.createLesson(data)
 				//console.log(response)
 				let dataCover = {
 					file: `data:image/png;base64,${params.cover}`,
-					id: '5f9d98b4c4dd1a7f83004ac7' //response.result._id
+					id: response.result._id
 				}
-				//let resLoadCover = await api.loadCover(dataCover)
+				let resLoadCover = await api.loadCover(dataCover)
 				let options = {
 					headers : {
 						'Accept': 'application/json',
@@ -90,18 +90,15 @@ export default function CreateLesson({navigation, route}) {
 					},
 					httpMethod: 'post',
 					uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-					fieldName: 'video',
+					fieldName: 'file',
 					parameters: {
 						type: 'video',
-						id: '5f9d98b4c4dd1a7f83004ac7'
+						id: response.result._id
 					},
 				}
-				let responseLoad = await FileSystem.uploadAsync(params.video, ROUTES.LOAD_MEDIA, options)
-
-				//let resLoadMedia = await api.loadMedia(formData)
-				console.log(responseLoad)
-
+				let responseLoad = await FileSystem.uploadAsync(ROUTES.LOAD_MEDIA, params.video, options)
 				setLoading(false)
+				navigation.navigate(Routes.MY_LESSONS)
 			}
 			catch (error)
 			{

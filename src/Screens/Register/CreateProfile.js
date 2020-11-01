@@ -469,7 +469,7 @@ export default function({navigation}) {
               onPress={() => openModalCountry()}
               style={{height: 50}}
             >
-              <Text style={styles.inputRegisterCountry} > { (countryName == '') ? t('selectCountry') : countryName } </Text>
+              <Text style={[styles.inputRegisterCountry, {color: (countryName == '') ? colors.lila : colors.white}]} > { (countryName == '') ? t('selectCountry') : countryName } </Text>
             </TouchableOpacity>
           </View>
 
@@ -500,7 +500,7 @@ export default function({navigation}) {
               onPress={() => openModalCalendar()}
               style={{height: 50}}
             >
-              <Text style={styles.inputRegisterCountry} > { (birth == '') ? '23-Mar-1988' : birth } </Text>
+              <Text style={[styles.inputRegisterCountry, {color: (birth == '') ? colors.lila : colors.white}]} > { (birth == '') ? '23-Mar-1988' : birth } </Text>
             </TouchableOpacity>
           </View>
         </View>

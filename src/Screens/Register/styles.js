@@ -158,14 +158,14 @@ const style = StyleSheet.create({
     borderBottomWidth: 1,
     marginLeft: 46,
     marginRight: 46,
-    height: 120
+    height: 70
   },
   containerInputBioError: {
     borderColor: colors.fucsia, 
     borderBottomWidth: 1,
     marginLeft: 46,
     marginRight: 46,
-    height: 120
+    height: 70
   },
   containerInputYear: {
     borderColor: colors.lila, 
@@ -199,7 +199,7 @@ const style = StyleSheet.create({
     width: '100%'
   },
   inputBio: {
-    fontSize: 18,
+    fontSize: 14,
     color: colors.white,
     fontFamily: fonts.regular,
     padding: 10,
@@ -216,7 +216,6 @@ const style = StyleSheet.create({
   },
   inputRegisterCountry: {
     fontSize: 18,
-    color: colors.white,
     fontFamily: fonts.regular,
     top: 30,
     marginLeft: 2,
@@ -404,7 +403,7 @@ const style = StyleSheet.create({
     color: colors.fucsia,
     fontFamily: fonts.SemiBold,
     fontSize: 14,
-    marginTop: 30,
+    marginTop: 10,
     marginLeft: 70,
     marginBottom: -20
   },
@@ -427,7 +426,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 15,
     textShadowColor: colors.cyan,
     textShadowOffset: {width: 0, height: 0},
     textShadowRadius: 8,
@@ -438,7 +437,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 15,
     marginHorizontal: 6
   },
   rowTag: {
