@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const style = StyleSheet.create({
   container: {
@@ -32,56 +33,52 @@ const style = StyleSheet.create({
   },
   imageCenter: {
     backgroundColor: "transparent",
-    marginTop: 106,
+    marginTop: hp('10%'),
     alignSelf: 'center',
-    width: 160,
-    height: 125,
-    resizeMode: 'stretch',
+    height: hp('15%'),
+    resizeMode: 'contain',
   },
   imageCenterWellcome: {
     backgroundColor: "transparent",
-    marginTop: 33,
+    marginTop:  hp('5%'),
     alignSelf: 'center',
-    width: 98,
-    height: 31,
-    resizeMode: 'stretch',
+    height: hp('5%'),
+    resizeMode: 'contain',
   },
   title: {
     color: colors.white,
     fontFamily: fonts.medium,
-    fontSize: 24,
+    fontSize: hp('3%'),
     textAlign: "center",
-    marginTop: 78,
+    marginTop: hp('5%'),
   },
   textPhone: {
     color: colors.fucsia,
     fontFamily: fonts.SemiBold,
-    fontSize: 18,
-    marginTop: 90,
-    marginLeft: 36,
+    fontSize: hp('2%'),
+    marginTop: hp('6%'),
+    marginLeft: wp('10%'),
     marginBottom: -20
   },
   containerInput: {
     borderColor: colors.lila, 
     borderBottomWidth: 1,
-    marginLeft: 36,
-    marginRight: 36,
+    marginHorizontal: wp('10%'),
     alignSelf: "stretch",
     height: 70
   },
   containerInputError: {
     borderColor: colors.fucsia, 
     borderBottomWidth: 1,
-    marginLeft: 36,
-    marginRight: 36,
+    marginHorizontal: wp('10%'),
     alignSelf: "stretch",
-    height: 70,
+    height: 70
   },
   textError : {
     color: colors.fucsia,
     fontSize: 12,
     fontFamily: fonts.regular,
-    marginTop: 15,
+    marginTop: hp('1%'),
     justifyContent: "center",
     textAlign: "center",
   },
@@ -124,8 +121,8 @@ const style = StyleSheet.create({
   containerButtom: {
     alignSelf: 'center',
     justifyContent: "center",
-    marginTop: 60,
-    marginBottom: 20
+    marginTop: '10%',
+    marginBottom: '10%'
   },
   buttom: {
     width: 190,
@@ -152,7 +149,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 18,
     textAlign: "center",
-    marginTop: 60,
+    marginTop: '5%',
   },
   textModal2: {
     color: colors.lila,

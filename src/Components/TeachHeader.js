@@ -48,22 +48,19 @@ const Header = ({navigation}) => {
 export default Header
 
 const Container = styled.View`
-	height: 90px;
+	height: 60px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
-	background-color: ${colors.blueDark};
-	padding-top: 40px;
-	padding-bottom: 10px;
-`
+	background-color: ${colors.blueDark};`
 const Separator = styled.View`
 	width: 100%;
 	height: 1px;
 	background-color: ${colors.lila};
 	opacity: 0.4;
 	position: absolute;
-	margin-top: 90px;
+	margin-top: 60px;
 	z-index: 3;
 `
 const Menu = styled.View`

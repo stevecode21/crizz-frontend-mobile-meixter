@@ -14,8 +14,8 @@ const Container = styled.View`
 	align-items: flex-start;
 `
 const Icon = styled.Image`
-	height: 308px;
-	top: 20px;
+	height: 50%;
+	margin-top: 5%;
 	align-self: center;
 `
 const Title = styled.Text`

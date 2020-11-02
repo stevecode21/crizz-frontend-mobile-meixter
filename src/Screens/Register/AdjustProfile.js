@@ -176,7 +176,7 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <ScrollView style={styles.scroll}>
-        <TouchableOpacity style={{top: 40, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.PROFILE_SCREEN)}}>
+        <TouchableOpacity style={{top: 0, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.PROFILE_SCREEN)}}>
             <IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
         </TouchableOpacity>
         <Text style={styles.title}> {t('registerPreparing')} </Text>

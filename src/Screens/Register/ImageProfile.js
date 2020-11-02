@@ -10,9 +10,8 @@ import {
   BackHandler
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-
+import * as Permissions from 'expo-permissions'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
 
@@ -125,8 +124,29 @@ export default function({navigation}) {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.CAMERA,
+        Permissions.AUDIO_RECORDING,
+        Permissions.CAMERA_ROLL
+      )
+
+      let finalStatus = existingStatus
+
+      if (existingStatus !== 'granted') 
+      {
+        const { status } = await Permissions.askAsync(
+          Permissions.CAMERA,
+          Permissions.AUDIO_RECORDING,
+          Permissions.CAMERA_ROLL
+        )
+        finalStatus = status
+      }
+
+      if (finalStatus !== 'granted') 
+      {
+        showErrorToast(t('permissions'))
+      }
+
       if (account.step == 3)
         navigation.navigate(Routes.PROFILE_SCREEN)
       if (account.step == 4)
@@ -141,7 +161,7 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <ScrollView style={styles.scroll}>
-        <Text style={[styles.title, {marginTop: 70}]}> {t('registerPreparing')} </Text>
+        <Text style={styles.titleCreate}> {t('registerPreparing')} </Text>
         <Text style={styles.textCreateProfile}> {t('registerCreateProfile')} </Text>
         <Image
           source={require("../../../assets/img/loading1.png")}

@@ -2,9 +2,9 @@
   "expo": {
     "name": "Meixter App",
     "slug": "meixter-app",
-    "description": "App Meixter develop for Crizz.",
+    "description": "App Meixter develop for Crizz. Release QA 1.0.4",
     "privacy": "unlisted",
-    "version": "1.0.0",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "platforms": [

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import RootNavigation from './src/Navigation/AppNavigation';
 import Constants from 'expo-constants';
-
+import colors from './src/Themes/Colors';
 import {LocaleContextProvider} from './src/i18n/LocaleContext';
 import {AppContextProvider} from './src/Services/Auth/AppContext';
 
@@ -42,10 +42,12 @@ export default function App() {
       <LocaleContextProvider>
         <AppearanceProvider>
           <AppContextProvider>
-              <StatusBar translucent backgroundColor='transparent' barStyle={themeStatusBarStyle} />
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <RootNavigation />
-              </TouchableWithoutFeedback>
+              <SafeAreaView style={styles.containerSafe}>
+                <StatusBar  barStyle={themeStatusBarStyle} />
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                  <RootNavigation />
+                </TouchableWithoutFeedback>
+              </SafeAreaView>
           </AppContextProvider>
         </AppearanceProvider>
       </LocaleContextProvider>

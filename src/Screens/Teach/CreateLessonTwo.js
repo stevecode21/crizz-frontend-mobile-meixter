@@ -1,20 +1,21 @@
 import React, {useEffect, useRef, useState, Fragment} from 'react'
 import { BackHandler, TouchableOpacity, TouchableHighlight} from 'react-native'
 import styled from 'styled-components/native'
-import useTranslation from '../../i18n';
-import useAuth from '../../Services/Auth';
-import ModalBottom from 'react-native-raw-bottom-sheet';
-import fonts from '../../Themes/Fonts';
-import colors from '../../Themes/Colors';
-import Ripple from 'react-native-material-ripple';
-import Routes from '../../Navigation/Routes';
+import useTranslation from '../../i18n'
+import useAuth from '../../Services/Auth'
+import ModalBottom from 'react-native-raw-bottom-sheet'
+import fonts from '../../Themes/Fonts'
+import colors from '../../Themes/Colors'
+import Ripple from 'react-native-material-ripple'
+import Routes from '../../Navigation/Routes'
 import * as FileSystem from 'expo-file-system'
+import LottieView from 'lottie-react-native'
 
 //api services
 import * as apiconfig from "../../Services/config"
 import * as api from "../../Services/lesson"
 
-import {ROUTES, APP_STATE} from '../../Constants';
+import {ROUTES, APP_STATE} from '../../Constants'
 
 
 export default function CreateLesson({navigation, route}) {
@@ -22,6 +23,8 @@ export default function CreateLesson({navigation, route}) {
 	const {t, localeProvider} = useTranslation()
   	const {setLoading, showErrorToast, stateApp, checkAccount, account, accessToken, setStateApp} = useAuth()
   	const refModalBottom = useRef()
+  	const refModalBottomSuccess = useRef()
+  	const animation = useRef()
 
   	const [valueCoin, setValueCoin] = useState(0)
   	const [viewMode, setViewMode] = useState('help')
@@ -63,25 +66,18 @@ export default function CreateLesson({navigation, route}) {
 					description: params.description,
 					sixtymin: params.selected60,
 					thirtymin: params.selected30,
-					sixtymincoins: params.coins60,
-					thirtymincoins: params.coins30,
+					sixtymincoins: parseInt(params.coins60),
+					thirtymincoins: parseInt(params.coins30),
 					language: params.language,
 					discount: params.selectedDescount,
-					tags: listTags
+					tags: listTags,
+					cover: `data:image/png;base64,${params.cover}`,
 				}
 				if (params.idTrack != undefined)
 				{
 					data.track = params.idTrack
-					data.volume = params.volume
+					data.volume = parseInt(params.volume)
 				}
-				//console.log(data)
-				let response = await api.createLesson(data)
-				//console.log(response)
-				let dataCover = {
-					file: `data:image/png;base64,${params.cover}`,
-					id: response.result._id
-				}
-				let resLoadCover = await api.loadCover(dataCover)
 				let options = {
 					headers : {
 						'Accept': 'application/json',
@@ -91,14 +87,11 @@ export default function CreateLesson({navigation, route}) {
 					httpMethod: 'post',
 					uploadType: FileSystem.FileSystemUploadType.MULTIPART,
 					fieldName: 'file',
-					parameters: {
-						type: 'video',
-						id: response.result._id
-					},
+					parameters: data,
 				}
-				let responseLoad = await FileSystem.uploadAsync(ROUTES.LOAD_MEDIA, params.video, options)
+				let responseLoad = await FileSystem.uploadAsync(ROUTES.LESSON, params.video, options)
 				setLoading(false)
-				navigation.navigate(Routes.MY_LESSONS)
+				openModalSuccess()
 			}
 			catch (error)
 			{
@@ -132,10 +125,11 @@ export default function CreateLesson({navigation, route}) {
 		  height: mtm,
 		  borderTopLeftRadius: 35,
 		  borderTopRightRadius: 35,
-		  backgroundColor: colors.blueDark,
+		  backgroundColor: colors.violetDark,
 		  opacity: 0.9
 		}
 	}
+
 
   	useEffect(() => {
 	    const backHandler = BackHandler.addEventListener(
@@ -206,16 +200,25 @@ export default function CreateLesson({navigation, route}) {
     	refModalBottom.current.close()
 	}
 
+	const closeModalSuccess = () => {
+    	refModalBottomSuccess.current.close()
+    	navigation.navigate(Routes.MY_LESSONS)
+	}
+
 	const openModal = (type) => {
-    	if (type == 'YouGet')
+    	if (type == 'YouGet' || type == 'coins30' || type == 'coins60' || type == 'language')
     		setMtm('70%')
     	if (type == 'help')
     		setMtm('80%')
-    	if (type == 'coins30' || type == 'coins60' || type == 'language')
-    		setMtm('50%')
-
+    	
 	    setViewMode(type)
 	    refModalBottom.current.open()
+	}
+
+	const openModalSuccess = () => {
+		setMtm('95%')
+	    refModalBottomSuccess.current.open()
+	    //animation.current.play()
 	}
 
 	const handleSelectecLanguage = (lang) => {
@@ -621,6 +624,47 @@ export default function CreateLesson({navigation, route}) {
 					</ScrollViewModal>
 				</ContainerModal>
         	</ModalBottom>
+
+        	<ModalBottom
+				ref={refModalBottomSuccess}
+				closeOnPressMask={false}
+				closeOnPressBack={false}
+				animationType={'slide'}
+				customStyles={customStyles}>
+				<ContainerModal>
+					<HeaderModal>
+						<MenuExt></MenuExt>
+						<MenuCenter>
+							<Title>
+								{t('LessonPosted')}
+							</Title>
+						</MenuCenter>
+						<MenuExt>
+							<TouchableOpacity onPress={closeModalSuccess}>
+								<IconClose resizeMode='contain' source={require('../../../assets/img/close-circle-outline.png')} />
+							</TouchableOpacity>
+						</MenuExt>
+					</HeaderModal>
+					<SeparatorModal />
+					<ScrollViewModal>
+						{/*
+						<LottieView
+							ref={animation}
+					        source={require('../../../assets/lottie/success.json')}
+					        style={{flex: 1, alignSelf:'center', width: 100, height: 100}}
+					        loop={true}
+					    />
+						*/}
+						<IconSuccess resizeMode='contain' source={require('../../../assets/img/success.png')}/>
+						<BuyYourMembership>{t('SuccessfullyPublished')}</BuyYourMembership>
+						<NowBooking>{t('NowBooking')}</NowBooking>
+						<NowBooking2>{t('NowBooking2')}</NowBooking2>
+
+						<ImageRecord resizeMode='contain' source={{ uri: `data:image;base64,${params.cover}` }} />
+
+					</ScrollViewModal>
+				</ContainerModal>
+        	</ModalBottom>
 		</Container>
 	)
 }
@@ -633,14 +677,12 @@ const Container = styled.View`
 
 //--- styleheader ------
 const Header = styled.View`
-	height: 90px;
+	height: 60px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
 	background-color: ${colors.blueDark};
-	padding-top: 40px;
-	padding-bottom: 10px;
 `
 const Menu = styled.View`
 	justify-content: center;
@@ -671,7 +713,7 @@ const Separator = styled.View`
 	background-color: ${colors.lila};
 	opacity: 0.4;
 	position: absolute;
-	margin-top: 90px;
+	margin-top: 60px;
 	z-index: 3;
 `
 //--- end ----------
@@ -694,7 +736,7 @@ const Description = styled.Text`
 	text-align: left;
 	padding-left: 30px;
 	width: 100%;
-	margin-top: 10px;
+	margin-top: 5%;
 `
 const InputDescription = styled.TextInput`
 	border-color: ${props => props.error ? colors.fucsia : colors.grayLight};
@@ -931,7 +973,7 @@ const ContainerModal = styled.View`
 	align-items: flex-start;
 `
 const HeaderModal = styled.View`
-	height: 30px;
+	height: 60px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
@@ -943,7 +985,7 @@ const SeparatorModal = styled.View`
 	background-color: ${colors.lila};
 	opacity: 0.3;
 	position: absolute;
-	margin-top: 55px;
+	margin-top: 60px;
 	z-index: 3;
 `
 const MenuExt = styled.View`
@@ -1003,6 +1045,26 @@ const ChooseMonthly = styled.Text`
 	align-self: center;
 	margin-top: 8px;
 `
+const NowBooking = styled.Text`
+	color: ${colors.whiteTrasparent};
+	font-size: 14px;
+	text-align: center;
+	justify-content: center;
+	font-family: ${fonts.regular};
+	align-self: center;
+	margin-top: 10px;
+	margin-horizontal: 20px;
+`
+const NowBooking2 = styled.Text`
+	color: ${colors.whiteTrasparent};
+	font-size: 14px;
+	text-align: center;
+	justify-content: center;
+	font-family: ${fonts.regular};
+	align-self: center;
+	margin-top: 3px;
+	margin-horizontal: 10px;
+`
 const ImageZero = styled.Image`
 	height: 100px;
 	justify-content: center;
@@ -1046,4 +1108,39 @@ const TotalAmountCoins = styled.Text`
     text-align:center;
 	font-family: ${fonts.regular};
 `
-
+const ImageRecord = styled.Image`
+	height: 237px;
+	width: 166px;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	margin-top: 10%;
+`
+const Row = styled.View`
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-right: 30px;
+`
+const IconTips = styled.Image`
+	height: 20px;
+	justify-content: center;
+	align-items: center;
+	flex: 1;
+`
+const ImageShadowPlayer = styled.Image`
+	height: 237px;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+	margin-top: 20px;
+`
+const IconSuccess = styled.Image`
+	height: 50px;
+	justify-content: center;
+	align-items: center;
+	align-self: center;
+`

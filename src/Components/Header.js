@@ -4,7 +4,6 @@ import fonts from '../Themes/Fonts';
 import colors from '../Themes/Colors';
 
 const Container = styled.View`
-	top: 30px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;

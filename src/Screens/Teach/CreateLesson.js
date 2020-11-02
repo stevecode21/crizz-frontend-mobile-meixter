@@ -12,11 +12,12 @@ import { Switch } from 'react-native-switch'
 import fonts from '../../Themes/Fonts'
 import colors from '../../Themes/Colors'
 import Ripple from 'react-native-material-ripple'
-import { StackActions } from '@react-navigation/native';
-import Routes from '../../Navigation/Routes';
+import { StackActions } from '@react-navigation/native'
+import Routes from '../../Navigation/Routes'
+import * as Linking from 'expo-linking'
 //api services
-import * as apiconfig from "../../Services/config";
-import { URI, APP_STATE } from "../../Constants";
+import * as apiconfig from "../../Services/config"
+import { URI, APP_STATE } from "../../Constants"
 
 
 
@@ -28,7 +29,7 @@ export default function CreateLesson({navigation}) {
   	const refModalBottom = useRef()
 
   	const [viewMode, setViewMode] = useState('help')
-  	const [mtm, setMtm] = useState('80%')
+  	const [mtm, setMtm] = useState('90%')
   	  	
   	const [params, setParams] = useState({
   		video: '',
@@ -68,8 +69,8 @@ export default function CreateLesson({navigation}) {
 		  height: mtm,
 		  borderTopLeftRadius: 35,
 		  borderTopRightRadius: 35,
-		  backgroundColor: colors.blueDark,
-		  opacity: 0.9
+		  backgroundColor: colors.violetDark,
+		  opacity: 0.95
 		}
 	}
 
@@ -153,11 +154,6 @@ export default function CreateLesson({navigation}) {
 	}
 
     const openModal = (type) => {
-    	if (type == 'addmusic')
-    		setMtm('85%')
-    	if (type == 'help')
-    		setMtm('80%')
-
 	    setViewMode(type)
 	    refModalBottom.current.open()
 	}
@@ -470,6 +466,10 @@ export default function CreateLesson({navigation}) {
 		}
 	}
 
+	const  linkExt = () => {
+		Linking.openURL('')
+	}
+
 	return (
 		<Container>
 			<Header>
@@ -672,13 +672,6 @@ export default function CreateLesson({navigation}) {
 												{!isPlaying && <IconCoverPlay resizeMode='contain' source={require('../../../assets/img/PlayButton.png')} /> }
 											</Fragment>
 										</TouchableOpacity>
-										<RowCenter>
-											<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
-											<TrackSelected>{params.track.name}</TrackSelected>
-											<TouchableOpacity onPress={() =>  deleteTrack()}>
-												<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
-											</TouchableOpacity>
-										</RowCenter>
 									</FlexCenterCoverPlay>
 									<FlexRightCoverPlay>
 										<ContainerCoverPlay>
@@ -688,13 +681,28 @@ export default function CreateLesson({navigation}) {
 											</TouchableOpacity>
 										</ContainerCoverPlay>
 										<ContainerCoverPlay>
-											<VolumeText>Volume</VolumeText>
+											<VolumeText>{t('volume')}</VolumeText>
 											<TouchableOpacity onPress={() => changeVolume('down')}>
 												<IconDown resizeMode='contain' source={require('../../../assets/img/arrowdown.png')}/>	
 											</TouchableOpacity>
 										</ContainerCoverPlay>
 									</FlexRightCoverPlay>
 								</ContainerCoverPlay>
+
+								<ContainerCoverPlay>
+									<FlexLeftCoverPlay></FlexLeftCoverPlay>
+									<FlexCenterCoverPlay>
+										<RowCenter>
+											<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
+											<TrackSelected>{params.track.name}</TrackSelected>
+											<TouchableOpacity onPress={() =>  deleteTrack()}>
+												<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
+											</TouchableOpacity>
+										</RowCenter>
+									</FlexCenterCoverPlay>
+									<FlexRightCoverPlay></FlexRightCoverPlay>
+								</ContainerCoverPlay>
+
 								<ContainerButtom>
 									<TextButton>
 										{t('AddThisSong')} {'     '}
@@ -732,14 +740,12 @@ const Container = styled.View`
 
 //--- styleheader ------
 const Header = styled.View`
-	height: 90px;
+	height: 60px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
 	background-color: ${colors.blueDark};
-	padding-top: 40px;
-	padding-bottom: 10px;
 `
 const Menu = styled.View`
 	justify-content: center;
@@ -770,7 +776,7 @@ const Separator = styled.View`
 	background-color: ${colors.lila};
 	opacity: 0.4;
 	position: absolute;
-	margin-top: 90px;
+	margin-top: 60px;
 	z-index: 3;
 `
 //--- end ----------
@@ -816,25 +822,21 @@ const Col50 = styled.View`
 const IconRecord = styled.Image`
 	height: 60px;
 	margin-left: 70px;
-	margin-top: 20px;
 `
 const IconGalery = styled.Image`
 	height: 60px;
 	margin-right: 70px;
-	margin-top: 20px;
 `
 const TextRecord = styled.Text`
 	color: ${colors.lila};
 	font-size: 14px;
 	font-family: ${fonts.regular};
-	margin-top: 10px;
 	margin-left: 65px;
 `
 const TextGallery = styled.Text`
 	color: ${colors.lila};
 	font-size: 14px;
 	font-family: ${fonts.regular};
-	margin-top: 10px;
 	margin-right: 70px;
 `
 const CopyrightedSuspended = styled.Text`
@@ -847,11 +849,11 @@ const CopyrightedSuspended = styled.Text`
 	align-self: center;
 `
 const Hr = styled.View`
-	width: 100%;
 	height: 1px;
 	background-color: ${colors.lila};
 	opacity: 0.3;
-	margin-top: 20px;
+	margin-top: 10px;
+	margin-horizontal: 20px;
 `
 const RowCover = styled.View`
 	flex-direction: row;
@@ -1090,7 +1092,6 @@ const ImageCoverPlay = styled.Image`
 	justify-content: center;
 	align-items: center;
 	align-self: center;
-	margin-top: 20px;
 `
 const IconCoverPlay = styled.Image`
 	width: 80px;
@@ -1098,7 +1099,7 @@ const IconCoverPlay = styled.Image`
 	justify-content: center;
 	align-items: center;
 	align-self: center;
-	top: 75px;
+	top: 45px;
 `
 const ContainerCoverPlay = styled.View`
 	flex-direction: row;
@@ -1123,9 +1124,8 @@ const RowCenter = styled.View`
 	flex-direction: row;
 	align-content: center;
 	justify-content:center;
-	margin-top: 20px;
+	margin-top: -35px;
 	margin-bottom: 20px;
-	height: 35px;
 `
 const IconUp = styled.Image`
 	width: 34px;

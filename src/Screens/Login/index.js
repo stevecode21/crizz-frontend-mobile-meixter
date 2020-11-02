@@ -242,7 +242,7 @@ export default function() {
               borderRadius: 2.5,
             },
             container: {
-              height: 520,
+              height: '80%',
               borderTopLeftRadius: 35,
               borderTopRightRadius: 35,
               backgroundColor: colors.background

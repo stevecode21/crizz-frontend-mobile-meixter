@@ -16,7 +16,7 @@ const colors = {
   cyan: "#00FEFF",
   cyanTransparent: '#00FEFFB2',
   violet: "#8D45FF",
-  violetDark: "#251F53",
+  violetDark: "#040517",
   lilaBlack: '#3A385B',
   grayLight: '#6A65A84D',
   gray: '#6A65A8',

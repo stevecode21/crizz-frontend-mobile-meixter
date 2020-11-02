@@ -2,8 +2,7 @@ import React from 'react'
 import { Video } from 'expo-av'
 import styled from 'styled-components/native'
 import useAuth from '../Services/Auth';
-import {Dimensions} from 'react-native';
-const { width, height } = Dimensions.get('window')
+
 const Play = styled(Video)`
 	height: 100%;
 	width: 100%;

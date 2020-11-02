@@ -1,6 +1,8 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import colors from '../../Themes/Colors';
 import fonts from '../../Themes/Fonts';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
+const { width, height } = Dimensions.get('screen')
 
 const style = StyleSheet.create({
   viewView: {
@@ -21,7 +23,7 @@ const style = StyleSheet.create({
   imageCenter: {
     position: 'relative',
     backgroundColor: "transparent",
-    marginTop: 36,
+    marginTop: '5%',
     alignSelf: 'center',
     width: 160,
     height: 160,
@@ -57,22 +59,22 @@ const style = StyleSheet.create({
   },
   imageOptions: {
     backgroundColor: "transparent",
-    width: 50,
-    height: 50,
+    width: wp('13%'),
+    height: wp('12%'),
     resizeMode: 'stretch'
   },
   row: {
     flex: 1, 
     flexDirection: 'row', 
-    marginTop: 51,
-    marginLeft: 40,
-    marginRight: 40
+    marginTop: '7%',
+    marginLeft: wp('10%'),
+    marginRight: wp('10%')
   },
   row2: {
     flex: 1, 
     flexDirection: 'row',
-    marginLeft: 40,
-    marginRight: 40
+    marginLeft: wp('10%'),
+    marginRight: wp('10%')
   },
   row3: {
     flex: 1, 
@@ -101,9 +103,9 @@ const style = StyleSheet.create({
   textOptions: {
     color: colors.lila,
     fontFamily: fonts.regular,
-    fontSize: 14,
+    fontSize: hp('1.5%'),
     textAlign: "center",
-    marginTop: 10,
+    marginTop: hp('1%'),
   },
   textSex : {
     color: colors.white,
@@ -129,7 +131,14 @@ const style = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 24,
     textAlign: "center",
-    marginTop: 40,
+    marginTop: '2%',
+  },
+  titleCreate: {
+    color: colors.white,
+    fontFamily: fonts.medium,
+    fontSize: 24,
+    textAlign: "center",
+    marginTop: (height < 800)?hp('1%'):hp('15%'),
   },
   textCreateProfile: {
     color: colors.violet,
@@ -143,7 +152,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 14,
     textAlign: "center",
-    marginTop: 50,
+    marginTop: hp('3%'),
   },
   containerInput: {
     borderColor: colors.lila, 
@@ -273,7 +282,7 @@ const style = StyleSheet.create({
   containerButtom: {
     alignSelf: 'center',
     justifyContent: "center",
-    marginTop: 110,
+    marginTop: hp('5%'),
     marginBottom: 20
   },
   containerButtom2: {
@@ -323,7 +332,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 18,
     textAlign: "center",
-    marginTop: 60,
+    marginTop: '8%',
   },
   textModal2: {
     color: colors.lila,
@@ -357,7 +366,7 @@ const style = StyleSheet.create({
     color: colors.lila,
     fontFamily: fonts.SemiBold,
     fontSize: 18,
-    marginTop: 10,
+    marginTop: 0,
     textAlign: "center"
   },
   scrollPhone:{

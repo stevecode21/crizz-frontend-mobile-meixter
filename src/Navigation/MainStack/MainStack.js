@@ -189,7 +189,7 @@ export default function MainStack() {
     <Tab.Navigator 
       lazy={true} 
       backBehavior="initialRoute" 
-      initialRouteName={Routes.TEACH} 
+      initialRouteName={Routes.LEARN} 
       tabBar={props => <MyTabBar {...props} />} 
     >
       <Tab.Screen name={Routes.LEARN} component={Learn}/>

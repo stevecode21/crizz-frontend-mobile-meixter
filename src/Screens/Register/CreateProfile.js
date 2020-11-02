@@ -30,7 +30,7 @@ import moment from "moment";
 //api services
 import * as api from "../../Services/register";
 
-const { width, height } = Dimensions.get('window')
+const { width, height } = Dimensions.get('screen')
 
 const IconBack = styled.Image`
   width: 34px;
@@ -372,7 +372,7 @@ export default function({navigation}) {
       borderRadius: 2.5,
     },
     container: {
-      height: 600,
+      height: height < 700 ? '100%' : '80%',
       borderTopLeftRadius: 35,
       borderTopRightRadius: 35,
       backgroundColor: colors.background
@@ -386,7 +386,7 @@ export default function({navigation}) {
         style={styles.linearGradient}
       />
       <KeyboardAwareScrollView ref={scrollRef} style={styles.scroll}>
-        <TouchableOpacity style={{top: 40, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.IMAGE_PROFILE_SCREEN)}}>
+        <TouchableOpacity style={{top: 0, left: 20, width: 60, padding: 10}}  onPress={() => {navigation.navigate(Routes.IMAGE_PROFILE_SCREEN)}}>
             <IconBack resizeMode='contain' source={require('../../../assets/img/arrowLeft.png')} />
         </TouchableOpacity>
         <Text style={styles.title}> {t('registerPreparing')} </Text>
@@ -543,6 +543,7 @@ export default function({navigation}) {
                 <TextInput
                   maxLength={25}
                   placeholder={t('country')}
+                  placeholderTextColor={colors.lila}
                   onChangeText={(data) => {
                     setFilters(data)
                   }}
@@ -622,7 +623,7 @@ export default function({navigation}) {
               (
                 <Calendar
                   style={{
-                    marginHorizontal: 30,
+                    marginHorizontal: 10,
                     marginTop: 0
                   }}
                   current={selectedDate}

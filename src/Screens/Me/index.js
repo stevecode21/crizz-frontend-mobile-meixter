@@ -48,13 +48,13 @@ const ScrollView = styled.ScrollView`
     height: 100%;
 `
 const Header = styled.View`
-	height: 90px;
+	height: 60px;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
 	background-color: ${colors.blueDark};
-	padding-top: 40px;
+	padding-top: 0px;
 	padding-bottom: 10px;
 `
 const Menu = styled.View`
@@ -86,6 +86,6 @@ const Separator = styled.View`
 	background-color: ${colors.lila};
 	opacity: 0.4;
 	position: absolute;
-	margin-top: 90px;
+	margin-top: 50px;
 	z-index: 3;
 `

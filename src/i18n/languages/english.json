@@ -106,8 +106,15 @@
     "Teach":"Teach",
     "Sessions":"Sessions",
     "Learn":"Learn",
-    "Me":"Yo",
+    "Me":"Me",
     "Upcoming":"Upcoming",
     "My lessons":"My lessons",
-    "Completed":"Completed"
+    "Completed":"Completed",
+    "UploadingLesson":"Uploading Lesson",
+    "NotClosePublished":"Do not close the app while it is being published",
+    "LessonPosted":"Lesson posted",
+    "SuccessfullyPublished":"Successfully published",
+    "NowBooking":"Now your lesson is on the air.",
+    "NowBooking2":"We’ll let you know when there are users booking.",
+    "volume":"volume"
 }
