@@ -70,7 +70,7 @@ export default function CreateLesson({navigation, route}) {
 					thirtymincoins: parseInt(params.coins30),
 					language: params.language,
 					discount: params.selectedDescount,
-					tags: listTags,
+					tags: JSON.stringify(listTags),
 					cover: `data:image/png;base64,${params.cover}`,
 				}
 				if (params.idTrack != undefined)
@@ -78,6 +78,7 @@ export default function CreateLesson({navigation, route}) {
 					data.track = params.idTrack
 					data.volume = parseInt(params.volume)
 				}
+
 				let options = {
 					headers : {
 						'Accept': 'application/json',
@@ -90,8 +91,25 @@ export default function CreateLesson({navigation, route}) {
 					parameters: data,
 				}
 				let responseLoad = await FileSystem.uploadAsync(ROUTES.LESSON, params.video, options)
+				//console.log('responseLoad', responseLoad.body)
 				setLoading(false)
-				openModalSuccess()
+				if (responseLoad.status == 200) 
+		        {
+		          openModalSuccess()
+		        }
+				else if (responseLoad.status == 401 || responseLoad.status == 500) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? responseLoad.message_en : responseLoad.message_es)
+		        }
+		        else if (responseLoad.status == 403) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? responseLoad.message_en : responseLoad.message_es)
+		          setStateApp(APP_STATE.PUBLIC)
+		        }
+		        else
+		        {
+		          showErrorToast(responseLoad.message);
+		        }
 			}
 			catch (error)
 			{
