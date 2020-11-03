@@ -24,7 +24,7 @@ const Header = ({navigation}) => {
 					<TouchableOpacity onPress={() => {
 						console.log('press calendar')
 					}}>
-						<IconCalendar resizeMode='contain' source={require('../../assets/img/calendar.png')} />
+						<IconCalendar resizeMode='contain' source={require('../../assets/img/calendar2.png')} />
 					</TouchableOpacity>
 				</Menu>
 				
@@ -53,7 +53,8 @@ const Container = styled.View`
 	justify-content: center;
 	align-items: center;
 	flex-direction: row;
-	background-color: ${colors.blueDark};`
+	background-color: ${colors.blueDark};
+`
 const Separator = styled.View`
 	width: 100%;
 	height: 1px;
@@ -69,7 +70,7 @@ const Menu = styled.View`
 	width: 33%;
 `
 const IconCalendar = styled.Image`
-	height: 32px;
+	height: 42px;
 	justify-content: center;
 	align-items: center;
 	left: -25px;
@@ -82,7 +83,7 @@ const Title = styled.Text`
 	font-family: ${fonts.medium};
 `
 const IconAdd = styled.Image`
-	height: 32px;
+	height: 42px;
 	justify-content: center;
 	align-items: center;
 	right: -25px;

@@ -116,5 +116,13 @@
     "SuccessfullyPublished":"Successfully published",
     "NowBooking":"Now your lesson is on the air.",
     "NowBooking2":"We’ll let you know when there are users booking.",
-    "volume":"volume"
+    "volume":"volume",
+    "ViewStatistics":"View statistics",
+    "Edit":"Edit",
+    "Freeze":"Freeze",
+    "IssuesLesson":"Issues with this lesson",
+    "Comments":"Comments",
+    "AddCommen":"Add comment",
+    "Send":"Send",
+    "Share":"Share"
 }

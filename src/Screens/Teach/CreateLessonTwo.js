@@ -412,7 +412,7 @@ export default function CreateLesson({navigation, route}) {
 								style={{alignItems: 'center', alignContent: 'center', alignSelf: 'center'}} 
 								onPress={() => deleteTags(item)}
 							>
-								<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
+								<IconDelete  resizeMode='stretch' source={require('../../../assets/img/close-circle.png')}/>
 							</TouchableOpacity>
 						</Fragment>
 					))}
@@ -775,8 +775,9 @@ const ErrorText = styled.Text`
 	margin-top: 5px;
 `
 const IconDelete = styled.Image`
+	height: 20px;
 	width: 20px;
-	margin-left: -10px;
+	margin-left: -5px;
 	margin-right: 10px;
 `
 const RowTags = styled.View`

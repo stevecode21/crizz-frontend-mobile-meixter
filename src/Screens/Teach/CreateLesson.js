@@ -161,7 +161,7 @@ export default function CreateLesson({navigation}) {
 	const handleResultVideo = async (result) => {
 		if (!result.cancelled) {
 			console.log(result.duration)
-			if (result.duration <= 60000)
+			if (result.duration <= 62000)
 			{
 				setParams(prevState => ({...prevState, video: result.uri }))
 			}
@@ -179,6 +179,10 @@ export default function CreateLesson({navigation}) {
 				encoding: 'base64',
 			})
 			setParams(prevState => ({...prevState, cover: base64 }))
+		}
+		else
+		{
+			setParams(prevState => ({...prevState, cover: '' }))
 		}
 	}
 
@@ -696,7 +700,7 @@ export default function CreateLesson({navigation}) {
 											<IconMusic resizeMode='contain' source={require('../../../assets/img/track.png')}/>	
 											<TrackSelected>{params.track.name}</TrackSelected>
 											<TouchableOpacity onPress={() =>  deleteTrack()}>
-												<IconDelete  resizeMode='contain' source={require('../../../assets/img/close-circle.png')}/>
+												<IconDelete  resizeMode='stretch' source={require('../../../assets/img/close-circle.png')}/>
 											</TouchableOpacity>
 										</RowCenter>
 									</FlexCenterCoverPlay>
@@ -905,8 +909,7 @@ const AddMusic = styled.Text`
 `
 const IconDelete = styled.Image`
 	height: 20px;
-	justify-content: center;
-	align-items: center;
+	width: 20px;
 `
 const IconMusic = styled.Image`
 	width: 20px;
