@@ -44,13 +44,12 @@ export default function Mylessons() {
 		{
 			let response = await api.listLesson()
 			//console.log(response)
-
 			let list = response.result
 			for (var i = 0; i < list.length; i++) {
 				let thumnail = await generateThumbnail(list[i].video)
 				list[i].thumnail = thumnail
 			}
-			console.log(list)
+			//console.log(list)
 			setListLesson(list)	
 		} 
 		catch (error) 
