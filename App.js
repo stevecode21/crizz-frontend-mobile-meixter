@@ -43,7 +43,7 @@ export default function App() {
         <AppearanceProvider>
           <AppContextProvider>
               <SafeAreaView style={styles.containerSafe}>
-                <StatusBar  barStyle={themeStatusBarStyle} />
+                <StatusBar barStyle={themeStatusBarStyle} />
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                   <RootNavigation />
                 </TouchableWithoutFeedback>

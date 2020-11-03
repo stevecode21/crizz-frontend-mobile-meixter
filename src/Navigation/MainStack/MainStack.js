@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   icon: {resizeMode: 'stretch', backgroundColor: "transparent", justifyContent: 'center', alignSelf: 'center'},
-  lineTab: {borderColor: colors.cyanTransparent, borderBottomWidth: 1, width: '100%'},
+  lineTab: {borderColor: colors.cyan, borderBottomWidth: 5, width: '100%'},
 })
 
 const Container = styled.View`
@@ -48,14 +48,14 @@ const Container = styled.View`
   right: 0;
   bottom: 0;  
   padding-top: 10px;
-  background-color: ${colors.transparent}; 
+  background-color: ${props => props.colorBG};
   height: 70px;
   width: 100%;
 `
 const Separator = styled.View`
   width: 100%;
   height: 1px;
-  background-color: ${colors.lila};
+  background-color: ${colors.whiteTrasparent};
   opacity: 0.5;
   position: absolute;
 `
@@ -70,7 +70,7 @@ function MyTabBar({ state, descriptors, navigation }) {
   }
 
   return (
-    <Container>
+    <Container colorBG={focusedOptions.backgroundColor}>
       <Separator />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
@@ -104,12 +104,12 @@ function MyTabBar({ state, descriptors, navigation }) {
         };
 
         const shadowOpt = {
-            width: parseInt(width/4),
-            height:6,
+            width: parseInt(width/4.2),
+            height:4,
             color: colors.cyan,
             border:5,
-            radius:3,
-            opacity:0.7,
+            radius:0,
+            opacity:0.8,
             x:0,
             y:0
         }
@@ -132,10 +132,10 @@ function MyTabBar({ state, descriptors, navigation }) {
             }
 
             {label == 'Sessions' && isFocused && 
-              (<Image style={[styles.icon, {width: 32, height: 30}]} source={require('../../../assets/img/menu_session-active.png')} />)
+              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_session-active.png')} />)
             }
             {label == 'Sessions' && !isFocused &&  
-              (<Image style={[styles.icon, {width: 32, height: 30}]} source={require('../../../assets/img/menu_session-inactive.png')} />)
+              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_session-inactive.png')} />)
             }
 
             {label == 'Teach' && isFocused && 
@@ -189,16 +189,24 @@ export default function MainStack() {
     <Tab.Navigator 
       lazy={true} 
       backBehavior="initialRoute" 
-      initialRouteName={Routes.LEARN} 
+      initialRouteName={Routes.TEACH} 
       tabBar={props => <MyTabBar {...props} />} 
     >
-      <Tab.Screen name={Routes.LEARN} component={Learn}/>
-      <Tab.Screen name={Routes.SESSIONS} component={Launch} />
+      <Tab.Screen name={Routes.LEARN} component={Learn} options={({ route }) => ({
+        tabBarVisible: getTabBarVisibility(route),
+        backgroundColor: colors.transparent
+      })}/>
+      <Tab.Screen name={Routes.SESSIONS} component={Launch} options={({ route }) => ({
+        tabBarVisible: getTabBarVisibility(route),
+        backgroundColor: colors.blueDark
+      })}/>
       <Tab.Screen name={Routes.TEACH} component={TeachTab} options={({ route }) => ({
-        tabBarVisible: getTabBarVisibility(route)
+        tabBarVisible: getTabBarVisibility(route),
+        backgroundColor: colors.blueDark
       })}/>
       <Tab.Screen name={Routes.ME} component={MeStack} options={({ route }) => ({
-        tabBarVisible: getTabBarVisibility(route)
+        tabBarVisible: getTabBarVisibility(route),
+        backgroundColor: colors.blueDark
       })}/>      
     </Tab.Navigator>
   );

@@ -43,5 +43,7 @@ export const ROUTES = {
 	CONFIG_GENERAL  :`${API_URL}/Config/General`,
 	CONFIG_LANGUAGE :`${API_URL}/Config/Language`,
 	CONFIG_TRACKS	:`${API_URL}/Config/Track`,
-	LESSON 			:`${API_URL}/Lesson/Lesson`
+	LESSON 			:`${API_URL}/Lesson/Lesson`,
+	LIST_LESSON 	:`${API_URL}/Lesson/listByUser`,
+	GET_LESSON 		:`${API_URL}/Lesson/findById`,
 }

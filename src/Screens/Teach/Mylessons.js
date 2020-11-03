@@ -8,6 +8,19 @@ import useAuth from '../../Services/Auth';
 import fonts from '../../Themes/Fonts';
 import colors from '../../Themes/Colors';
 
+
+
+export default function Mylessons() {
+	const {t, localeProvider} = useTranslation()
+  	const {setLoading, showErrorToast, stateApp, checkAccount} = useAuth()
+
+	return (
+		<Container>
+			
+		</Container>
+	)
+}
+
 const Container = styled.View`
 	flex: 1;
 	background: ${colors.blueDark};
@@ -35,16 +48,3 @@ const Subtitle = styled.Text`
 	margin-top: 20px;
 	width: 320px;
 `
-
-export default function Mylessons() {
-	const {t, localeProvider} = useTranslation()
-  	const {setLoading, showErrorToast, stateApp, checkAccount} = useAuth()
-
-	return (
-		<Container>
-			<Icon resizeMode='contain' source={require('../../../assets/img/uncoming.png')} />
-			<Title>{t('teachUncomingTitle')}</Title>
-			<Subtitle>{t('teachUncomingText')}</Subtitle>
-		</Container>
-	)
-}
