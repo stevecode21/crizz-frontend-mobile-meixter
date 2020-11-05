@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.SemiBold, 
     textAlign: 'center'
   },
-  icon: {resizeMode: 'stretch', backgroundColor: "transparent", justifyContent: 'center', alignSelf: 'center'},
+  icon: {resizeMode: 'stretch', backgroundColor: "transparent", justifyContent: 'center', alignSelf: 'center', width: 42, height: 36},
   lineTab: {borderColor: colors.cyan, borderBottomWidth: 5, width: '100%'},
 })
 
@@ -49,7 +49,7 @@ const Container = styled.View`
   bottom: 0;  
   padding-top: 10px;
   background-color: ${props => props.colorBG};
-  height: 70px;
+  height: 80px;
   width: 100%;
 `
 const Separator = styled.View`
@@ -125,31 +125,31 @@ function MyTabBar({ state, descriptors, navigation }) {
             style={{ flex: 1 }}
           >
             {label == 'Learn' && isFocused && 
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_learn-active.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_learn-active.png')} />)
             }
             {label == 'Learn' && !isFocused &&  
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_learn-inactive.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_learn-inactive.png')} />)
             }
 
             {label == 'Sessions' && isFocused && 
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_session-active.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_session-active.png')} />)
             }
             {label == 'Sessions' && !isFocused &&  
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_session-inactive.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_session-inactive.png')} />)
             }
 
             {label == 'Teach' && isFocused && 
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_teach-active.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_teach-active.png')} />)
             }
             {label == 'Teach' && !isFocused &&  
-              (<Image style={[styles.icon, {width: 34, height: 30}]} source={require('../../../assets/img/menu_teach-inactive.png')} />)
+              (<Image style={[styles.icon, {}]} source={require('../../../assets/img/menu_teach-inactive.png')} />)
             }
 
             {label == 'Me' && isFocused && 
-              (<Image style={[styles.icon, {width: 36, height: 32}]} source={require('../../../assets/img/menu_me-active.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_me-active.png')} />)
             }
             {label == 'Me' && !isFocused &&  
-              (<Image style={[styles.icon, {width: 36, height: 32}]} source={require('../../../assets/img/menu_me-inactive.png')} />)
+              (<Image style={styles.icon} source={require('../../../assets/img/menu_me-inactive.png')} />)
             }
 
             <Text style={[styles.textLabel, { color: isFocused ? colors.white : colors.whiteTrasparent }]}>

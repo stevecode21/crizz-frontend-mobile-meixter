@@ -32,6 +32,15 @@ export async function sendComment(data){
     }
 }
 
+export async function freeze(data){
+    try{
+        let res = await axios.put(ROUTES.FREEZE_LESSON, data);
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
+
 
 export function handler(err) {
     console.log('err', err)

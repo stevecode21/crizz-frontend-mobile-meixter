@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef, Fragment} from 'react'
-import { BackHandler, FlatList, TouchableOpacity} from 'react-native'
+import { BackHandler, FlatList, TouchableOpacity, TouchableHighlight} from 'react-native'
 import styled from 'styled-components/native'
 import moment from 'moment'
 import useTranslation from '../../i18n';
@@ -24,7 +24,7 @@ export default function Mylessons() {
   	//comments
   	const [listComments, setListComments] = useState([])
   	const [refresComments, setRefresComments] = useState(false)
-  	const [idComments, setIdComments] = useState('')
+  	const [selectedLesson, setSelectedLesson] = useState({})
 
   	const [params, setParams] = useState({
   		message: '',
@@ -50,9 +50,9 @@ export default function Mylessons() {
 	}
 
   	useEffect(() => {(async () => {
-  		setRefreshing(true)
+  		setLoading(true)
 		await getListLesson()
-		setRefreshing(false)
+		setLoading(false)
 		//openModal('menu')
 	})()}, [])
 
@@ -75,7 +75,7 @@ export default function Mylessons() {
   		try 
 		{
 			let response = await api.listLesson()
-			//console.log(response)
+			//console.log(response.result)
 			let list = response.result
 			for (var i = 0; i < list.length; i++) {
 				let thumnail = await generateThumbnail(list[i].video)
@@ -108,7 +108,7 @@ export default function Mylessons() {
 		{
 			setRefresComments(true)
 			let response = await api.listLessonComments(id)
-			console.log(response)
+			//console.log(response)
 			setListComments(response.result)
 			setRefresComments(false)	
 		} 
@@ -140,17 +140,18 @@ export default function Mylessons() {
 				setLoading(true)
 				let data = {
 					comment: params.message,
-					id: idComments
+					id: selectedLesson._id
 				}
 				let response = await api.sendComment(data)
-				console.log(response)
+				//console.log(response)
 				setParams(prevState => ({...prevState, message: '' }))
 				setError(prevState => ({...prevState, message: '' }))
 				setLoading(false)
-				await getListComments(idComments)
+				await getListComments(selectedLesson._id)
 			} 
 			catch (error) 
 			{
+				setLoading(false)
 				console.log(error)
 		        if (error.status == 401) 
 		        {
@@ -174,6 +175,40 @@ export default function Mylessons() {
   		}
   	}
 
+  	const freezeLesson = async (lesson) => {
+  		try 
+		{
+			setLoading(true)
+			let data = {
+				offer: !lesson.offer,
+				id: lesson._id
+			}
+			let response = await api.freeze(data)
+			//console.log(response)
+			setLoading(false)
+			closeModal()
+			await getListLesson()
+		} 
+		catch (error) 
+		{
+			setLoading(false)
+			console.log(error)
+	        if (error.status == 401) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	        }
+	        else if (error.status == 403) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	          setStateApp(APP_STATE.PUBLIC)
+	        }
+	        else
+	        {
+	          showErrorToast(error.message);
+	        }
+		}
+  	}
+
   	const handleRefresh = async () => {
   		setRefreshing(true)
 		await getListLesson()
@@ -185,7 +220,7 @@ export default function Mylessons() {
   	}
 
   	const openModal = (type) => {
-  		if (type == 'menu')
+  		if (type == 'menu' || type == 'unfreeze')
     		setMtm('50%')
     	else
     		setMtm('80%')
@@ -206,7 +241,7 @@ export default function Mylessons() {
 				<TouchableOpacity onPress={closeModal}>
 					<TextEdit>{t('Edit')}</TextEdit>
 				</TouchableOpacity>
-				<TouchableOpacity onPress={closeModal}>
+				<TouchableOpacity onPress={() => freezeLesson(selectedLesson)}>
 					<TextEdit>{t('Freeze')}</TextEdit>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={closeModal}>
@@ -224,10 +259,50 @@ export default function Mylessons() {
 		)
 	}
 
-	const handleComments = async (id) => {
-		setIdComments(id)
+	const Unfreeze = () => {
+		return (
+			<ScrollViewModal>
+				<AreUnfreezeLesson>{t('AreUnfreezeLesson')}</AreUnfreezeLesson>
+				<ContainerButtom>
+					<TextButton>
+						{t('PublishNow')} {'	  '}
+						<IconArrow resizeMode='contain' source={require('../../../assets/img/arrowRight.png')} />
+					</TextButton>
+					<TouchableHighlight
+						style={{
+							width: 190,
+						    height: 60,
+						    borderRadius: 10,
+						    marginTop: -40,
+						    backgroundColor: colors.transparent,
+						    justifyContent: 'center',
+						    alignItems: 'center'
+						}}
+						onPress={() => freezeLesson(selectedLesson)}
+					>
+						<BottomContinue resizeMode='stretch' source={require("../../../assets/img/button-bg.png")} />
+					</TouchableHighlight>
+				</ContainerButtom>
+				<YourPublicAgain>{t('YourPublicAgain')}</YourPublicAgain>
+			</ScrollViewModal>
+		)
+	}
+
+	const handleComments = async (item) => {
+		setListComments([])
+		setSelectedLesson(item)
 		openModal('comments')
-		await getListComments(id)
+		await getListComments(item._id)
+	}
+
+	const handleMenu = async (item) => {
+		setSelectedLesson(item)
+		openModal('menu')
+	}
+
+	const handleUnfreeze = async (item) => {
+		setSelectedLesson(item)
+		openModal('unfreeze')
 	}
 
 	return (
@@ -237,7 +312,23 @@ export default function Mylessons() {
 				renderItem={({ item, index }) => (
 					<ListItem>
 						<RowCover>
-							<ImageCover resizeMode='cover' source={{ uri: (item.thumnail == null) ? URI+''+item.cover : item.thumnail }} />
+							<ImageCover freeze={item.offer} resizeMode='cover' 
+								source={{ uri: (item.thumnail == null) ? URI+''+item.cover : item.thumnail }} />
+							{!item.offer && (
+								<TouchableOpacity style={{
+									position: 'absolute',
+									zIndex: 3,
+									marginLeft: 10,
+									backgroundColor: colors.transparent,
+									width: 78,
+									height: 120,
+									alignItems: 'center',
+									alignSelf: 'center',
+									justifyContent: 'center'
+								}} onPress={() => handleUnfreeze(item) }>
+									<TextFrezze>Freeze</TextFrezze>
+								</TouchableOpacity>
+							)}
 							<ButtomCover>
 								<ButtomCoverLeft>
 									<IconViews resizeMode='contain' source={require('../../../assets/img/views.png')} />
@@ -251,22 +342,26 @@ export default function Mylessons() {
 						</RowCover>
 						<RowInfo>
 							<TopInfo>
-								<DateTime>{moment(item.createdAt).format('d MMM, hh:mm a')}</DateTime>
-								<TouchableOpacity onPress={() => openModal('menu') }>
-									<IconMenu resizeMode='contain' source={require('../../../assets/img/options.png')} />
+								<DateTime freeze={item.offer}>{moment(item.createdAt).format('d MMM, hh:mm a')}</DateTime>
+								{item.offer && (
+								<TouchableOpacity onPress={() => handleMenu(item) }>
+									<IconMenu resizeMode='stretch' source={require('../../../assets/img/options.png')} />
 								</TouchableOpacity>
+								)}
 							</TopInfo>
-							<Info>{item.description}</Info>
+							<Info freeze={item.offer}>{item.description}</Info>
 							<ButtomInfo>
 								<ButtomInfoSpace></ButtomInfoSpace>
 								<ButtomInfoLeft>
+									{item.offer && (
 									<TouchableOpacity onPress={() => openModal('sharing') }>
 										<IconShared resizeMode='contain' source={require('../../../assets/img/share_home.png')} />
 										<TextShared>{item.share}</TextShared>
 									</TouchableOpacity>
+									)}
 								</ButtomInfoLeft>
 								<ButtomInfoRight>
-									<TouchableOpacity onPress={() => handleComments(item._id) }>
+									<TouchableOpacity onPress={() => handleComments(item) }>
 										<IconComment resizeMode='contain' source={require('../../../assets/img/comment_home.png')} />
 										<TextComment>{item.comments}</TextComment>
 									</TouchableOpacity>
@@ -294,6 +389,7 @@ export default function Mylessons() {
 								{viewMode == 'menu' && t('settings')}
 								{viewMode == 'sharing' && t('Share')}
 								{viewMode == 'comments' && t('Comments')}
+								{viewMode == 'unfreeze' && t('UnfreezeLesson')}
 							</Title>
 						</MenuCenter>
 						<MenuExt>
@@ -305,6 +401,7 @@ export default function Mylessons() {
 					<SeparatorModal />
 					{viewMode == 'menu' && <MenuSettings />}
 					{viewMode == 'sharing' && <Sharing />}
+					{viewMode == 'unfreeze' && <Unfreeze />}
 					{viewMode == 'comments' && (
 						<Fragment>
 							<FlatList
@@ -329,10 +426,11 @@ export default function Mylessons() {
 									</ListItemV>
 								)}
 								keyExtractor={item => item._id}
-								onRefresh={() => getListComments(idComments)}
+								onRefresh={() => getListComments(selectedLesson._id)}
 								refreshing={refresComments}
 								style={{marginTop: 10}}
 							/>
+							{selectedLesson.offer && (
 							<ViewSendComment>
 								<RowSCLeft>
 									<InputComments 
@@ -352,6 +450,7 @@ export default function Mylessons() {
 									</TouchableOpacity>
 								</RowSCRight>
 							</ViewSendComment>
+							)}
 						</Fragment>
 					)}
 				</ContainerModal>
@@ -364,7 +463,7 @@ const Container = styled.View`
 	flex: 1;
 	background: ${colors.blueDark};
 	align-items: flex-start;
-	margin-bottom: 70px;
+	margin-bottom: 80px;
 `
 //------ list item --------------
 const ListItem = styled.View`
@@ -394,7 +493,7 @@ const RowInfo = styled.View`
 	width: 70%;
 `
 const Info = styled.Text`
-	color: ${colors.whiteTrasparent};
+	color: ${props => props.freeze ? colors.whiteTrasparent : colors.gray};
 	font-size: 12px;
 	text-align: left;
 	font-family: ${fonts.regular};
@@ -408,23 +507,25 @@ const ImageCover = styled.Image`
 	justify-content: center;
 	align-items: center;
 	align-self: center;
+	opacity: ${props => props.freeze ? 1.0 : 0.3};
 `
 const TopInfo = styled.View`
 	flex-direction: row;
 	height: 20px;
 `
 const IconMenu = styled.Image`
-	height: 20px;
+	height: 14px;
+	width: 30px;
 	align-items: center;
 	justify-content: center;
 	align-self: center;
 `
 const DateTime = styled.Text`
-	color: ${colors.whiteTrasparent};
+	color: ${props => props.freeze ? colors.whiteTrasparent : colors.gray};
 	font-size: 12px;
 	text-align: left;
 	font-family: ${fonts.regular};
-	width: 75%;
+	width: 85%;
 `
 const ButtomCover = styled.View`
 	flex-direction: row;
@@ -448,6 +549,13 @@ const IconLikes = styled.Image`
 	align-items: center;
 	justify-content: center;
 	align-self: center;
+`
+const TextFrezze = styled.Text`
+	color: ${colors.white};
+	font-size: 16px;
+	text-align: center;
+	font-family: ${fonts.SemiBold};
+	text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
 `
 const TextViews = styled.Text`
 	color: ${colors.whiteTrasparent};
@@ -650,3 +758,52 @@ const TextCommentList = styled.Text`
 	text-align: left;
 	font-family: ${fonts.regular};
 `
+const AreUnfreezeLesson = styled.Text`
+	color: ${colors.white};
+	font-size: 12px;
+	text-align: center;
+	font-family: ${fonts.regular};
+	margin-top: 10%;
+	margin-bottom: 25px;
+	width: 336px;
+	align-self:center;
+	align-items:center;
+	justify-content:center;
+`
+const YourPublicAgain = styled.Text`
+	color: ${colors.whiteTrasparent};
+	font-size: 12px;
+	text-align: center;
+	font-family: ${fonts.regular};
+	width: 336px;
+	align-self:center;
+	align-items:center;
+	justify-content:center;
+	margin-top: 10px;
+`
+//--- stylepie -----
+const ContainerButtom = styled.View`
+	align-self: center;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+`
+const TextButton = styled.Text`
+	color: ${colors.cyan};
+	font-size: 18px;
+	font-family: ${fonts.SemiBold};
+	text-shadow: 0px 0px 2px ${colors.cyan};
+	justify-content: center;
+	align-items:center;
+	text-align: center;
+`
+const IconArrow = styled.Image`
+    height: 20px;
+`
+const BottomContinue = styled.Image`
+    background-color: ${colors.transparent};
+    width: 240px;
+    height: 90px;
+`
+//--- end ----------
+

@@ -126,4 +126,8 @@
     "Send":"Send",
     "Share":"Share",
     "sorrySendComments":"Sorry, write one comment",
+    "UnfreezeLesson":"Unfreeze Lesson",
+    "AreUnfreezeLesson":"Are you sure you want to Unfreeze this Lesson?",
+    "YourPublicAgain":"your lesson will appear on your profile and be public again",
+    "PublishNow":"Publish now"
 }

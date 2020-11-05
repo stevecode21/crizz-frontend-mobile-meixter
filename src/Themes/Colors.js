@@ -18,8 +18,8 @@ const colors = {
   violet: "#8D45FF",
   violetDark: "#040517",
   lilaBlack: '#3A385B',
-  grayLight: '#6A65A84D',
-  gray: '#6A65A8',
+  grayLight: '#3c3e514D',
+  gray: '#3c3e51',
 };
 
 export default colors;

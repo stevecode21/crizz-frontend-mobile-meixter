@@ -46,5 +46,6 @@ export const ROUTES = {
 	LESSON 			:`${API_URL}/Lesson/Lesson`,
 	LIST_LESSON 	:`${API_URL}/Lesson/listByUser`,
 	GET_LESSON 		:`${API_URL}/Lesson/findById`,
+	FREEZE_LESSON	:`${API_URL}/Lesson/offer`,
 	COMMENTS_LESSON	:`${API_URL}/Lesson/Comment`,
 }
