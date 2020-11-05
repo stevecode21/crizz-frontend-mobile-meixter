@@ -122,7 +122,8 @@
     "Freeze":"Freeze",
     "IssuesLesson":"Issues with this lesson",
     "Comments":"Comments",
-    "AddCommen":"Add comment",
+    "AddComment":"Add comment",
     "Send":"Send",
-    "Share":"Share"
+    "Share":"Share",
+    "sorrySendComments":"Sorry, write one comment",
 }

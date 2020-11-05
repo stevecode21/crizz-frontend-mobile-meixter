@@ -10,6 +10,28 @@ export async function listLesson(){
     }
 }
 
+export async function listLessonComments(id){
+    try{
+        let res = await axios.get(ROUTES.COMMENTS_LESSON, {
+          params: {
+            id: id
+          }
+        });
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
+
+export async function sendComment(data){
+    try{
+        let res = await axios.post(ROUTES.COMMENTS_LESSON, data);
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
+
 
 export function handler(err) {
     console.log('err', err)

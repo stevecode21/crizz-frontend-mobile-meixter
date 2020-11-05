@@ -613,7 +613,6 @@ export default function CreateLesson({navigation}) {
 				closeOnDragDown
 				onClose={stopTrack}
 				dragFromTopOnly
-				keyboardAvoidingViewEnabled={true}
 				animationType={'slide'}
 				customStyles={customStyles}>
 				<ContainerModal>
