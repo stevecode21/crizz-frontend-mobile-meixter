@@ -1,31 +1,26 @@
 import React, {useEffect, useState} from 'react'
 import { BackHandler } from 'react-native'
 import styled from 'styled-components/native'
-import videos from '../../Services/videos'
 import useTranslation from '../../i18n';
 import useAuth from '../../Services/Auth';
-
+import { APP_STATE, URI } from "../../Constants";
 import Header from '../../Components/Header'
 import Hero from '../../Components/Hero'
+import colors from '../../Themes/Colors'
 
 const Container = styled.View`
 	flex: 1;
-	background: transparent;
+	background: ${colors.blueDark};
+	opacity: 0.95;
 `
 
 export default function() {
-	const {logout, setInHome} = useAuth()
-	const [pause, setPause] = useState(false)
-
-	useEffect(() => {
-		setInHome(true)
-		setPause(false)
-	}, []);
+	const {setInHome, videos, getListLesson} = useAuth()
 
 	return (
 		<Container>
 			<Header />
-			<Hero videos={videos} pause={pause} setPause={setPause} />
+			<Hero videos={videos} />
 		</Container>
 	)
 }

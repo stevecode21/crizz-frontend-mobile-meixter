@@ -2,11 +2,14 @@ import React, {useEffect, useCallback, useState, useRef} from 'react';
 import { Alert } from 'react-native';
 import useStorage, {getValue} from "../AsyncStorage";
 import { APP_STATE, URI } from "../../Constants";
-import * as api from "../login";
+
 import Loading from '../../Components/Loading'
 import {showErrorToast} from '../../Components/Toast'
 import useTranslation from '../../i18n';
 import Routes from '../../Navigation/Routes';
+
+import * as api from "../login"
+import * as apilesson from '../lesson'
 
 const AppStateContext = React.createContext();
 
@@ -16,13 +19,14 @@ export const AppContextProvider = props => {
 	const [stateApp, setStateApp] = useStorage("@STATE", APP_STATE.UNKNOWN);
 	const [loading, setLoading] = useState(false)
 	const [inHome, setInHome] = useState(false)
+	const [videos, setVideos] = useState([])
 	const {localeProvider} = useTranslation()
 
-	useEffect(() => {(async () => {
-			//setStateApp(APP_STATE.PRIVATE)
-			_checkAccount()
-			//_logoutUser()
-	    })();
+	useEffect(() => {
+	  	async function fetchData() {
+	    	let response = await _checkAccount()
+		}
+		fetchData();
 	}, []);
 	
 	const _setToken = async (accessToken) => {
@@ -104,18 +108,69 @@ export const AppContextProvider = props => {
 				
 				updateAccount(response.result)
 				console.log('account_info', response.result)
-				if (!response.result.fullRecord)
+				if (!response.result.fullRecord){
 					setStateApp(APP_STATE.REGISTER)
-				else
+				}else{
+					await getListLesson()
 					setStateApp(APP_STATE.PRIVATE)
+				}
+					
 			}
 		    catch (error) 
 		    {
-          		showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+		    	if (error.status == 401) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+		        }
+		        else if (error.status == 403) 
+		        {
+		          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+		          setStateApp(APP_STATE.PUBLIC)
+		        }
+		        else
+		        {
+		          showErrorToast(error.message);
+		        }
 				setLoading(false)
 		    }
 		}
 	}
+
+	const getListLesson = async () => {
+  		setLoading(true)
+  		try 
+		{
+			let response = await apilesson.listLessonByTags()
+			let list = response.result
+			for (var i = 0; i < list.length; i++) {
+				list[i].video = URI+''+list[i].video
+				list[i].cover = URI+''+list[i].cover
+				list[i].tacherUrlProfile = URI+''+list[i].tacherUrlProfile
+				
+				let vol = (100 - parseInt(list[i].volume)) / 100
+				list[i].volumeVideo = parseFloat(vol.toFixed(1))
+				vol = parseInt(list[i].volume) / 100
+				list[i].volume = parseFloat(vol.toFixed(1))
+			}
+			//console.log(list)
+			setVideos(list)	
+			//console.log(list)
+			setLoading(false)
+		} 
+		catch (error) 
+		{
+			setLoading(false)
+			console.log('error en home', error)
+	        if (error.status == 401) 
+	        {
+	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
+	        }
+	        else
+	        {
+	          //showErrorToast(error.message);
+	        }
+		}
+  	}
 
 	return (
 		<AppStateContext.Provider
@@ -133,6 +188,8 @@ export const AppContextProvider = props => {
 				showErrorToast: showErrorToast,
 				inHome: inHome,
 				setInHome: setInHome,
+				videos: videos,
+				getListLesson: getListLesson
 			}}
 		>
 			<Loading visible={loading} />

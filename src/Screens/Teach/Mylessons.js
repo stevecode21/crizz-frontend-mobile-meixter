@@ -10,7 +10,7 @@ import fonts from '../../Themes/Fonts';
 import colors from '../../Themes/Colors';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 //api services
-import * as api from "../../Services/lesson"
+import * as api from '../../Services/lesson'
 
 
 export default function Mylessons() {
@@ -69,7 +69,7 @@ export default function Mylessons() {
 			//console.log(error)
 			return null
 		}
-	};
+	}
 
   	const getListLesson = async () => {
   		try 
@@ -537,14 +537,15 @@ const ButtomCoverRight = styled.View`
 	flex:1;
 `
 const IconViews = styled.Image`
-	height: 18px;
+	height: 23px;
 	margin-top: 9px;
 	align-items: center;
 	justify-content: center;
 	align-self: center;
+	margin-left: 10px;
 `
 const IconLikes = styled.Image`
-	height: 21px;
+	height: 26px;
 	margin-top: 6px;
 	align-items: center;
 	justify-content: center;
@@ -563,6 +564,7 @@ const TextViews = styled.Text`
 	text-align: center;
 	font-family: ${fonts.medium};
 	margin-top: 5px;
+	margin-left: 10px;
 `
 const TextLikes = styled.Text`
 	color: ${colors.whiteTrasparent};
@@ -587,16 +589,16 @@ const ButtomInfoRight = styled.View`
 	align-items: center;
 `
 const IconShared = styled.Image`
-	width: 30px;
-	height: 30px;
+	width: 38px;
+	height: 38px;
 	margin-top: 2px;
 	align-items: center;
 	justify-content: center;
 	align-self: center;
 `
 const IconComment = styled.Image`
-	width: 30px;
-	height: 30px;
+	width: 38px;
+	height: 38px;
 	margin-top: 2px;
 	align-items: center;
 	justify-content: center;

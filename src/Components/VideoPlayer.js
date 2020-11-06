@@ -12,45 +12,50 @@ const Poster = styled.ImageBackground`
 	width: 100%;
 `
 
-const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
-	const {inHome} = useAuth()
+const VideoPlayer = ({lesson, isPlay, setVideoRef}) => {
+	const {inHome, setInHome, setLoading} = useAuth()
 	
 
 	const handleVideoRef = component => {
 	  	const playbackObject = component
 	  	if (playbackObject != null)
 	  	{
-	  		videoRef(playbackObject)
-	  		//playbackObject.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
+	  		setVideoRef(playbackObject)
+	  		playbackObject.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
 	  	}
 	}
 
 	const _onPlaybackStatusUpdate = playbackStatus => {
 	  	if (!playbackStatus.isLoaded) {
-	  		console.log('isLoaded', playbackStatus.isLoaded)
+	  		//console.log('isLoaded', playbackStatus.isLoaded)
+	  		setLoading(true)
 		    // Update your UI for the unloaded state
 		    if (playbackStatus.error) {
-		      console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
+		      //console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
 		      // Send Expo team the error on Slack or the forums so we can help you debug!
+		      setLoading(false)
 		    }
 		} else {
 		    // Update your UI for the loaded state
 
 		    if (playbackStatus.isPlaying) {
 		      // Update your UI for the playing state
-		      console.log('isPlaying', playbackStatus.isPlaying)
+		      setInHome(true)
+		      setLoading(false)
+		      //console.log('isPlaying', playbackStatus.isPlaying)
 		    } else {
 		      // Update your UI for the paused state
 		    }
 
 		    if (playbackStatus.isBuffering) {
+		    	//setLoading(true)
 		      // Update your UI for the buffering state
-		      console.log('isBuffering', playbackStatus.isBuffering)
+		      //console.log('isBuffering', playbackStatus.isBuffering)
 		    }
 
 		    if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
 		      // The player has just finished playing and will stop. Maybe you want to play something else?
-		      console.log('didJustFinish', playbackStatus.didJustFinish)
+		      //console.log('didJustFinish', playbackStatus.didJustFinish)
 		    }
 		}
 	}
@@ -58,20 +63,20 @@ const VideoPlayer = ({url, poster, isPlay, videoRef}) => {
 	return isPlay ? (
 		<Play
 			rate={1.0}
-			volume={1.0}
+			volume={lesson.volumeVideo}
 			isMuted={false}
 			shouldPlay={inHome}
 			useNativeControls={false}
 			usePoster
 			isLooping={true}
-			posterSource={poster}
-			source={{uri: url}}
+			posterSource={{uri: lesson.cover}}
+			source={{uri: lesson.video}}
 			resizeMode='cover'
 			ref={handleVideoRef}
-			posterStyle={{opacity: 0.85, height: '100%', width: '100%', resizeMode: 'stretch'}}
+			posterStyle={{opacity: 0.95, height: '100%', width: '100%', resizeMode: 'stretch'}}
 		/>
 	) : (
-		<Poster source={poster} />
+		<Poster source={{uri: lesson.cover}} />
 	)
 }
 

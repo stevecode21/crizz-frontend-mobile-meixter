@@ -8,15 +8,16 @@ import { TouchableOpacity } from 'react-native'
 const Container = styled.View`
 	width: 60px;
 	height: 100%;
-	padding-bottom: 110px;
+	padding-bottom: 150px;
 	justify-content: flex-end;
+	background-color: ${colors.lila}
 `
 const Menu = styled.View`
-	margin: 15px 0;
+	margin: 10px 0;
 	align-items: center;
 `
 const Icon = styled.Image`
-	height: 40px;
+	height: 32px;
 	margin-right: 37px;
 `
 const Count = styled.Text`
@@ -30,48 +31,9 @@ const Count = styled.Text`
 	font-family: ${fonts.medium};
 	margin-top: -2px;
 `
-const SoundBg = styled.View`
-	background: ${colors.fucsia};
-	width: 50px;
-	height: 50px;
-	border-radius: 50px;
-	justify-content: center;
-	align-items: center;
-	margin-top: 20px;
-	margin-right: 37px;
-`
-const NumCoin = styled.Text`
-	color: #fff;
-	font-size: 20px;
-	letter-spacing: -0.1px;
-	text-align: center;
-	margin-top: 10px;
-	text-shadow: 0px 1px 2px #FFFFFF;
-	font-family: ${fonts.SemiBold};
-`
-const shadowOpt = {
-    width:50,
-    height:50,
-    color: colors.fucsia,
-    border:10,
-    radius:25,
-    opacity:0.7,
-    x:0,
-    y:0
-}
 
-const Coins = styled.Text`
-	color: #fff;
-	font-size: 12px;
-	margin-right: 37px;
-	width: 60px;
-	text-align: center;
-	text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
-	font-family: ${fonts.medium};
-	margin-top: 10px;
-`
+const Sidebar = ({ info }) => {
 
-const Sidebar = ({ avatar, count }) => {
 	return (
 		<Container>
 			<TouchableOpacity onPress={() => {
@@ -79,7 +41,7 @@ const Sidebar = ({ avatar, count }) => {
 			}}>
 				<Menu>
 					<Icon resizeMode='contain' source={require('../../assets/img/save_home.png')} />
-					<Count>{count.like}</Count>
+					<Count>{info.save}</Count>
 				</Menu>
 			</TouchableOpacity>
 
@@ -88,7 +50,7 @@ const Sidebar = ({ avatar, count }) => {
 			}}>
 				<Menu>
 					<Icon resizeMode='contain' source={require('../../assets/img/comment_home.png')} />
-					<Count>{count.comment}</Count>
+					<Count>{info.comments}</Count>
 				</Menu>
 			</TouchableOpacity>
 
@@ -97,20 +59,7 @@ const Sidebar = ({ avatar, count }) => {
 			}}>
 				<Menu>
 					<Icon resizeMode='contain' source={require('../../assets/img/share_home.png')} />
-					<Count>{count.share}</Count>
-				</Menu>
-			</TouchableOpacity>
-
-			<TouchableOpacity onPress={() => {
-				console.log('press menu')
-			}}>
-				<Menu>
-					<SoundBg>
-						<BoxShadow style={{borderRadius: 50}} setting={shadowOpt}>
-	          				<NumCoin>{count.share}</NumCoin>
-	          			</BoxShadow>
-	        		</SoundBg>
-	        		<Coins>COINS</Coins>
+					<Count>{info.share}</Count>
 				</Menu>
 			</TouchableOpacity>
 		</Container>
@@ -118,3 +67,6 @@ const Sidebar = ({ avatar, count }) => {
 }
 
 export default Sidebar
+
+
+

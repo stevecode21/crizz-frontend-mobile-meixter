@@ -67,7 +67,7 @@ function MyTabBar({ state, descriptors, navigation }) {
 
   if (focusedOptions.tabBarVisible === false) {
     return null;
-  }
+  } 
 
   return (
     <Container colorBG={focusedOptions.backgroundColor}>
@@ -189,24 +189,28 @@ export default function MainStack() {
     <Tab.Navigator 
       lazy={true} 
       backBehavior="initialRoute" 
-      initialRouteName={Routes.TEACH} 
+      initialRouteName={Routes.LEARN} 
       tabBar={props => <MyTabBar {...props} />} 
     >
       <Tab.Screen name={Routes.LEARN} component={Learn} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route),
-        backgroundColor: colors.transparent
+        backgroundColor: colors.transparent,
+        inHome: true
       })}/>
       <Tab.Screen name={Routes.SESSIONS} component={Launch} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route),
-        backgroundColor: colors.blueDark
+        backgroundColor: colors.blueDark,
+        inHome: false
       })}/>
       <Tab.Screen name={Routes.TEACH} component={TeachTab} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route),
-        backgroundColor: colors.blueDark
+        backgroundColor: colors.blueDark,
+        inHome: false
       })}/>
       <Tab.Screen name={Routes.ME} component={MeStack} options={({ route }) => ({
         tabBarVisible: getTabBarVisibility(route),
-        backgroundColor: colors.blueDark
+        backgroundColor: colors.blueDark,
+        inHome: false
       })}/>      
     </Tab.Navigator>
   );

@@ -41,6 +41,19 @@ export async function freeze(data){
     }
 }
 
+export async function listLessonByTags(){
+    try{
+        let res = await axios.get(ROUTES.ALL_LESSON, {
+          params: {
+            search: '',
+            lang: '5f75f04bf362c0d181a8a207'
+          }
+        }); 
+        return res.data;
+    }catch (e) {
+        throw handler(e)
+    }
+}
 
 export function handler(err) {
     console.log('err', err)

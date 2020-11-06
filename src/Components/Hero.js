@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dimensions, TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback, View} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
@@ -9,7 +9,7 @@ import Info from '../Components/Info'
 import Sidebar from '../Components/Sidebar'
 import useAuth from '../Services/Auth';
 
-const { width, height } = Dimensions.get('screen')
+const { width, height } = Dimensions.get('window')
 
 const Container = styled(ViewPager)`
 	height: 100%;
@@ -31,38 +31,38 @@ const Boton = styled.View`
 	flex: 1;
     justify-content: center;
     align-items: center;
-    margin-top: 55%;
+    margin-top: ${parseInt(height/4)}px;
 `
 const Icon = styled.Image`
-	height: 130px;
-	width: 130px;
+	height: ${parseInt(width/3)}px;
+	width: ${parseInt(width/3)}px;
 `
 
-const Hero = ({ videos, pause, setPause }) => {
+const Hero = ({ videos }) => {
 	const [selected, setSelected] = useState(0)
 	const {inHome, setInHome} = useAuth()
 	const [videoRef, setVideoRef] = useState(null)
+	const [pause, setPause] = useState(true)
 
 	return (
 		<Container
 			orientation='vertical'
 			onPageSelected={e => {
-				setPause(false)
 				setSelected(e.nativeEvent.position)
+				setPause(false)
 			}}
 			initialPage={0}>
 			{videos.map((item, index) => {
 				return (
 					<TouchableWithoutFeedback key={index} onPress={() => {
-						setPause(!pause)
 						videoRef.setStatusAsync({ shouldPlay: pause, isMute: !pause })
+						setPause(!pause)
 					}}>
 						<View>
 							<VideoPlayer
-								url={item.url}
-								poster={item.poster}
+								lesson={item}
 								isPlay={selected === index}
-								videoRef={setVideoRef}
+								setVideoRef={setVideoRef}
 							/>
 							<Gradient
 								locations={[0, 0.2, 0.6, 1]}
@@ -77,10 +77,7 @@ const Hero = ({ videos, pause, setPause }) => {
 										<Icon resizeMode='stretch' source={require('../../assets/img/PlayButton.png')} />
 									)}
 								</Boton>
-								<Center>
-									<Info user={item.user} />
-									<Sidebar avatar={item.user.avatar} count={item.count} />
-								</Center>
+								<Info info={item}/>
 							</Gradient>
 						</View>
 					</TouchableWithoutFeedback>
