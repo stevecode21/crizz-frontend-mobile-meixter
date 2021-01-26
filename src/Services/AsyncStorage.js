@@ -46,7 +46,6 @@ async function saveValue(key, value) {
       return { success: true };
     }
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return { error: e };
   }
 }
@@ -59,7 +58,6 @@ async function saveMultiValues(data) {
     await AsyncStorage.multiSet(mappedValues);
     return { success: true };
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return { error: e };
   }
 }
