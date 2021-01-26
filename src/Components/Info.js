@@ -70,7 +70,6 @@ const Info = ({ info }) => {
 					</Menu>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={() => {
-						console.log('press menu')
 					}}>
 					<Menu>
 						<SoundBg>
