@@ -45,12 +45,10 @@ const VideoPlayer = ({lesson, isPlay, setVideoRef}) => {
 		    if (playbackStatus.isBuffering) {
 		    	//setLoading(true)
 		      // Update your UI for the buffering state
-		      //console.log('isBuffering', playbackStatus.isBuffering)
 		    }
 
 		    if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
 		      // The player has just finished playing and will stop. Maybe you want to play something else?
-		      //console.log('didJustFinish', playbackStatus.didJustFinish)
 		    }
 		}
 	}
