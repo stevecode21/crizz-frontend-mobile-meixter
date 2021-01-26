@@ -343,7 +343,6 @@ export default function CreateLesson({navigation}) {
 			playbackInstance.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate)
 			let res = await playbackInstance.loadAsync(source, status, false)
 			setIsPlaying(res.isPlaying)
-			//console.log('res', res)
 		} catch (e) {
 			//showErrorToast()
 			console.log(e)
