@@ -91,7 +91,6 @@ export default function CreateLesson({navigation, route}) {
 					parameters: data,
 				}
 				let responseLoad = await FileSystem.uploadAsync(ROUTES.LESSON, params.video, options)
-				//console.log('responseLoad', responseLoad.body)
 				setLoading(false)
 				if (responseLoad.status == 200) 
 		        {
