@@ -63,7 +63,6 @@ const Info = ({ info }) => {
 				</TouchableOpacity>
 
 				<TouchableOpacity onPress={() => {
-					console.log('press menu')
 				}}>
 					<Menu>
 						<Icon resizeMode='contain' source={require('../../assets/img/share_home.png')} />
