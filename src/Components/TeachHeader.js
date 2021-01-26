@@ -22,7 +22,6 @@ const Header = ({navigation}) => {
 			<Container>
 				<Menu>
 					<TouchableOpacity onPress={() => {
-						console.log('press calendar')
 					}}>
 						<IconCalendar resizeMode='contain' source={require('../../assets/img/calendar2.png')} />
 					</TouchableOpacity>
