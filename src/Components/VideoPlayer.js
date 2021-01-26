@@ -28,9 +28,7 @@ const VideoPlayer = ({lesson, isPlay, setVideoRef}) => {
 	const _onPlaybackStatusUpdate = playbackStatus => {
 	  	if (!playbackStatus.isLoaded) {
 	  		setLoading(true)
-		    // Update your UI for the unloaded state
 		    if (playbackStatus.error) {
-		      // Send Expo team the error on Slack or the forums so we can help you debug!
 		      setLoading(false)
 		    }
 		} else {
@@ -40,7 +38,6 @@ const VideoPlayer = ({lesson, isPlay, setVideoRef}) => {
 		      // Update your UI for the playing state
 		      setInHome(true)
 		      setLoading(false)
-		      //console.log('isPlaying', playbackStatus.isPlaying)
 		    } else {
 		      // Update your UI for the paused state
 		    }
