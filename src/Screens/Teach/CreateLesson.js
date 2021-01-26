@@ -336,7 +336,6 @@ export default function CreateLesson({navigation}) {
 			}
 			let newVolume = parseInt(volume) / 100 
 			newVolume = newVolume.toFixed(1)
-			console.log(newVolume)
 			let status = {
 				shouldPlay: true,
 				volume: parseFloat(newVolume)
