@@ -87,7 +87,6 @@ export default function({navigation}) {
       codes.map((item) => {
         if(item.code === account.country)
         {
-          console.log('encontre', item.code, item.name)
           setCountryName(item.name)
           setCountry(item.code)
         }
