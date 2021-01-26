@@ -27,11 +27,9 @@ const VideoPlayer = ({lesson, isPlay, setVideoRef}) => {
 
 	const _onPlaybackStatusUpdate = playbackStatus => {
 	  	if (!playbackStatus.isLoaded) {
-	  		//console.log('isLoaded', playbackStatus.isLoaded)
 	  		setLoading(true)
 		    // Update your UI for the unloaded state
 		    if (playbackStatus.error) {
-		      //console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
 		      // Send Expo team the error on Slack or the forums so we can help you debug!
 		      setLoading(false)
 		    }
