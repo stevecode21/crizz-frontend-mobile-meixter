@@ -140,7 +140,6 @@ export default function({navigation}) {
     } 
     catch (error) 
     {
-      console.log(error)
       setLoading(false)
       if (error.status == 401) 
       {
