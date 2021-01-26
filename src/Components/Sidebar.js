@@ -37,7 +37,6 @@ const Sidebar = ({ info }) => {
 	return (
 		<Container>
 			<TouchableOpacity onPress={() => {
-				console.log('press menu')
 			}}>
 				<Menu>
 					<Icon resizeMode='contain' source={require('../../assets/img/save_home.png')} />
