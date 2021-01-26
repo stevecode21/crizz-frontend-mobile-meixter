@@ -73,7 +73,6 @@ export default function({navigation}) {
   const [viewMode, setViewMode] = useState('country')
 
   useEffect(() => { (async () => {
-      console.log(account)
       if(account.fullName != undefined)
         setName(account.fullName)
       if(account.nickname != undefined)
