@@ -158,7 +158,6 @@ export default function CreateLesson({navigation}) {
 
 	const handleResultVideo = async (result) => {
 		if (!result.cancelled) {
-			console.log(result.duration)
 			if (result.duration <= 62000)
 			{
 				setParams(prevState => ({...prevState, video: result.uri }))
