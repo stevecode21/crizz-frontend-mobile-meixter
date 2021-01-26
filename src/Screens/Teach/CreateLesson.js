@@ -117,7 +117,6 @@ export default function CreateLesson({navigation}) {
 		try 
 		{
 			let response = await apiconfig.tracks()
-			//console.log(response)
 			setListTrack(
 				response.result.map(item => ({
 					_id:item._id, track: URI+item.track, name:item.name, play:false
@@ -127,7 +126,6 @@ export default function CreateLesson({navigation}) {
 		catch (error) 
 		{
 			setLoading(false)
-			console.log(error)
 	        if (error.status == 401) 
 	        {
 	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
