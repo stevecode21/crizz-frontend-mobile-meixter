@@ -42,7 +42,6 @@ export const AppContextProvider = props => {
 			{
 				response.result.urlProfileImage = URI+''+response.result.urlProfileImage
 			}
-			console.log('account_info', response.result)
 			updateAccount(response.result)
 			if (response.result.fullRecord == false)
 				setStateApp(APP_STATE.REGISTER)
