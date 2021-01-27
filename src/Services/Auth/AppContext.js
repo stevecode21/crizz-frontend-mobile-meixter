@@ -154,7 +154,6 @@ export const AppContextProvider = props => {
 			}
 			//console.log(list)
 			setVideos(list)	
-			//console.log(list)
 			setLoading(false)
 		} 
 		catch (error) 
