@@ -107,7 +107,6 @@ export const AppContextProvider = props => {
 				
 				
 				updateAccount(response.result)
-				console.log('account_info', response.result)
 				if (!response.result.fullRecord){
 					setStateApp(APP_STATE.REGISTER)
 				}else{
