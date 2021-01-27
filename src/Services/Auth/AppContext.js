@@ -152,7 +152,6 @@ export const AppContextProvider = props => {
 				vol = parseInt(list[i].volume) / 100
 				list[i].volume = parseFloat(vol.toFixed(1))
 			}
-			//console.log(list)
 			setVideos(list)	
 			setLoading(false)
 		} 
