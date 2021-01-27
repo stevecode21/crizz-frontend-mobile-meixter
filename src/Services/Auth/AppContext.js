@@ -32,7 +32,6 @@ export const AppContextProvider = props => {
 	const _setToken = async (accessToken) => {
 		api.setAuthorization(accessToken)
 		changeAccessToken(accessToken)
-		console.log('accessToken', accessToken)
 		setLoading(true)
 		try
 		{
