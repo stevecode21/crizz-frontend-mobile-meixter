@@ -95,7 +95,6 @@ export const AppContextProvider = props => {
 		}
 		else
 		{
-			console.log('accessToken', accessToken)
 			api.setAuthorization(accessToken)
 			setLoading(true)
 			try
