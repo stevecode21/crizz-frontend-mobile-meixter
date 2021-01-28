@@ -67,7 +67,6 @@ export async function getValue(key) {
     const value = await AsyncStorage.getItem(key);
     return value;
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return false;
   }
 }
