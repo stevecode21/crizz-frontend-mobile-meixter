@@ -123,7 +123,6 @@ async function clearAll() {
   try {
     await AsyncStorage.clear();
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
   }
 }
 
