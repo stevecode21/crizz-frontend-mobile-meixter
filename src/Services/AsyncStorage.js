@@ -77,7 +77,6 @@ async function getMultiValues(keys) {
   try {
     values = await AsyncStorage.multiGet(keys);
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return false;
   }
 
