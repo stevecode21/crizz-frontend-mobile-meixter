@@ -389,7 +389,6 @@ export default function CreateLesson({navigation}) {
 	const _onPlaybackStatusUpdate = (playbackStatus) => {
 		if (!playbackStatus.isLoaded) {
 			if (playbackStatus.error) {
-			  	console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
 			  	setListTrack(
 			    	listTrack.map(item => ({...item, play : false }))
 			    )
