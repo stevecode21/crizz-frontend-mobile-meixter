@@ -66,7 +66,6 @@ export default function Mylessons() {
 			);
 			return uri
 		} catch (error) {
-			//console.log(error)
 			return null
 		}
 	}
