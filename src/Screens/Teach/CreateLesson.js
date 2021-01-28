@@ -345,7 +345,6 @@ export default function CreateLesson({navigation}) {
 			setIsPlaying(res.isPlaying)
 		} catch (e) {
 			//showErrorToast()
-			console.log(e)
 		}
 	}
 
@@ -384,7 +383,6 @@ export default function CreateLesson({navigation}) {
 		} 
 		catch (e) 
 		{
-			console.log(e)
 		}
 	}
 
