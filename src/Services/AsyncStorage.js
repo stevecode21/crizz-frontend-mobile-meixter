@@ -104,7 +104,6 @@ async function removeMultiValues(keys) {
     await AsyncStorage.multiRemove(keys);
     return { success: true };
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return { error: e };
   }
 }
