@@ -114,7 +114,6 @@ async function getAllKeys() {
   try {
     keys = await AsyncStorage.getAllKeys();
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
   }
   return keys;
 }
