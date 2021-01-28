@@ -74,7 +74,6 @@ export default function Mylessons() {
   		try 
 		{
 			let response = await api.listLesson()
-			//console.log(response.result)
 			let list = response.result
 			for (var i = 0; i < list.length; i++) {
 				let thumnail = await generateThumbnail(list[i].video)
