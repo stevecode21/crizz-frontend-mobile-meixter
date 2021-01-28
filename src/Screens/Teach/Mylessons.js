@@ -80,7 +80,6 @@ export default function Mylessons() {
 				let thumnail = await generateThumbnail(list[i].video)
 				list[i].thumnail = thumnail
 			}
-			//console.log(list)
 			setListLesson(list)	
 		} 
 		catch (error) 
