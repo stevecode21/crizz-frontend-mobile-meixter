@@ -234,7 +234,6 @@ export default function({navigation}) {
           country: country,
           birthdate: moment(birth, 'DD-MMM-YYYY').format('YYYY/MM/DD')
         }
-        console.log(data)
         let response = await api.profileData(data);
         setLoading(false);
         changeAccount(response.result)
