@@ -94,7 +94,6 @@ async function removeValue(key) {
     await AsyncStorage.removeItem(key);
     return { success: true };
   } catch (e) {
-    console.log("LOG_Async Storage access Failed", e);
     return { error: e };
   }
 }
