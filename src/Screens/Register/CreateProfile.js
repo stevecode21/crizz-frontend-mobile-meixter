@@ -310,7 +310,6 @@ export default function({navigation}) {
 
   const validateDate = (day) => {
     let years = moment().diff(day.dateString, 'years')
-    console.log('yearOld', years)
     if (years >= 18)
     {
       setBirthValidate(true)
