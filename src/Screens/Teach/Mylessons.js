@@ -140,7 +140,6 @@ export default function Mylessons() {
 					id: selectedLesson._id
 				}
 				let response = await api.sendComment(data)
-				//console.log(response)
 				setParams(prevState => ({...prevState, message: '' }))
 				setError(prevState => ({...prevState, message: '' }))
 				setLoading(false)
