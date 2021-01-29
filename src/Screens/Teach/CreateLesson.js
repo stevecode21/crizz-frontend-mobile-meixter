@@ -409,7 +409,7 @@ export default function CreateLesson({navigation}) {
 			}
 
 			if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
-				console.log('finish!!!')
+				// console.log('finish!!!')
 
 				setListTrack(
 			    	listTrack.map(item => ({...item, play : false }))
