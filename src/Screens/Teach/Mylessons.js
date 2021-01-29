@@ -189,7 +189,6 @@ export default function Mylessons() {
 		catch (error) 
 		{
 			setLoading(false)
-			console.log(error)
 	        if (error.status == 401) 
 	        {
 	          showErrorToast(localeProvider.name == 'en' ? error.message_en : error.message_es)
