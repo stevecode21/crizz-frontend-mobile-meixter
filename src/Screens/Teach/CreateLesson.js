@@ -405,7 +405,7 @@ export default function CreateLesson({navigation}) {
 			}
 
 			if (playbackStatus.isBuffering) {
-			  console.log('loading...')
+			//   console.log('loading...')
 			}
 
 			if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
