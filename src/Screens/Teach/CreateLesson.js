@@ -400,7 +400,7 @@ export default function CreateLesson({navigation}) {
 			}
 		} else {
 			if (playbackStatus.isPlaying) {
-			  console.log('play', playbackStatus.positionMillis, playbackStatus.durationMillis)
+			//   console.log('play', playbackStatus.positionMillis, playbackStatus.durationMillis)
 			} else {
 			}
 
