@@ -290,7 +290,6 @@ export default function CreateLesson({navigation, route}) {
 		let lt = listTags
 		lt = lt.filter(item => item !== ta)
 		setListTags(lt)
-		console.log(listTags)
 	}
 
 	const Help = () => {
