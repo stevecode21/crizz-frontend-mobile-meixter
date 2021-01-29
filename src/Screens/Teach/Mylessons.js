@@ -181,7 +181,6 @@ export default function Mylessons() {
 				id: lesson._id
 			}
 			let response = await api.freeze(data)
-			//console.log(response)
 			setLoading(false)
 			closeModal()
 			await getListLesson()
