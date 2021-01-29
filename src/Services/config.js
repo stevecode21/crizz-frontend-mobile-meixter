@@ -42,6 +42,5 @@ export function handler(err) {
     {
         return err.response.data;
     }
-    console.log('err', err)
     return err;
 }
