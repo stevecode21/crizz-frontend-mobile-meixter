@@ -105,7 +105,6 @@ export default function Mylessons() {
 		{
 			setRefresComments(true)
 			let response = await api.listLessonComments(id)
-			//console.log(response)
 			setListComments(response.result)
 			setRefresComments(false)	
 		} 
