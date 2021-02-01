@@ -184,7 +184,7 @@ export default function Settings({navigation}) {
 			 	</Ripple>
 
 			 	<Ripple
-		 			onPress={() => console.log('Pressed')}
+		 			// onPress={() => console.log('Pressed')}
 		 			rippleColor={colors.whiteTrasparent}
 		 			rippleDuration={1000}
 		 			rippleSize={1000}
