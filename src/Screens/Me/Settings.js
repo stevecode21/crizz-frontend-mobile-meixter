@@ -64,7 +64,7 @@ export default function Settings({navigation}) {
 			 	<TitleMenu>{t('account')}</TitleMenu>
 			 	
 			 	<Ripple
-		 			onPress={() => console.log('Pressed')}
+		 			// onPress={() => console.log('Pressed')}
 		 			rippleColor={colors.whiteTrasparent}
 		 			rippleDuration={1000}
 		 			rippleSize={1000}
@@ -200,7 +200,7 @@ export default function Settings({navigation}) {
 			 	<TitleMenu>{t('about')}</TitleMenu>
 
 			 	<Ripple
-		 			onPress={() => console.log('Pressed')}
+		 			// onPress={() => console.log('Pressed')}
 		 			rippleColor={colors.whiteTrasparent}
 		 			rippleDuration={1000}
 		 			rippleSize={1000}
